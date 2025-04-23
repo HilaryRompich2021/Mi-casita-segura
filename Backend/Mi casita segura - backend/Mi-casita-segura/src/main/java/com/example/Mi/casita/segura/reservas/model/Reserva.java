@@ -1,11 +1,13 @@
 package com.example.Mi.casita.segura.reservas.model;
 
+import com.example.Mi.casita.segura.pagos.model.Pago_Detalle;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -33,7 +35,7 @@ public class Reserva {
     @JoinColumn(name = "asociado_a", referencedColumnName = "cui")
     private Usuario residente;
 
-    // Este campo se agregará si quieres vincular reserva con detallePago
-    // @OneToOne(mappedBy = "reserva")
-    // private DetallePago detallePago
+   /* @OneToMany(mappedBy = "reserva")
+    private List<Pago_Detalle> detallesPago;*/
+
 }

@@ -39,6 +39,6 @@ public class Pagos {
 
     // Detalle de conceptos individuales dentro del pago
     @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL)
-    private List<Pago_Detalle> detallePagos;
+    private List<Pago_Detalle> Pago_Detalle;
 
 }
