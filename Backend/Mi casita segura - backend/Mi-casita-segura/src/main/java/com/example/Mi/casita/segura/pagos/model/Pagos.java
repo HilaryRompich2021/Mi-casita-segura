@@ -30,7 +30,7 @@ public class Pagos {
 
     // Tipo de pago: RESERVA, CUOTA, REINSTALACIÓN, etc.
     @Column(length = 30)
-    private String tipoPago;
+    private String metodoPago;
 
     // Usuario que realizó el pago
     @ManyToOne
