@@ -20,11 +20,14 @@ public class Visitante {
 
     @Column(nullable = false, length = 100)
     private String nombreVisitante;
+
     private boolean estado;
+
     private LocalDate fechaDeIngreso;
 
     @Column(length = 20)
     private String telefono;
+
     private Integer numeroCasa;
 
     @Column(length = 100)
