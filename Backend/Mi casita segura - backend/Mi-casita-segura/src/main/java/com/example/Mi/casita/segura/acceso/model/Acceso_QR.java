@@ -19,7 +19,7 @@ public class Acceso_QR {
  @Id
  //Permite que la base de datos genere el valor automáticamente
 @GeneratedValue(strategy = GenerationType.IDENTITY)
-private Integer id;
+private Long id;
 
  @Column(nullable = false)
     private String codigoQR;
