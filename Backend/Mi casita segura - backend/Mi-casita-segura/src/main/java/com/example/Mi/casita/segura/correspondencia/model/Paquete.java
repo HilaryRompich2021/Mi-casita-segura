@@ -44,5 +44,5 @@ public class Paquete {
 
     @ManyToOne
     @JoinColumn(name = "creado_por")
-    private Usuario creadoPor;
+    private Usuario creado_por;
 }

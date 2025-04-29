@@ -58,11 +58,11 @@ public class Usuario {
     private List<Acceso_QR> acceso_QR;
 
     // Relación con paquetes ingresados por este usuario
-    @OneToMany(mappedBy = "creadoPor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "creado_por", cascade = CascadeType.ALL)
     private List<Paquete> paquetes;
 
     // Relación con notificaciones generadas
-    @OneToMany(mappedBy = "generadoPor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "generado_por", cascade = CascadeType.ALL)
     private List<Notificacion> notificaciones;
 
     // Relación con pagos realizados

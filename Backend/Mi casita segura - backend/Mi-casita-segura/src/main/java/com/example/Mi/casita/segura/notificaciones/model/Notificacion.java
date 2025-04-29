@@ -18,14 +18,14 @@ public class Notificacion {
    private String titulo;
 
     @Enumerated(EnumType.STRING)
-    private String tipoNotificacion;
+    private TipoNotificacion tipoNotificacion;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String mensaje;
 
     @ManyToOne
     @JoinColumn(name = "generado_por", referencedColumnName = "cui")
-    private Usuario generadopor;
+    private Usuario generado_por;
 
     public enum TipoNotificacion {
         SISTEMA, PAGO, RESERVA, SEGURIDAD
