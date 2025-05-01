@@ -18,7 +18,7 @@ public class RegistroIngreso {
 
    private LocalDateTime fecha_hora_ingreso;
 
-    //@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
    private String tipo_ingreso;
 
     private String resultado_validacion;
@@ -28,9 +28,9 @@ public class RegistroIngreso {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String observacion;
 
-  /*  public enum TipoIngreso {
+   public enum TipoIngreso {
         SISTEMA, PAGO, RESERVA, SEGURIDAD
-    }*/
+    }
 
 
 }
