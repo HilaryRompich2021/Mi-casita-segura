@@ -41,13 +41,21 @@ public class Usuario {
     @Column(length = 20)
     private String telefono;
 
-    @Column(length = 50)
+    @Enumerated(EnumType.STRING)
     private String rol;
+
+    @Column(nullable = false)
     private LocalDate fechaDeIngreso;
 
     @Column(nullable = false)
     private boolean estado;
+
+    @Column(nullable = false)
     private int numeroCasa;
+
+    public enum Rol {
+        ADMINISTRADOR, RESIDENTE, GUARDIA
+    }
 
     // Relación con los visitantes creados por este usuario
     @OneToMany(mappedBy = "creadoPor", cascade = CascadeType.ALL)
@@ -58,11 +66,11 @@ public class Usuario {
     private List<Acceso_QR> acceso_QR;
 
     // Relación con paquetes ingresados por este usuario
-    @OneToMany(mappedBy = "creado_por", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "creadopor", cascade = CascadeType.ALL)
     private List<Paquete> paquetes;
 
     // Relación con notificaciones generadas
-    @OneToMany(mappedBy = "generado_por", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "generadopor", cascade = CascadeType.ALL)
     private List<Notificacion> notificaciones;
 
     // Relación con pagos realizados
