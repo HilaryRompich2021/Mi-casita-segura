@@ -20,7 +20,7 @@ import java.util.UUID;
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final AccesoQRRepository accesoQRRepository;
-    private final notificacionService notificacionService;
+    private final notificacionService notificacion_Service;
 
     public Usuario registrarUsuario(UsuarioRegistroDTO dto) {
         if (usuarioRepository.existsById(dto.getCui())) {
@@ -46,7 +46,7 @@ public class UsuarioService {
         Acceso_QR qr = new Acceso_QR();
         qr.setCodigoQR(UUID.randomUUID().toString()); // puedes generar con Zxing si deseas
         qr.setFechaGeneracion(LocalDateTime.now());
-        qr.setEstado("ACTIVO");
+        qr.setEstado(Acceso_QR.Estado.ACTIVO);
         qr.setAsociado(usuario);
         accesoQRRepository.save(qr);
 

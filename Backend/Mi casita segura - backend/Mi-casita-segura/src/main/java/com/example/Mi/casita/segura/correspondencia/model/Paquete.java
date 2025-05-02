@@ -43,6 +43,6 @@ public class Paquete {
     private LocalDateTime fecha_registro;
 
     @ManyToOne
-    @JoinColumn(name = "creado_por")
-    private Usuario creado_por;
+    @JoinColumn(name = "creadoPor")
+    private Usuario creadopor;
 }

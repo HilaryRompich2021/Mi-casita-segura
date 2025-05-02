@@ -19,5 +19,5 @@ public interface AccesoQRRepository extends JpaRepository<Acceso_QR, Long> {
     Optional<Acceso_QR> findByVisitanteIdAndEstado(Long visitanteId, String estado);
 
     // Verificar si existe un QR vigente para un visitante
-    boolean existsByVisitanteIdAndEstado(String visitanteId, String estado);
+    boolean existsByVisitanteIdAndEstado(Long visitanteId, String estado);
 }

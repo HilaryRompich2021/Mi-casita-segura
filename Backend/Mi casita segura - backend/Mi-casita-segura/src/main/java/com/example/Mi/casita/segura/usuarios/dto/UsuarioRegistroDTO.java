@@ -1,5 +1,6 @@
 package com.example.Mi.casita.segura.usuarios.dto;
 
+import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class UsuarioRegistroDTO {
     private String contrasena;
 
     @NotBlank
-    private String rol;
+    private Usuario.Rol rol;
 
     private String telefono;
 

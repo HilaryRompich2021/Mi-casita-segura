@@ -42,7 +42,7 @@ public class Usuario {
     private String telefono;
 
     @Enumerated(EnumType.STRING)
-    private String rol;
+    private Rol rol;
 
     @Column(nullable = false)
     private LocalDate fechaDeIngreso;

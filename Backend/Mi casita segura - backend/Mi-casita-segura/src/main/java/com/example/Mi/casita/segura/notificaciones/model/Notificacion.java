@@ -24,8 +24,8 @@ public class Notificacion {
     private String mensaje;
 
     @ManyToOne
-    @JoinColumn(name = "generado_por", referencedColumnName = "cui")
-    private Usuario generado_por;
+    @JoinColumn(name = "generadoPor", referencedColumnName = "cui")
+    private Usuario generadopor;
 
     public enum TipoNotificacion {
         SISTEMA, PAGO, RESERVA, SEGURIDAD

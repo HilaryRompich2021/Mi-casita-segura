@@ -28,7 +28,7 @@ private Long id;
  private LocalDateTime fechaGeneracion;
 
  @Enumerated(EnumType.STRING)
- private String estado;
+ private Estado estado;
 
  private LocalDateTime fechaExpiracion; // RN03.4
 
@@ -42,7 +42,7 @@ private Long id;
  @JoinColumn(name = "asociado_a", referencedColumnName = "cui")
  private Usuario asociado;
 
- public enum estado {
+ public enum Estado {
   ACTIVO, USADO, EXPIRADO, INACTIVO
 
  }
