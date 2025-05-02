@@ -3,6 +3,7 @@ package com.example.Mi.casita.segura.usuarios.dto;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -20,7 +21,7 @@ public class UsuarioRegistroDTO {
     @NotBlank
     private String contrasena;
 
-    @NotBlank
+    @NotNull(message = "El rol no puede ser nulo")
     private Usuario.Rol rol;
 
     private String telefono;

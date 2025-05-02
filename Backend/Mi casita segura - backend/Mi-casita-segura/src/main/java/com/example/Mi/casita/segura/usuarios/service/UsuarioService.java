@@ -2,12 +2,12 @@ package com.example.Mi.casita.segura.usuarios.service;
 
 import com.example.Mi.casita.segura.acceso.model.Acceso_QR;
 import com.example.Mi.casita.segura.acceso.repository.AccesoQRRepository;
-import com.example.Mi.casita.segura.notificaciones.service.notificacionService;
+import com.example.Mi.casita.segura.notificaciones.service.NotificacionService;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioRegistroDTO;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ import java.util.UUID;
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final AccesoQRRepository accesoQRRepository;
-    private final notificacionService notificacion_Service;
+    private final NotificacionService notificacionService;
 
     public Usuario registrarUsuario(UsuarioRegistroDTO dto) {
         if (usuarioRepository.existsById(dto.getCui())) {
@@ -39,6 +39,13 @@ public class UsuarioService {
         usuario.setNumeroCasa(dto.getNumeroCasa());
         usuario.setFechaDeIngreso(LocalDate.now());
         usuario.setEstado(true);
+
+        if (dto.getRol() == Usuario.Rol.ADMINISTRADOR || dto.getRol() == Usuario.Rol.GUARDIA) {
+            usuario.setNumeroCasa(0); //
+        } else {
+            usuario.setNumeroCasa(dto.getNumeroCasa());
+        }
+
 
         usuarioRepository.save(usuario);
 
@@ -61,7 +68,11 @@ public class UsuarioService {
     }
 
     private String encriptar(String contrasena) {
-        return new BCryptPasswordEncoder().encode(contrasena);
+       // return new BCryptPasswordEncoder().encode(contrasena);
+        Usuario usuario = new Usuario();
+        UsuarioRegistroDTO dto = new UsuarioRegistroDTO();
+        usuario.setContrasena(dto.getContrasena());
+        return contrasena;
     }
 
 }
