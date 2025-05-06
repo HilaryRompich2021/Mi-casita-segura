@@ -24,5 +24,6 @@ public class UsuarioController {
     public ResponseEntity<Usuario> registrar (@Valid @RequestBody UsuarioRegistroDTO dto){
         Usuario usuario = usuarioService.registrarUsuario(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
+
     }
 }
