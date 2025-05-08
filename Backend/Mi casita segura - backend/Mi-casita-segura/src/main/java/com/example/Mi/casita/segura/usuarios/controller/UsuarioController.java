@@ -1,5 +1,6 @@
 package com.example.Mi.casita.segura.usuarios.controller;
 
+import com.example.Mi.casita.segura.usuarios.dto.UsuarioListadoDTO;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioRegistroDTO;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.service.UsuarioService;
@@ -39,7 +40,7 @@ public class UsuarioController {
 
 
     @GetMapping
-    public ResponseEntity<List<UsuarioRegistroDTO>> listarUsuarios() {
+    public ResponseEntity<List<UsuarioListadoDTO>> listarUsuarios() {
         return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
     }
 
