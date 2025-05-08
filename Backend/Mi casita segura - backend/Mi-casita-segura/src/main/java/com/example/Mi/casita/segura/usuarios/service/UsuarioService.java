@@ -3,7 +3,6 @@ package com.example.Mi.casita.segura.usuarios.service;
 import com.example.Mi.casita.segura.acceso.model.Acceso_QR;
 import com.example.Mi.casita.segura.acceso.repository.AccesoQRRepository;
 import com.example.Mi.casita.segura.notificaciones.service.NotificacionService;
-import com.example.Mi.casita.segura.usuarios.dto.UsuarioListadoDTO;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioRegistroDTO;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
@@ -82,9 +81,9 @@ public class UsuarioService {
 
 
 
-    public List<UsuarioListadoDTO> obtenerTodosLosUsuarios() {
+    public List<UsuarioRegistroDTO> obtenerTodosLosUsuarios() {
         return usuarioRepository.findAll().stream()
-                .map(usuario -> new UsuarioListadoDTO(
+                .map(usuario -> new UsuarioRegistroDTO(
                         usuario.getCui(),
                         usuario.getNombre(),
                         usuario.getCorreoElectronico(),

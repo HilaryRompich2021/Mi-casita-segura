@@ -46,4 +46,6 @@ public class UsuarioRegistroDTO {
     @Min(value = 1, message = "El número de casa debe ser mayor a cero")
     @Max(value = 300, message = "El número de casa no puede ser mayor a 300")
     private int numeroCasa;
+
+
 }

@@ -2,7 +2,7 @@ package com.example.Mi.casita.segura.visitantes.service;
 
 import com.example.Mi.casita.segura.acceso.model.Acceso_QR;
 import com.example.Mi.casita.segura.acceso.repository.AccesoQRRepository;
-import com.example.Mi.casita.segura.notificaciones.service.notificacionService;
+import com.example.Mi.casita.segura.notificaciones.service.NotificacionService;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
 import com.example.Mi.casita.segura.visitantes.dto.VisitanteRegistroDTO;
@@ -22,7 +22,7 @@ public class VisitanteService {
     private final VisitanteRepository visitanteRepository;
     private final UsuarioRepository usuarioRepository;
     private final AccesoQRRepository accesoQRRepository;
-    private final notificacionService notificacionService;
+    private final NotificacionService notificacionService;
 
     public Visitante registrarVisitante(VisitanteRegistroDTO dto) {
         if (dto.getCui() != null && visitanteRepository.existsByCui(dto.getCui())) {
