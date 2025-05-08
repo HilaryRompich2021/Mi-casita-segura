@@ -1,29 +1,49 @@
 package com.example.Mi.casita.segura.usuarios.dto;
 
+import com.example.Mi.casita.segura.ValidationCui.ValidCui;
+import com.example.Mi.casita.segura.usuarios.Validaciones.NombreValido;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class UsuarioRegistroDTO {
 
-    @NotBlank
+
+    @NotNull(message = "El cui no puede ser nulo")
+    @Pattern(regexp = "\\d{13}", message = "El CUI debe tener exactamente 13 dígitos")
+    @ValidCui
     private String cui;
 
-    @NotBlank
+    @NombreValido
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String nombre;
 
-    @Email
+    @NotBlank(message = "El correo no puede estar vacío")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.(com|org|net|edu|gov|mil|gt)$",
+            message = "Correo electrónico inválido. Debe ser una dirección válida como nombre@dominio.com"
+    )
+    @Email(message = "El correo no es válido")
     private String correoElectronico;
 
-    @NotBlank
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s])\\S{6,13}$",
+            message = "La contraseña debe tener entre 6 y 13 caracteres, incluir al menos una mayúscula, una minúscula, un dígito, un carácter especial y no contener espacios."
+    )
+    @NotBlank(message = "La contraseña no puede estar vacía")
     private String contrasena;
 
-    @NotBlank
+    @NotNull(message = "El rol no puede ser nulo")
     private Usuario.Rol rol;
 
+    @NotNull(message = "Teléfono no puede quedar vacío")
+    @Pattern(regexp = "\\d{8}", message = "El número de teléfono debe contener exactamente 8 dígitos numéricos")
     private String telefono;
 
+    @NotNull(message = "El número de casa no puede estar vacío")
+    @Min(value = 1, message = "El número de casa debe ser mayor a cero")
+    @Max(value = 300, message = "El número de casa no puede ser mayor a 300")
     private int numeroCasa;
 }
