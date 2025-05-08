@@ -10,6 +10,7 @@ import com.example.Mi.casita.segura.usuarios.model.Usuario;
 
 import lombok.RequiredArgsConstructor;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final AccesoQRRepository accesoQRRepository;
     private final NotificacionService notificacionService;
+    private final PasswordEncoder passwordEncoder;
 
 
     public Usuario registrarUsuario(UsuarioRegistroDTO dto) {
@@ -127,12 +129,15 @@ public class UsuarioService {
     }
 
 
-    private String encriptar(String contrasena) {
+    /*private String encriptar(String contrasena) {
        // return new BCryptPasswordEncoder().encode(contrasena);
         Usuario usuario = new Usuario();
         UsuarioRegistroDTO dto = new UsuarioRegistroDTO();
         usuario.setContrasena(dto.getContrasena());
         return contrasena;
+    }*/
+    private String encriptar(String contrasena) {
+        return passwordEncoder.encode(contrasena);
     }
 
 }
