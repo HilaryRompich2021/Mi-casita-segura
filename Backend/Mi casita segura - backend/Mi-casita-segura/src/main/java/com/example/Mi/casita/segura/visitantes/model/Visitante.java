@@ -36,11 +36,12 @@ public class Visitante {
     @Lob
     private String nota;
 
+    // Relación con los usuarios que crean visitantes.
     @ManyToOne
     @JoinColumn(name = "creado_por")
     private Usuario creadoPor;
 
-    // 🔹 Relación uno a uno con el código QR generado
+    // Relación uno a uno con el código QR generado
     @OneToOne(mappedBy = "visitante", cascade = CascadeType.ALL)
     private Acceso_QR acceso_QR;
 

@@ -5,6 +5,7 @@ import com.example.Mi.casita.segura.acceso.repository.AccesoQRRepository;
 import com.example.Mi.casita.segura.notificaciones.service.NotificacionService;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
+import com.example.Mi.casita.segura.visitantes.dto.VisitanteListadoDTO;
 import com.example.Mi.casita.segura.visitantes.dto.VisitanteRegistroDTO;
 import com.example.Mi.casita.segura.visitantes.model.Visitante;
 import com.example.Mi.casita.segura.visitantes.repository.VisitanteRepository;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,4 +61,39 @@ public class VisitanteService {
 
         return visitante;
     }
+
+    public List<VisitanteListadoDTO> obtenerTodosVisitantes() {
+        return visitanteRepository.findAll().stream()
+                .map(v -> new VisitanteListadoDTO(
+                        v.getId(),
+                        v.getCui(),
+                        v.getNombreVisitante(),
+                        v.isEstado(),
+                        v.getFechaDeIngreso(),
+                        v.getTelefono(),
+                        v.getNumeroCasa(),
+                        v.getMotivoVisita(),
+                        v.getNota(),
+                        //Saber quién lo creó
+                        v.getCreadoPor().getCui()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public Visitante actualizarVisitante(Long id, VisitanteRegistroDTO dto) {
+
+        Visitante visitante = visitanteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Visitante con id " + id + " no encontrado"));
+
+        // 2. (Opcional) verifica permisos del creador aquí si ya integras JWT
+
+        visitante.setNombreVisitante(dto.getNombreVisitante());
+        visitante.setTelefono(dto.getTelefono());
+        visitante.setMotivoVisita(dto.getMotivoVisita());
+        visitante.setNota(dto.getNota());
+        visitante.setEstado(dto.isEstado());
+
+        return visitanteRepository.save(visitante);
+    }
+
 }

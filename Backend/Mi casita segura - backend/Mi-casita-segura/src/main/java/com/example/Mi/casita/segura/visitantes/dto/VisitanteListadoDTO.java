@@ -1,39 +1,34 @@
 package com.example.Mi.casita.segura.visitantes.dto;
 
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisitanteRegistroDTO {
+public class VisitanteListadoDTO {
 
-    @NotBlank
+    private Long id;
+
     private String cui;
 
-    @NotBlank
     private String nombreVisitante;
 
-    @NotBlank
-    private String telefono;
-
-    @NotNull
     private boolean estado;
 
-    @NotBlank
-    @Min(1)
-    @Max(100)
+    private LocalDate fechaDeIngreso;
+
+    private String telefono;
+
     private Integer numeroCasa;
 
-    @NotBlank
     private String motivoVisita;
 
-    @NotBlank
     private String nota;
 
-    // ID del usuario que lo crea (Administrador o Residente)
-    @NotBlank
-    private String cuiCreador;
+    private String creadoPorCui;
+
 }
