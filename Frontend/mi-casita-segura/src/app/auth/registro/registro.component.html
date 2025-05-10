@@ -15,9 +15,13 @@
           <div>
             <input
               type="text"
-              placeholder="CUI (13 dígitos)"
+              placeholder="CUI"
               formControlName="cui"
               class="mt-1 block w-full border-none bg-gray-100 h-12 rounded-xl shadow-lg hover:bg-blue-100 focus:bg-blue-100 focus:ring-0" />
+            <div *ngIf="formulario.get('cui')?.touched && formulario.get('cui')?.invalid" class="text-red-500 text-xs mt-1">
+              <span *ngIf="formulario.get('cui')?.errors?.['required']">El CUI es obligatorio.</span>
+              <span *ngIf="formulario.get('cui')?.errors?.['pattern']">Debe tener exactamente 13 dígitos.</span>
+            </div>
           </div>
 
           <!-- Nombre -->
@@ -27,6 +31,18 @@
               placeholder="Nombre completo"
               formControlName="nombre"
               class="mt-1 block w-full border-none bg-gray-100 h-12 rounded-xl shadow-lg hover:bg-blue-100 focus:bg-blue-100 focus:ring-0" />
+            <div *ngIf="formulario.get('nombre')?.touched && formulario.get('nombre')?.invalid" class="text-red-500 text-xs mt-1">
+              <span *ngIf="formulario.get('nombre')?.errors?.['required']">El nombre es obligatorio.</span>
+            </div>
+            <div *ngIf="mensajeErrorNombre" class="text-red-500 text-xs mt-1">
+                    {{ mensajeErrorNombre }}
+
+            </div>
+            <div *ngIf="formulario.get('nombre')?.touched && formulario.get('nombre')?.hasError('nombreInvalido')" class="text-red-500 text-xs mt-1">
+                  El nombre debe tener al menos dos palabras y cada palabra debe tener al menos 2 letras (solo letras).
+            </div>
+
+
           </div>
 
           <!-- Correo -->
@@ -36,24 +52,42 @@
               placeholder="Correo electrónico"
               formControlName="correoElectronico"
               class="mt-1 block w-full border-none bg-gray-100 h-12 rounded-xl shadow-lg hover:bg-blue-100 focus:bg-blue-100 focus:ring-0" />
+            <div *ngIf="formulario.get('correoElectronico')?.touched && formulario.get('correoElectronico')?.invalid" class="text-red-500 text-xs mt-1">
+              <span *ngIf="formulario.get('correoElectronico')?.errors?.['required']">El correo es obligatorio.</span>
+              <span *ngIf="formulario.get('correoElectronico')?.errors?.['email']">Formato de correo inválido.</span>
+              <span *ngIf="formulario.get('correoElectronico')?.errors?.['pattern']">Correo no permitido (debe ser .com, .gt, etc).</span>
+            </div>
           </div>
 
           <!-- Contraseña -->
           <div class="mt-7">
             <input
-              type="password"
+              type="contrasena"
               placeholder="Contraseña"
               formControlName="contrasena"
               class="mt-1 block w-full border-none bg-gray-100 h-12 rounded-xl shadow-lg hover:bg-blue-100 focus:bg-blue-100 focus:ring-0" />
+            <div *ngIf="formulario.get('contrasena')?.touched && formulario.get('contrasena')?.invalid" class="text-red-500 text-xs mt-1">
+              <span *ngIf="formulario.get('contrasena')?.errors?.['required']">La contraseña es obligatoria.</span>
+              <span *ngIf="formulario.get('contrasena')?.errors?.['pattern']">
+                Debe tener entre 6 y 13 caracteres, mayúscula, minúscula, número y carácter especial.
+              </span>
+            </div>
           </div>
 
           <!-- Confirmar Contraseña -->
           <div class="mt-7">
             <input
-              type="password"
+              type="contrasena"
               placeholder="Confirmar contraseña"
               formControlName="confirmarContrasena"
               class="mt-1 block w-full border-none bg-gray-100 h-12 rounded-xl shadow-lg hover:bg-blue-100 focus:bg-blue-100 focus:ring-0" />
+            <div *ngIf="formulario.get('confirmarContrasena')?.touched && formulario.hasError('passwordsMismatch')" class="text-red-500 text-xs mt-1">
+                Las contraseñas no coinciden.
+            </div>
+            <div *ngIf="formulario.get('confirmarContrasena')?.touched && formulario.get('confirmarContrasena')?.hasError('required')" class="text-red-500 text-xs mt-1">
+                 Confirma tu contraseña.
+            </div>
+
           </div>
 
           <!-- Rol -->
@@ -61,7 +95,7 @@
             <select
               formControlName="rol"
               class="mt-1 block w-full border-none bg-gray-100 h-12 rounded-xl shadow-lg hover:bg-blue-100 focus:bg-blue-100 focus:ring-0"
-            >
+              >
               <option value="" disabled>Seleccione un rol</option>
               <option value="ADMINISTRADOR">Administrador</option>
               <option value="RESIDENTE">Residente</option>
@@ -72,19 +106,28 @@
           <!-- Teléfono -->
           <div class="mt-7">
             <input
-              type="text"
+              type="telefono"
               placeholder="Teléfono (8 dígitos)"
               formControlName="telefono"
               class="mt-1 block w-full border-none bg-gray-100 h-12 rounded-xl shadow-lg hover:bg-blue-100 focus:bg-blue-100 focus:ring-0" />
+            <div *ngIf="formulario.get('telefono')?.touched && formulario.get('telefono')?.invalid" class="text-red-500 text-xs mt-1">
+              <span *ngIf="formulario.get('telefono')?.errors?.['required']">El teléfono es obligatorio.</span>
+              <span *ngIf="formulario.get('telefono')?.errors?.['pattern']">Debe contener 8 dígitos numéricos.</span>
+            </div>
           </div>
 
           <!-- Número de Casa -->
           <div class="mt-7">
             <input
-              type="number"
+              type="numeroCasa"
               placeholder="Número de casa"
               formControlName="numeroCasa"
               class="mt-1 block w-full border-none bg-gray-100 h-12 rounded-xl shadow-lg hover:bg-blue-100 focus:bg-blue-100 focus:ring-0" />
+            <div *ngIf="formulario.get('numeroCasa')?.touched && formulario.get('numeroCasa')?.invalid" class="text-red-500 text-xs mt-1">
+              <span *ngIf="formulario.get('numeroCasa')?.errors?.['required']">El número de casa es obligatorio.</span>
+              <span *ngIf="formulario.get('numeroCasa')?.errors?.['min']">Debe ser mayor a 0.</span>
+              <span *ngIf="formulario.get('numeroCasa')?.errors?.['max']">No puede ser mayor a 300.</span>
+            </div>
           </div>
 
           <!-- Botón Registrar -->
@@ -98,6 +141,38 @@
             </button>
           </div>
         </form>
+        <!-- Tabla de usuarios -->
+<div class="mt-10">
+  <h2 class="text-center text-lg font-semibold mb-4">Usuarios registrados</h2>
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white shadow-md rounded-xl overflow-hidden">
+      <thead class="bg-gray-200 text-gray-600">
+        <tr>
+          <th class="px-4 py-2">CUI</th>
+          <th class="px-4 py-2">Nombre</th>
+          <th class="px-4 py-2">Correo</th>
+          <th class="px-4 py-2">Rol</th>
+          <th class="px-4 py-2">Teléfono</th>
+          <th class="px-4 py-2">Casa</th>
+          <th class="px-4 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let usuario of usuarios" class="text-center hover:bg-gray-100">
+          <td class="px-4 py-2">{{ usuario.cui }}</td>
+          <td class="px-4 py-2">{{ usuario.nombre }}</td>
+          <td class="px-4 py-2">{{ usuario.correoElectronico }}</td>
+          <td class="px-4 py-2">{{ usuario.rol }}</td>
+          <td class="px-4 py-2">{{ usuario.telefono }}</td>
+          <td class="px-4 py-2">{{ usuario.numeroCasa }}</td>
+          <td class="px-4 py-2">
+            <button (click)="eliminarUsuario(usuario.cui)" class="text-red-500 hover:underline">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
       </div>
     </div>
   </div>

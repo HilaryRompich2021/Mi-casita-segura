@@ -12,6 +12,8 @@ public class UsuarioListadoDTO {
     private String cui;
     private String nombre;
     private String correoElectronico;
+    private String telefono;
+    private int numeroCasa;
     private Usuario.Rol rol;
     private boolean estado;
 }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -22,6 +22,16 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   registrar(data: any): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post(`${this.baseUrl}/registrar`, data);
   }
+
+  obtenerUsuarios(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}`);
+}
+
+eliminarUsuario(cui: string): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/${cui}`);
+}
+
 }

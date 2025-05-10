@@ -90,6 +90,8 @@ public class UsuarioService {
                         usuario.getCui(),
                         usuario.getNombre(),
                         usuario.getCorreoElectronico(),
+                        usuario.getTelefono(),
+                        usuario.getNumeroCasa(),
                         usuario.getRol(),
                         usuario.isEstado()
                 ))
