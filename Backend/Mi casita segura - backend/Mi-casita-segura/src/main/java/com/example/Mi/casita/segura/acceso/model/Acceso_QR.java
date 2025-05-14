@@ -44,6 +44,14 @@ private Long id;
 
  public enum Estado {
   ACTIVO, USADO, EXPIRADO, INACTIVO
+          }
 
+  @PrePersist
+  public void prePersist() {
+   // si no te dieron fechaExpiracion, le asigna 24h después de generación
+   if (fechaExpiracion == null && fechaGeneracion != null) {
+    fechaExpiracion = fechaGeneracion.plusHours(24);
+   }
  }
 }
+

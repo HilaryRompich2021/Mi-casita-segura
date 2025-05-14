@@ -33,7 +33,7 @@ public class Visitante {
     @Column(length = 100)
     private String motivoVisita;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String nota;
 
     // Relación con los usuarios que crean visitantes.

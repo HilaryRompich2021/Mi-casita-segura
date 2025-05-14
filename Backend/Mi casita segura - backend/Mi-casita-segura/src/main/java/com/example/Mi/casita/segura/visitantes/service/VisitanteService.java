@@ -32,7 +32,7 @@ public class VisitanteService {
             throw new IllegalArgumentException("El visitante ya existe");
         }
 
-        Usuario creador = usuarioRepository.findById(dto.getCuiCreador())
+        Usuario creador = usuarioRepository.findById(dto.getCreadoPor())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario creador no encontrado"));
 
         Visitante visitante = new Visitante();
@@ -51,10 +51,15 @@ public class VisitanteService {
         // Generar código QR
         Acceso_QR qr = new Acceso_QR();
         qr.setCodigoQR(UUID.randomUUID().toString());
-        qr.setFechaGeneracion(LocalDateTime.now());
+        LocalDateTime ahora = LocalDateTime.now();
+        qr.setFechaGeneracion(ahora);
         qr.setEstado(Acceso_QR.Estado.valueOf("ACTIVO"));
+        qr.setFechaExpiracion(ahora.plusHours(24));
+        //Usuario creador = visitante.getCreadoPor();
+        qr.setAsociado(creador);
         qr.setVisitante(visitante);
         accesoQRRepository.save(qr);
+
 
         // Notificar
         // notificacionService.enviarNotificacionVisitante(visitante, qr.getCodigoQR());
@@ -64,19 +69,20 @@ public class VisitanteService {
 
     public List<VisitanteListadoDTO> obtenerTodosVisitantes() {
         return visitanteRepository.findAll().stream()
-                .map(v -> new VisitanteListadoDTO(
-                        v.getId(),
-                        v.getCui(),
-                        v.getNombreVisitante(),
-                        v.isEstado(),
-                        v.getFechaDeIngreso(),
-                        v.getTelefono(),
-                        v.getNumeroCasa(),
-                        v.getMotivoVisita(),
-                        v.getNota(),
-                        //Saber quién lo creó
-                        v.getCreadoPor().getCui()
-                ))
+                .map(v -> {
+                    VisitanteListadoDTO dto = new VisitanteListadoDTO();
+                    dto.setId(v.getId());
+                    dto.setCui(v.getCui());
+                    dto.setNombreVisitante(v.getNombreVisitante());
+                    dto.setEstado(v.isEstado());
+                    dto.setFechaDeIngreso(v.getFechaDeIngreso());
+                    dto.setTelefono(v.getTelefono());
+                    dto.setNumeroCasa(v.getNumeroCasa());
+                    dto.setMotivoVisita(v.getMotivoVisita());
+                    dto.setNota(v.getNota());
+                    dto.setCreadoPor(v.getCreadoPor().getCui());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 

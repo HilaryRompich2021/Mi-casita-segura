@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(usuario.getUsuario())
                 .password(usuario.getContrasena())
-                .roles(usuario.getRol().name()) // Asegúrate que tu enum Rol tenga nombres válidos para roles
+                .roles(usuario.getRol().name())
                 .build();
     }
 }

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+//import { AuthService } from '../../services/auth.service';
 import { RouterOutlet } from '@angular/router';
+import { RegistroService } from '../services/registro.service';
 
 @Component({
   selector: 'app-registro',
@@ -19,7 +20,7 @@ export default class RegistroComponent implements OnInit{
   usuarios: any[] = [];
 
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {}
+  constructor(private fb: FormBuilder, private registroService: RegistroService) {}
 
   ngOnInit(): void {
     this.formulario = this.fb.group({
@@ -36,7 +37,7 @@ export default class RegistroComponent implements OnInit{
   this.cargarUsuarios();
   }
   cargarUsuarios() {
-  this.authService.obtenerUsuarios().subscribe({
+  this.registroService.obtenerUsuarios().subscribe({
     next: (data) => this.usuarios = data,
     error: (err) => console.error('Error al obtener usuarios', err)
   });
@@ -52,7 +53,7 @@ export default class RegistroComponent implements OnInit{
 
   registrarUsuario(): void {
     if (this.formulario.valid) {
-      this.authService.registrar(this.formulario.value).subscribe({
+      this.registroService.registrar(this.formulario.value).subscribe({
         next: (respuesta: any) => {console.log('Registrado:', respuesta);
           this.mensajeErrorNombre = ''; // Limpia errores anteriores
         },
@@ -88,7 +89,7 @@ export default class RegistroComponent implements OnInit{
 }
 
 eliminarUsuario(cui: string) {
-  this.authService.eliminarUsuario(cui).subscribe({
+  this.registroService.eliminarUsuario(cui).subscribe({
     next: () => this.cargarUsuarios(),
     error: (err) => console.error('Error al eliminar usuario', err)
   });

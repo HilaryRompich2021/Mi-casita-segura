@@ -1,0 +1,134 @@
+<!-- registro-visitante.component.html -->
+<div class="font-sans">
+  <div class="relative min-h-screen flex flex-col sm:justify-center items-center bg-gray-100 ">
+    <div class="relative sm:max-w-md w-full">
+      <div class="card bg-blue-400 shadow-lg w-full h-full rounded-3xl absolute transform -rotate-6"></div>
+      <div class="card bg-red-400 shadow-lg w-full h-full rounded-3xl absolute transform rotate-6"></div>
+      <div class="relative w-full rounded-3xl px-6 py-4 bg-gray-100 shadow-md">
+        <h2 class="block mt-3 text-xl text-gray-700 text-center font-semibold">
+          Registro de Visitante
+        </h2>
+        <!-- <form [formGroup]="visitanteForm"-->
+              (ngSubmit)="onSubmit()"
+              class="mt-8">
+
+          <!-- CUI -->
+          <div>
+            <input
+              formControlName="cui"
+              type="text"
+              placeholder="CUI (13 dígitos)"
+              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
+                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
+            />
+            <div *ngIf="visitanteForm.get('cui')?.invalid && visitanteForm.get('cui')?.touched"
+                 class="text-red-500 text-sm mt-1">
+              {{ getError('cui') }}
+            </div>
+          </div>
+
+          <!-- Nombre -->
+          <div class="mt-6">
+            <input
+              formControlName="nombreVisitante"
+              type="text"
+              placeholder="Nombre del visitante"
+              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
+                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
+            />
+            <div *ngIf="visitanteForm.get('nombreVisitante')?.invalid && visitanteForm.get('nombreVisitante')?.touched"
+                 class="text-red-500 text-sm mt-1">
+              {{ getError('nombreVisitante') }}
+            </div>
+          </div>
+
+          <!-- Teléfono -->
+          <div class="mt-6">
+            <input
+              formControlName="telefono"
+              type="text"
+              placeholder="Teléfono (8 dígitos)"
+              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
+                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
+            />
+            <div *ngIf="visitanteForm.get('telefono')?.invalid && visitanteForm.get('telefono')?.touched"
+                 class="text-red-500 text-sm mt-1">
+              {{ getError('telefono') }}
+            </div>
+          </div>
+
+          <!-- Número de casa -->
+          <div class="mt-6">
+            <input
+              formControlName="numeroCasa"
+              type="number"
+              placeholder="Número de casa"
+              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
+                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
+            />
+            <div *ngIf="visitanteForm.get('numeroCasa')?.invalid && visitanteForm.get('numeroCasa')?.touched"
+                 class="text-red-500 text-sm mt-1">
+              {{ getError('numeroCasa') }}
+            </div>
+          </div>
+
+          <!-- Motivo de visita -->
+          <div class="mt-6">
+            <input
+              formControlName="motivoVisita"
+              type="text"
+              placeholder="Motivo de la visita"
+              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
+                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
+            />
+            <div *ngIf="visitanteForm.get('motivoVisita')?.invalid && visitanteForm.get('motivoVisita')?.touched"
+                 class="text-red-500 text-sm mt-1">
+              {{ getError('motivoVisita') }}
+            </div>
+          </div>
+
+          <!-- Nota -->
+          <div class="mt-6">
+            <textarea
+              formControlName="nota"
+              rows="3"
+              placeholder="Nota adicional"
+              class="mt-1 block w-full bg-gray-100 rounded-xl shadow-lg
+                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none p-3"
+            ></textarea>
+            <div *ngIf="visitanteForm.get('nota')?.invalid && visitanteForm.get('nota')?.touched"
+                 class="text-red-500 text-sm mt-1">
+              {{ getError('nota') }}
+            </div>
+          </div>
+
+          <!-- CUI creador (oculto o readonly) -->
+          <div class="mt-6">
+            <input
+              formControlName="creadoPor"
+              type="text"
+              readonly
+              placeholder="CUI del creador"
+              class="mt-1 block w-full bg-gray-200 h-11 rounded-xl shadow-inner
+                     focus:ring-0 border-none"
+            />
+          </div>
+
+          <!-- Botón -->
+          <div class="mt-8">
+            <button
+              type="submit"
+              [disabled]="visitanteForm.invalid"
+              class="bg-blue-500 w-full py-3 rounded-xl text-white shadow-xl
+                     hover:shadow-inner focus:outline-none transition duration-500
+                     ease-in-out transform hover:-translate-x hover:scale-105 disabled:opacity-50"
+            >
+              Registrar visitante
+            </button>
+          </div>
+       <!-- </form> -->
+      </div>
+    </div>
+  </div>
+</div>
+

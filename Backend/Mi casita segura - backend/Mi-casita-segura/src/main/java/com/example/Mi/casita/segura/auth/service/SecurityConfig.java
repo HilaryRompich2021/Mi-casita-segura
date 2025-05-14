@@ -1,7 +1,6 @@
 package com.example.Mi.casita.segura.auth.service;
 
-import com.example.Mi.casita.segura.usuarios.model.Usuario;
-import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +13,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -45,7 +42,8 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/usuarios/registrar",
                                 "/api/usuarios",
-                                "/api/usuarios/{cui}"
+                                "/api/usuarios/{cui}",
+                                "/api/visitantes/registro"
                                 ).permitAll()
                         .anyRequest().authenticated()
                 )

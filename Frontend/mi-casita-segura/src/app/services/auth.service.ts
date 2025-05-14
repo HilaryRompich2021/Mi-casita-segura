@@ -2,14 +2,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-interface RegistroDTO {
-  cui: string;
-  nombre: string;
-  correoElectronico: string;
-  contrasena: string;
-  rol: string; // ADMINISTRADOR, RESIDENTE, GUARDIA
-  telefono: string;
-  numeroCasa: number;
+interface AuthResponse {
+  token: string;
 }
 
 @Injectable({
@@ -17,21 +11,24 @@ interface RegistroDTO {
 })
 export class AuthService {
   [x: string]: any;
-  private baseUrl = 'http://localhost:8080/api/usuarios';
+  private baseUrl = 'http://localhost:8080/api/auth';
+  private tokenKey = 'auth_token';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient){}
 
-  registrar(data: any): Observable<any> {
+  /** POST /api/auth/login */
+  login(credentials: { usuario: string; contrasena: string }): Observable<AuthResponse> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post(`${this.baseUrl}/registrar`, data);
+    return this.http.post<AuthResponse>(
+      `${this.baseUrl}/login`,
+      credentials,
+      { headers }
+    );
   }
 
-  obtenerUsuarios(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.baseUrl}`);
+  setToken(token: string) {
+    localStorage.setItem(this.tokenKey, token);
+  }
 }
 
-eliminarUsuario(cui: string): Observable<any> {
-  return this.http.delete(`${this.baseUrl}/${cui}`);
-}
 
-}
