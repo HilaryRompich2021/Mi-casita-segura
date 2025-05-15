@@ -4,6 +4,17 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import * as jwt_decode                  from 'jwt-decode';
+import Swal from 'sweetalert2';
+
+
+
+interface JWTPayload {
+  sub: string;
+  cui: string;
+  roles: string[];
+  // …otros campos de tu token…
+}
 
 @Component({
   selector: 'app-auth',
@@ -16,6 +27,7 @@ export default class AuthComponent  {
 
   loginForm!: FormGroup;
   errorMessage = '';
+  welcomeMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -40,7 +52,29 @@ export default class AuthComponent  {
     this.auth.login(this.loginForm.value).subscribe({
       next: (res) => {
         this.auth.setToken(res.token);
-        this.router.navigate(['/dashboard']); // o a donde quieras
+
+         // 2) Decodificar el payload
+      const parts = res.token.split('.');
+      let decoded: any = {};
+      if (parts.length === 3) {
+        try {
+          decoded = JSON.parse(atob(parts[1]));
+        } catch {
+          console.warn('Error parsing JWT payload');
+        }
+      }
+
+      // 3) Usa `sub` en vez de `cui`
+      const userName = decoded.sub ?? 'usuario';
+      Swal.fire({
+          title: `¡Bienvenido ${userName}!`,
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          allowOutsideClick: false
+        }).then(() => {
+          // 3) Al cerrar el modal, navegar
+          this.router.navigate(['/dashboard']);
+        });
       },
       error: (err) => {
         // err.error es la cadena que devuelve tu backend: "17 …", "18 …", etc.

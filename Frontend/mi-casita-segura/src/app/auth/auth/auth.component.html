@@ -33,7 +33,7 @@
           <input
             formControlName="usuario"
             type="text"
-            placeholder="Usuario (CUI)"
+            placeholder="Usuario"
             class="pl-2 w-full outline-none border-none"
           />
         </div>
@@ -70,6 +70,11 @@
         <!-- Mensaje de error del servidor -->
         <p *ngIf="errorMessage" class="text-red-500 text-sm mb-4">
           {{ errorMessage }}
+        </p>
+
+        <!-- Mensaje de bienvenida tras login exitoso -->
+        <p *ngIf="welcomeMessage" class="text-green-600 text-sm mb-4">
+          {{ welcomeMessage }}
         </p>
 
         <button
