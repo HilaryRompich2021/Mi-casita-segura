@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface VisitanteRegistroDTO {
   cui: string;
@@ -54,23 +55,48 @@ export interface Visitante {
   providedIn: 'root'
 })
 export class VisitanteService {
-  private baseUrl = '/api/visitantes';
+  private baseUrl = 'http://localhost:8080/api/visitantes';
 
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
-  /** Crea un visitante */
-  registrarVisitante(dto: VisitanteRegistroDTO): Observable<Visitante> {
-    return this.http.post<Visitante>(`${this.baseUrl}/registro`, dto);
+  /** Construye los headers con el Bearer token */
+  private authHeaders(): { headers: HttpHeaders } {
+    const token = this.authService.getToken();  // usar authService
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : ''
+      })
+    };
   }
 
-  /** Lista todos los visitantes */
-  listarVisitantes(): Observable<VisitanteListadoDTO[]> {
-    return this.http.get<VisitanteListadoDTO[]>(this.baseUrl);
+  /** POST /api/visitantes/registro */
+  registrar(dto: VisitanteRegistroDTO): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/registro`,
+      dto,
+      this.authHeaders()
+    );
   }
 
-  /** Actualiza un visitante existente */
-  actualizarVisitante(id: number, dto: VisitanteRegistroDTO): Observable<Visitante> {
-    return this.http.put<Visitante>(`${this.baseUrl}/${id}`, dto);
+  /** GET /api/visitantes */
+  listar(): Observable<VisitanteListadoDTO[]> {
+    return this.http.get<VisitanteListadoDTO[]>(
+      this.baseUrl,
+      this.authHeaders()
+    );
+  }
+
+  /** PUT /api/visitantes/{id} */
+  actualizar(id: number, dto: VisitanteRegistroDTO): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/${id}`,
+      dto,
+      this.authHeaders()
+    );
   }
 }
