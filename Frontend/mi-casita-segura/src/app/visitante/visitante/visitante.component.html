@@ -1,134 +1,122 @@
-<!-- registro-visitante.component.html -->
+<!-- src/app/visitantes/registro/visitante-registro.component.html -->
 <div class="font-sans">
-  <div class="relative min-h-screen flex flex-col sm:justify-center items-center bg-gray-100 ">
-    <div class="relative sm:max-w-md w-full">
+  <div class="relative min-h-screen flex flex-col sm:justify-center items-center bg-gray-100">
+    <div class="relative sm:max-w-sm w-full">
       <div class="card bg-blue-400 shadow-lg w-full h-full rounded-3xl absolute transform -rotate-6"></div>
-      <div class="card bg-red-400 shadow-lg w-full h-full rounded-3xl absolute transform rotate-6"></div>
+      <div class="card bg-red-400  shadow-lg w-full h-full rounded-3xl absolute transform rotate-6"></div>
       <div class="relative w-full rounded-3xl px-6 py-4 bg-gray-100 shadow-md">
-        <h2 class="block mt-3 text-xl text-gray-700 text-center font-semibold">
-          Registro de Visitante
-        </h2>
-        <!-- <form [formGroup]="visitanteForm"-->
-              (ngSubmit)="onSubmit()"
-              class="mt-8">
+
+        <label class="block mt-3 text-sm text-gray-700 text-center font-semibold">
+          Registrar Visitante
+        </label>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-10 space-y-4">
 
           <!-- CUI -->
           <div>
-            <input
-              formControlName="cui"
-              type="text"
-              placeholder="CUI (13 dígitos)"
-              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
-                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
-            />
-            <div *ngIf="visitanteForm.get('cui')?.invalid && visitanteForm.get('cui')?.touched"
-                 class="text-red-500 text-sm mt-1">
-              {{ getError('cui') }}
-            </div>
+            <input formControlName="cui"
+                   type="text"
+                   placeholder="CUI (13 dígitos)"
+                   class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg focus:bg-blue-100 focus:ring-0">
+            <div *ngIf="form.get('cui')?.touched && form.get('cui')?.hasError('required')"
+                 class="text-red-500 text-xs mt-1">El CUI es obligatorio</div>
+            <div *ngIf="form.get('cui')?.touched && form.get('cui')?.hasError('pattern')"
+                 class="text-red-500 text-xs mt-1">Debe tener 13 dígitos</div>
           </div>
 
-          <!-- Nombre -->
-          <div class="mt-6">
-            <input
-              formControlName="nombreVisitante"
-              type="text"
-              placeholder="Nombre del visitante"
-              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
-                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
-            />
-            <div *ngIf="visitanteForm.get('nombreVisitante')?.invalid && visitanteForm.get('nombreVisitante')?.touched"
-                 class="text-red-500 text-sm mt-1">
-              {{ getError('nombreVisitante') }}
-            </div>
-          </div>
+          <!-- Nombre del visitante -->
+<div>
+  <input
+    formControlName="nombreVisitante"
+    type="text"
+    placeholder="Nombre completo"
+    class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg focus:bg-blue-100 focus:ring-0"
+  />
+
+  <!-- Un único contenedor que muestra uno u otro mensaje -->
+  <ng-container
+    *ngIf="
+      form.get('nombreVisitante')?.touched &&
+      form.get('nombreVisitante')?.invalid
+    "
+  >
+    <!-- 1) Si está vacío -->
+    <p
+      *ngIf="form.get('nombreVisitante')?.hasError('required')"
+      class="text-red-500 text-xs mt-1"
+    >
+      El Nombre no puede estar vacío, debe contener al menos 2 palabras y 3 letras.
+    </p>
+
+    <!-- 2) Si NO está vacío pero falla el validador personalizado -->
+    <p
+      *ngIf="
+        !form.get('nombreVisitante')?.hasError('required') &&
+        form.get('nombreVisitante')?.hasError('nombreInvalido')
+      "
+      class="text-red-500 text-xs mt-1"
+    >
+      El nombre no es válido, debe contener al menos 2 palabras y 3 letras.
+    </p>
+  </ng-container>
+</div>
+
 
           <!-- Teléfono -->
-          <div class="mt-6">
-            <input
-              formControlName="telefono"
-              type="text"
-              placeholder="Teléfono (8 dígitos)"
-              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
-                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
-            />
-            <div *ngIf="visitanteForm.get('telefono')?.invalid && visitanteForm.get('telefono')?.touched"
-                 class="text-red-500 text-sm mt-1">
-              {{ getError('telefono') }}
-            </div>
+          <div>
+            <input formControlName="telefono"
+                   type="text"
+                   placeholder="Teléfono (8 dígitos)"
+                   class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg focus:bg-blue-100 focus:ring-0">
+            <div *ngIf="form.get('telefono')?.touched && form.get('telefono')?.hasError('required')"
+                 class="text-red-500 text-xs mt-1">El teléfono es obligatorio</div>
+            <div *ngIf="form.get('telefono')?.touched && form.get('telefono')?.hasError('pattern')"
+                 class="text-red-500 text-xs mt-1">Debe tener 8 dígitos</div>
           </div>
 
           <!-- Número de casa -->
-          <div class="mt-6">
-            <input
-              formControlName="numeroCasa"
-              type="number"
-              placeholder="Número de casa"
-              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
-                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
-            />
-            <div *ngIf="visitanteForm.get('numeroCasa')?.invalid && visitanteForm.get('numeroCasa')?.touched"
-                 class="text-red-500 text-sm mt-1">
-              {{ getError('numeroCasa') }}
-            </div>
+          <div>
+            <input formControlName="numeroCasa"
+                   type="number"
+                   placeholder="Número de casa"
+                   class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg focus:bg-blue-100 focus:ring-0">
+            <div *ngIf="form.get('numeroCasa')?.touched && form.get('numeroCasa')?.hasError('required')"
+                 class="text-red-500 text-xs mt-1">El número de casa es obligatorio</div>
+            <div *ngIf="form.get('numeroCasa')?.touched && form.get('numeroCasa')?.hasError('min')"
+                 class="text-red-500 text-xs mt-1">Debe ser al menos 1</div>
+            <div *ngIf="form.get('numeroCasa')?.touched && form.get('numeroCasa')?.hasError('max')"
+                 class="text-red-500 text-xs mt-1">No puede ser mayor a 300</div>
           </div>
 
-          <!-- Motivo de visita -->
-          <div class="mt-6">
-            <input
-              formControlName="motivoVisita"
-              type="text"
-              placeholder="Motivo de la visita"
-              class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg
-                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none"
-            />
-            <div *ngIf="visitanteForm.get('motivoVisita')?.invalid && visitanteForm.get('motivoVisita')?.touched"
-                 class="text-red-500 text-sm mt-1">
-              {{ getError('motivoVisita') }}
-            </div>
+          <!-- Motivo -->
+          <div>
+            <input formControlName="motivoVisita"
+                   type="text"
+                   placeholder="Motivo de visita"
+                   class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg focus:bg-blue-100 focus:ring-0">
+            <div *ngIf="form.get('motivoVisita')?.touched && form.get('motivoVisita')?.hasError('required')"
+                 class="text-red-500 text-xs mt-1">El motivo es obligatorio</div>
           </div>
 
           <!-- Nota -->
-          <div class="mt-6">
-            <textarea
-              formControlName="nota"
-              rows="3"
-              placeholder="Nota adicional"
-              class="mt-1 block w-full bg-gray-100 rounded-xl shadow-lg
-                     hover:bg-blue-100 focus:bg-blue-100 focus:ring-0 border-none p-3"
-            ></textarea>
-            <div *ngIf="visitanteForm.get('nota')?.invalid && visitanteForm.get('nota')?.touched"
-                 class="text-red-500 text-sm mt-1">
-              {{ getError('nota') }}
-            </div>
+          <div>
+            <textarea formControlName="nota"
+                      placeholder="Notas adicionales"
+                      class="mt-1 block w-full bg-gray-100 rounded-xl shadow-lg focus:bg-blue-100 focus:ring-0 p-3"></textarea>
+            <div *ngIf="form.get('nota')?.touched && form.get('nota')?.hasError('required')"
+                 class="text-red-500 text-xs mt-1">La nota es obligatoria</div>
           </div>
 
-          <!-- CUI creador (oculto o readonly) -->
-          <div class="mt-6">
-            <input
-              formControlName="creadoPor"
-              type="text"
-              readonly
-              placeholder="CUI del creador"
-              class="mt-1 block w-full bg-gray-200 h-11 rounded-xl shadow-inner
-                     focus:ring-0 border-none"
-            />
-          </div>
-
-          <!-- Botón -->
-          <div class="mt-8">
-            <button
-              type="submit"
-              [disabled]="visitanteForm.invalid"
-              class="bg-blue-500 w-full py-3 rounded-xl text-white shadow-xl
-                     hover:shadow-inner focus:outline-none transition duration-500
-                     ease-in-out transform hover:-translate-x hover:scale-105 disabled:opacity-50"
-            >
-              Registrar visitante
+          <!-- Botón Registrar -->
+          <div class="mt-7">
+            <button type="submit"
+                    class="bg-blue-500 w-full py-3 rounded-xl text-white shadow-xl hover:shadow-inner transition duration-500 ease-in-out transform hover:-translate-x hover:scale-105">
+              Registrar
             </button>
           </div>
-       <!-- </form> -->
+        </form>
+
       </div>
     </div>
   </div>
 </div>
-

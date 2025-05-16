@@ -14,7 +14,10 @@ export class AuthService {
   private baseUrl = 'http://localhost:8080/api/auth';
   private tokenKey = 'auth_token';
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient
+              //private  authService: AuthService
+
+  ){}
 
   /** POST /api/auth/login */
   login(credentials: { usuario: string; contrasena: string }): Observable<AuthResponse> {
@@ -28,6 +31,11 @@ export class AuthService {
 
   setToken(token: string) {
     localStorage.setItem(this.tokenKey, token);
+  }
+
+  /** Recupera el JWT de localStorage */
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
   }
 }
 

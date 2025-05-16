@@ -4,6 +4,10 @@ import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModu
 //import { AuthService } from '../../services/auth.service';
 import { RouterOutlet } from '@angular/router';
 import { RegistroService } from '../services/registro.service';
+import Swal from 'sweetalert2';
+import SidebarComponent from '../shared/sidebar/sidebar.component';
+//import { SidebarComponent } from '../shared/sidebar/sidebar.component';
+
 
 @Component({
   selector: 'app-registro',
@@ -35,6 +39,18 @@ export default class RegistroComponent implements OnInit{
     }, {validators: this.passwordsIgualesValidator}
   );
   this.cargarUsuarios();
+  // **SUBSCRIBIRNOS A LOS CAMBIOS DEL ROL**
+  this.formulario.get('rol')!.valueChanges.subscribe(role => {
+    const numCasaCtrl = this.formulario.get('numeroCasa')!;
+    if (role === 'ADMINISTRADOR' || role === 'GUARDIA') {
+      numCasaCtrl.disable();
+      numCasaCtrl.reset();        // opcional: borramos valor anterior
+    } else {
+      numCasaCtrl.enable();
+    }
+  });
+
+  this.cargarUsuarios();
   }
   cargarUsuarios() {
   this.registroService.obtenerUsuarios().subscribe({
@@ -50,7 +66,47 @@ export default class RegistroComponent implements OnInit{
   return password === confirm ? null : { passwordsMismatch: true };
 }
 
+registrarUsuario(): void {
+  if (this.formulario.invalid) {
+    this.formulario.markAllAsTouched();
+    return;
+  }
 
+  this.registroService.registrar(this.formulario.value).subscribe({
+    next: (respuesta: any) => {
+      // Éxito
+      Swal.fire({
+        icon: 'success',
+        title: '¡Registro exitoso!',
+        text: `Usuario ${respuesta.usuario} registrado correctamente.`,
+        confirmButtonText: 'OK'
+      });
+      this.formulario.reset();
+      this.cargarUsuarios();
+    },
+    error: (error: any) => {
+      console.error('Error al registrar:', error);
+      // Puedes extraer mensaje de validación si viene en error.error.errors
+      let mensaje = 'Error al registrar, inténtalo de nuevo.';
+      if (error.status === 400 && error.error?.errors) {
+        const errores = error.error.errors;
+        const errorNombre = errores.find((e: any) => e.field === 'nombre');
+        if (errorNombre) {
+          mensaje = errorNombre.defaultMessage;
+        }
+      }
+      Swal.fire({
+        icon: 'error',
+        title: '¡Registro fallido!',
+        text: mensaje,
+        confirmButtonText: 'OK'
+      });
+    }
+  });
+}
+
+
+/*
   registrarUsuario(): void {
     if (this.formulario.valid) {
       this.registroService.registrar(this.formulario.value).subscribe({
@@ -70,7 +126,7 @@ export default class RegistroComponent implements OnInit{
         }
       });
     }
-  }
+  }*/
 
   nombreValidoValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
