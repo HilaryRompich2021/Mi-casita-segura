@@ -47,5 +47,6 @@ public class UsuarioRegistroDTO {
     @Max(value = 300, message = "El número de casa no puede ser mayor a 300")
     private int numeroCasa;
 
+    private String codigoQR;
 
 }

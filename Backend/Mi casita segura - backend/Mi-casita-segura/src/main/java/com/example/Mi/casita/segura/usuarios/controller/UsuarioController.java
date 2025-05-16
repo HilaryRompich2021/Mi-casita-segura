@@ -21,10 +21,13 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @PostMapping("/registrar")
-    public ResponseEntity<Usuario> registrar (@Valid @RequestBody UsuarioRegistroDTO dto){
-        Usuario usuario = usuarioService.registrarUsuario(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
-
+    public ResponseEntity<UsuarioRegistroDTO> registrar(
+            @Valid @RequestBody UsuarioRegistroDTO dto) {
+        // Ahora devolvemos el DTO con el campo codigoQR ya rellenado
+        UsuarioRegistroDTO respuesta = usuarioService.registrarUsuario(dto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(respuesta);
     }
 
     @DeleteMapping("/{cui}")

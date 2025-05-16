@@ -1,6 +1,7 @@
 package com.example.Mi.casita.segura.acceso.repository;
 
 import com.example.Mi.casita.segura.acceso.model.Acceso_QR;
+import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,6 @@ public interface AccesoQRRepository extends JpaRepository<Acceso_QR, Long> {
 
     // Verificar si existe un QR vigente para un visitante
     boolean existsByVisitanteIdAndEstado(Long visitanteId, String estado);
+
+    Optional<Acceso_QR> findFirstByAsociadoOrderByFechaGeneracionDesc(Usuario asociado);
 }
