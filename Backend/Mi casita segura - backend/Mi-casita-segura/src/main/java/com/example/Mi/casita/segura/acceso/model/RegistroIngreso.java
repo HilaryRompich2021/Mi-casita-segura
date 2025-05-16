@@ -12,21 +12,29 @@ public class RegistroIngreso {
 
     //PK
     @Id
-    //Permite que la base de datos genere el valor automáticamente
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-   private LocalDateTime fecha_hora_ingreso;
+    @Column(name = "fecha_hora_ingreso", nullable = false)
+    private LocalDateTime fechaHoraIngreso;
 
     @Enumerated(EnumType.STRING)
-   private TipoIngreso tipo_ingreso;
+    @Column(name = "tipo_ingreso", nullable = false)
+    private TipoIngreso tipoIngreso;
 
-    private String resultado_validacion;
+    @Column(name = "resultado_validacion", nullable = false)
+    private String resultadoValidacion;
 
-    private String nombre_lector;
+    @Column(name = "nombre_lector", nullable = false)
+    private String nombreLector;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String observacion;
+
+    // Relación con el Acceso_QR que generó este log
+    @ManyToOne
+    @JoinColumn(name = "acceso_qr_id", nullable = false)
+    private Acceso_QR accesoQr;
 
    public enum TipoIngreso {
         SISTEMA, PAGO, RESERVA, SEGURIDAD

@@ -13,13 +13,17 @@ public class AccesoQRController {
 
     private final AccesoQRService service;
 
-    public AccesoQRController(AccesoQRService service) {
-        this.service = service;
+    public AccesoQRController(AccesoQRService service) { this.service = service; }
+
+    @PostMapping("/entrada/{codigo}")
+    public ResponseEntity<Void> validarEntrada(@PathVariable String codigo) {
+        service.procesarCodigo(codigo, true);
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{codigo}")
-    public ResponseEntity<Void> validar(@PathVariable String codigo) {
-        service.procesarCodigo(codigo);
+    @PostMapping("/salida/{codigo}")
+    public ResponseEntity<Void> validarSalida(@PathVariable String codigo) {
+        service.procesarCodigo(codigo, false);
         return ResponseEntity.ok().build();
     }
 }
