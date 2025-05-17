@@ -35,7 +35,7 @@ export default class RegistroComponent implements OnInit{
       confirmarContrasena: ['', Validators.required],
       rol: ['', Validators.required],
       telefono: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      numeroCasa: [null, [Validators.required, Validators.min(1), Validators.max(300)]]
+      numeroCasa: [null, [Validators.required, Validators.min(1), Validators.max(100)]]
     }, {validators: this.passwordsIgualesValidator}
   );
   this.cargarUsuarios();

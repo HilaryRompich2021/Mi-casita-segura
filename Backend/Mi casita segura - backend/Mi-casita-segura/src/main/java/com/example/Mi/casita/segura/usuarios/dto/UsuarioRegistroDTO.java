@@ -51,7 +51,7 @@ public class UsuarioRegistroDTO {
     @AssertTrue(message = "El número de casa debe estar entre 1 y 300 para residentes")
     public boolean isNumeroCasaValido() {
         if (rol == Usuario.Rol.RESIDENTE) {
-            return numeroCasa >= 1 && numeroCasa <= 300;
+            return numeroCasa >= 1 && numeroCasa <= 100;
         }
         return true;
     }
