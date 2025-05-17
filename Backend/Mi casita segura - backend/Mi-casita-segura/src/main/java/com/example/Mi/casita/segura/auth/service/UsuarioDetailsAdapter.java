@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 public class UsuarioDetailsAdapter implements UserDetails {
@@ -26,6 +28,7 @@ public class UsuarioDetailsAdapter implements UserDetails {
     public String getUsername() {
         return usuario.getUsuario();
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
@@ -47,8 +50,17 @@ public class UsuarioDetailsAdapter implements UserDetails {
         return usuario.isEstado();
     }
 
+
+    public List<String> getRoles() {
+        return List.of(usuario.getRol().name());
+    }
+
     // Método opcional para acceder al objeto original
     public Usuario getUsuarioOriginal() {
         return usuario;
     }
+
+
+
+
 }

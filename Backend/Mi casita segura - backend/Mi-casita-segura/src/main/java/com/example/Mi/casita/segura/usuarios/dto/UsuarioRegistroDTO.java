@@ -42,10 +42,18 @@ public class UsuarioRegistroDTO {
     @Pattern(regexp = "\\d{8}", message = "El número de teléfono debe contener exactamente 8 dígitos numéricos")
     private String telefono;
 
-    @NotNull(message = "El número de casa no puede estar vacío")
-    @Min(value = 1, message = "El número de casa debe ser mayor a cero")
-    @Max(value = 300, message = "El número de casa no puede ser mayor a 300")
+    //@NotNull(message = "El número de casa no puede estar vacío")
+    //@Min(value = 1, message = "El número de casa debe ser mayor a cero")
+    //@Max(value = 300, message = "El número de casa no puede ser mayor a 300")
+    @Min(value = 0, message = "El número de casa no puede ser negativo")
     private int numeroCasa;
 
+    @AssertTrue(message = "El número de casa debe estar entre 1 y 300 para residentes")
+    public boolean isNumeroCasaValido() {
+        if (rol == Usuario.Rol.RESIDENTE) {
+            return numeroCasa >= 1 && numeroCasa <= 300;
+        }
+        return true;
+    }
 
 }

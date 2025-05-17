@@ -43,7 +43,8 @@ public class SecurityConfig {
                                 "/api/usuarios/registrar",
                                 "/api/usuarios",
                                 "/api/usuarios/{cui}",
-                                "/api/visitantes/registro"
+                                "/api/visitantes/registro",
+                                "/api/visitantes"
                                 ).permitAll()
                         .anyRequest().authenticated()
                 )

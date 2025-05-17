@@ -51,6 +51,7 @@ export default class AuthComponent  {
 
     this.auth.login(this.loginForm.value).subscribe({
       next: (res) => {
+        //guarda token
         this.auth.setToken(res.token);
 
          // 2) Decodificar el payload
@@ -62,18 +63,33 @@ export default class AuthComponent  {
         } catch {
           console.warn('Error parsing JWT payload');
         }
+        console.log("JWT payload:", decoded);
       }
 
-      // 3) Usa `sub` en vez de `cui`
+
+      // prepara nombre  y roles
       const userName = decoded.sub ?? 'usuario';
+
+      const roleClaim = decoded.roles ?? decoded.rol ?? decoded.role ?? [];
+      // Asegúrate de tener siempre un array:
+      const roles: string[] = Array.isArray(roleClaim) ? roleClaim : [roleClaim];
+      //const roles: string[] = decoded.roles || [];
+
+      //Alerta de bienvenida
       Swal.fire({
           title: `¡Bienvenido ${userName}!`,
           icon: 'success',
           confirmButtonText: 'Aceptar',
           allowOutsideClick: false
         }).then(() => {
-          // 3) Al cerrar el modal, navegar
-          this.router.navigate(['/dashboard']);
+          //Al cerrar alerta, dirigir según rol
+          if (roles.includes('ADMINISTRADOR')) {
+          this.router.navigate(['/menu']);
+        } else if (roles.includes('RESIDENTE')){
+          this.router.navigate(['/registro']);
+        } else {
+          this.router.navigate(['/visitantes'])
+        }
         });
       },
       error: (err) => {

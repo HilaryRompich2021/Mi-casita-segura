@@ -1,9 +1,13 @@
 
 import { Routes }           from '@angular/router';
+import HomeComponent from './home/home.component';
 
 
 export const routes: Routes = [
+
   { path: '',       redirectTo: 'auth', pathMatch: 'full' },
+
+    { path: 'menu', component: HomeComponent },
 
     { path: 'home',
       loadComponent: () => import('./shared/sidebar/sidebar.component')

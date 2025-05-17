@@ -34,6 +34,16 @@ public class UsuarioService {
         if (usuarioRepository.existsById(dto.getCui())) {
             throw new IllegalArgumentException("El usuario ya existe");
         }
+        // 2) Validar y ajustar número de casa según rol
+        if (dto.getRol() == Usuario.Rol.ADMINISTRADOR || dto.getRol() == Usuario.Rol.GUARDIA) {
+            dto.setNumeroCasa(0);
+        } else {
+            // RESIDENTE
+            Integer nc = dto.getNumeroCasa();
+            if (nc == null || nc < 1 || nc > 300) {
+                throw new IllegalArgumentException("El número de casa debe estar entre 1 y 300 para residentes");
+            }
+        }
 
         // Crear el usuario
         Usuario usuario = new Usuario();
@@ -54,7 +64,7 @@ public class UsuarioService {
             usuario.setNumeroCasa(dto.getNumeroCasa());
         }
 
-
+//guardar
         usuarioRepository.save(usuario);
 
         // Crear código QR fijo
