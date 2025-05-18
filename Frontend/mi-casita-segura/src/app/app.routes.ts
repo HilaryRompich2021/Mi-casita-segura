@@ -9,6 +9,10 @@ export const routes: Routes = [
 
     { path: 'menu', component: HomeComponent },
 
+    {path: 'menuResidente',
+      loadComponent: () => import('./shared/sidebar/residente-sidebar/residente-sidebar.component')
+    },
+
     { path: 'home',
       loadComponent: () => import('./shared/sidebar/sidebar.component')
      },

@@ -29,15 +29,52 @@ import HomeComponent from './home/home.component';
 export class AppComponent {
   title = 'mi-casita-tailwind';
 
-  showSidebar = true;
+  showSidebar = false;
+  rol: string = '';
 
+  constructor(private router: Router) {
+  this.router.events
+    .pipe(filter(e => e instanceof NavigationEnd))
+    .subscribe(() => {
+      const token = localStorage.getItem('auth_token');
+      const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+      this.rol = payload.roles?.[0] || '';
+      this.showSidebar = !this.router.url.startsWith('/auth');
+    });
+}
+ /* constructor(private router: Router) {
+  this.router.events
+    .pipe(filter(e => e instanceof NavigationEnd))
+    .subscribe(() => {
+
+      const payload = JSON.parse(atob((localStorage.getItem('auth_token') || '').split('.')[1]));
+      this.rol = payload.roles?.[0]; // ✅ Asegura que siempre se actualice
+      this.showSidebar = !this.router.url.startsWith('/auth') && this.rol === 'ADMINISTRADOR';
+    });
+}*/
+
+  /*
   constructor(private router: Router) {
     // cada vez que cambie de ruta, compruebo si debo ocultar el sidebar
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+        this.rol = usuario.rol;
+
+        const rutaEsAuth = this.router.url.startsWith('/auth');
+        const esAdministrador = this.rol === 'ADMINISTRADOR';
         // Si la ruta empieza por '/auth', ocultarlo
-        this.showSidebar = !this.router.url.startsWith('/auth');
+        //this.showSidebar = !this.router.url.startsWith('/auth');
+        this.showSidebar = !rutaEsAuth && esAdministrador;
       });
   }
+
+  rol: string = '';
+*/
+ngOnInit() {
+  const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+  this.rol = usuario.rol;
+}
+
 }

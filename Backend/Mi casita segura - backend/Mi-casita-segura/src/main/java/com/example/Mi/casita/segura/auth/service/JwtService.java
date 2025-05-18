@@ -32,6 +32,8 @@ public class JwtService {
         // Si usamos tu adapter, recuperamos sus roles
         if (userDetails instanceof com.example.Mi.casita.segura.auth.service.UsuarioDetailsAdapter uds) {
             claims.put("roles", uds.getRoles());
+            claims.put("numeroCasa", uds.getUsuarioOriginal().getNumeroCasa());
+            claims.put("cui", uds.getCui());
         }
 
         return Jwts

@@ -60,7 +60,16 @@ public class UsuarioDetailsAdapter implements UserDetails {
         return usuario;
     }
 
+    //private final int numeroCasa;
 
+
+    public int getNumeroCasa() {
+        return usuario.getNumeroCasa();
+    }
+
+    public String getCui() {
+        return usuario.getCui();
+    }
 
 
 }

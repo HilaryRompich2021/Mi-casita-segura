@@ -3,9 +3,13 @@
 
 <!-- src/app/app.component.html -->
 <div class="h-screen flex">
-  <app-sidebar class="flex-shrink-0"></app-sidebar>
+  <!--<app-sidebar class="flex-shrink-0"></app-sidebar>-->
+  <ng-container *ngIf="showSidebar">
+  <app-sidebar *ngIf="rol === 'ADMINISTRADOR'"></app-sidebar>
+  <app-residente-sidebar *ngIf="rol === 'RESIDENTE'"></app-residente-sidebar>
   <div class="flex-1 overflow-auto">
     <router-outlet></router-outlet>
   </div>
+  </ng-container>
 </div>
 
