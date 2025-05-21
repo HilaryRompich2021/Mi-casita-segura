@@ -1,5 +1,7 @@
 package com.example.Mi.casita.segura.usuarios.service;
 
+import com.example.Mi.casita.segura.Correo.Service.CorreoService;
+import com.example.Mi.casita.segura.Qr.service.QRService;
 import com.example.Mi.casita.segura.acceso.model.Acceso_QR;
 import com.example.Mi.casita.segura.acceso.repository.AccesoQRRepository;
 import com.example.Mi.casita.segura.notificaciones.service.NotificacionService;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +31,8 @@ public class UsuarioService {
     private final AccesoQRRepository accesoQRRepository;
     private final NotificacionService notificacionService;
     private final PasswordEncoder passwordEncoder;
+    private final QRService qrService;
+    private final CorreoService correoService;
 
 
     public Usuario registrarUsuario(UsuarioRegistroDTO dto) {
@@ -75,11 +80,23 @@ public class UsuarioService {
         qr.setAsociado(usuario);
         accesoQRRepository.save(qr);
 
-        // Enviar notificación
-       // notificacionService.enviarBienvenida(usuario, qr.getCodigoQR());
+        // Enviar correo
+        try {
+            BufferedImage imagenQR = qrService.generarQR(qr.getCodigoQR());
+            correoService.enviarBienvenida(
+                    usuario.getCorreoElectronico(),
+                    usuario.getNombre(),
+                    usuario.getUsuario(),
+                    dto.getContrasena(),
+                    imagenQR
+            );
+        } catch (Exception e) {
+            System.err.println("⚠️ Error al enviar correo: " + e.getMessage());
+        }
 
         return usuario;
     }
+
 
     public void eliminarUsuario(String cui) {
         if (!usuarioRepository.existsById(cui)) {

@@ -1,12 +1,18 @@
 package com.example.Mi.casita.segura.usuarios.repository;
 
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
+import jakarta.transaction.Transactional;
+import jdk.jfr.Threshold;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, String> {
 
@@ -22,4 +28,12 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
 
     // Buscar todos por rol
     List<Usuario> findAllByRol(String rol);
+
+    //buscar por rol
+    List<Usuario> findByRol(Usuario.Rol rol);
+
+    @Modifying
+    @Query("UPDATE Usuario u SET u.estado = false WHERE u.cui = :cui")
+    void desactivarUsuario(@Param("cui") String cui);
+
 }

@@ -24,11 +24,11 @@ public class Pago_Detalle {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal monto;
 
-    @Column(length = 50)
-    private String servicioPagado; // Ej: CUOTA, AGUA, RESERVA, REINSTALACION
+    @Enumerated(EnumType.STRING)
+    private ServicioPagado servicioPagado;
 
-    @Column(length = 30)
-    private String estadoPago; // Ej: COMPLETADO, PENDIENTE
+    @Enumerated(EnumType.STRING)
+    private EstadoPago estadoPago; // Ej: COMPLETADO, PENDIENTE
 
     //  Relación muchos a uno hacia Pago
     @ManyToOne
@@ -44,4 +44,15 @@ public class Pago_Detalle {
     @ManyToOne
     @JoinColumn(name = "referencia_reinstalacion_id", nullable = true)
     private ReinstalacionServicio reinstalacion;
+
+    public enum EstadoPago {
+        COMPLETADO, PENDIENTE
+
+    }
+
+    public enum ServicioPagado {
+         AGUA, LUZ, RECOLLECION_DE_BASURA,RESERVA, REINSTALACION,CUOTA
+
+    }
 }
+
