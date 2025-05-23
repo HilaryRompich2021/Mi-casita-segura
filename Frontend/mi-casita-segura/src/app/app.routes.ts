@@ -1,17 +1,9 @@
 
 import { Routes }           from '@angular/router';
-import HomeComponent from './home/home.component';
 
 
 export const routes: Routes = [
-
   { path: '',       redirectTo: 'auth', pathMatch: 'full' },
-
-    { path: 'menu', component: HomeComponent },
-
-    {path: 'menuResidente',
-      loadComponent: () => import('./shared/sidebar/residente-sidebar/residente-sidebar.component')
-    },
 
     { path: 'home',
       loadComponent: () => import('./shared/sidebar/sidebar.component')
@@ -47,7 +39,6 @@ export const routes: Routes = [
       import('./qr-scanner/qr-scanner.component').then(m => m.ScannerQrComponent),
     data: { esEntrada: false }
   },
-
 
   {
     path: '**',
