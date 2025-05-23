@@ -4,50 +4,42 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
+/**
+ * Handler que:
+ *  - Registra la sesión de entrada y salida al recibir "register:entrada" / "register:salida"
+ *  - Permite enviar mensajes sólo a esos dos clientes
+ */
 @Component
 public class TalanqueraWebSocketHandler extends TextWebSocketHandler {
-
-    // Guardamos todas las sessions abiertas
-    private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
+    private WebSocketSession entradaSession;
+    private WebSocketSession salidaSession;
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
-        sessions.add(session);
-        // Opcional: enviar saludo
-        sendTo(session, "connected");
+    protected void handleTextMessage(WebSocketSession session, TextMessage msg) throws Exception {
+        String p = msg.getPayload();
+        if ("register:entrada".equals(p)) {
+            entradaSession = session;
+            session.sendMessage(new TextMessage("registered:entrada"));
+        } else if ("register:salida".equals(p)) {
+            salidaSession = session;
+            session.sendMessage(new TextMessage("registered:salida"));
+        }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        sessions.remove(session);
+        if (session == entradaSession)  entradaSession = null;
+        if (session == salidaSession)   salidaSession  = null;
     }
 
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage msg) {
-        String payload = msg.getPayload();
-        // Aquí puedes procesar mensajes recibidos del ESP32
-        // p.ej. registroFallo
-        System.out.println("[WS] recibido: " + payload);
-        // … o reenviarlo a otros servicios …
-    }
-
-    // Método público para enviar a todos los clientes (tu ESP32)
     public void broadcast(String message) {
-        TextMessage text = new TextMessage(message);
-        sessions.forEach(s -> sendTo(s, text));
-    }
-
-    private void sendTo(WebSocketSession session, String payload) {
-        sendTo(session, new TextMessage(payload));
-    }
-    private void sendTo(WebSocketSession session, TextMessage msg) {
+        TextMessage tm = new TextMessage(message);
         try {
-            if (session.isOpen()) session.sendMessage(msg);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            if (entradaSession != null && entradaSession.isOpen())
+                entradaSession.sendMessage(tm);
+            if (salidaSession  != null && salidaSession.isOpen())
+                salidaSession.sendMessage(tm);
+        } catch (Exception e) { e.printStackTrace(); }
     }
 }
+

@@ -38,6 +38,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        //Permiso sin autorizacion a /ws/**
+                        .requestMatchers(HttpMethod.GET, "/ws/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+
                         .requestMatchers(
                                 "/api/auth/login",
                                 "/api/usuarios/registrar",

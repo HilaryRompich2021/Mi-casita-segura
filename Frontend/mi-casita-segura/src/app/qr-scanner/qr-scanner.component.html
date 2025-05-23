@@ -1,0 +1,22 @@
+<div class="scanner-container">
+  <zxing-scanner
+    [device]="currentDevice"
+    [formats]="formats"
+    (camerasFound)="handleDevicesFound($event)"
+    (permissionResponse)="onPermissionResponse($event)"
+    (scanSuccess)="onCodeResult($event)"
+    (scanError)="onScanError($event)"
+    (scanFailure)="onScanFailure()">
+  </zxing-scanner>
+
+  <div *ngIf="availableDevices.length > 1" class="mt-2">
+    <label for="deviceSelect" class="block mb-1">Elige cámara:</label>
+    <select id="deviceSelect" (change)="onDeviceSelect($event)"
+            class="border p-1 rounded w-full">
+      <option *ngFor="let dev of availableDevices; let i = index"
+              [value]="i">
+        {{ dev.label || ('Cámara ' + (i + 1)) }}
+      </option>
+    </select>
+  </div>
+</div>

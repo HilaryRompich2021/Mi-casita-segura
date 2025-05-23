@@ -26,8 +26,24 @@ export const routes: Routes = [
 
   },
 
+ {
+    path: 'scanner-qr/entrada',
+    loadComponent: () =>
+      import('./qr-scanner/qr-scanner.component').then(m => m.ScannerQrComponent),
+    data: { esEntrada: true }
+  },
+  
+  {
+    path: 'scanner-qr/salida',
+    loadComponent: () =>
+      import('./qr-scanner/qr-scanner.component').then(m => m.ScannerQrComponent),
+    data: { esEntrada: false }
+  },
+
+
   {
     path: '**',
     redirectTo: 'auth',
-  }
+  },
+
 ];
