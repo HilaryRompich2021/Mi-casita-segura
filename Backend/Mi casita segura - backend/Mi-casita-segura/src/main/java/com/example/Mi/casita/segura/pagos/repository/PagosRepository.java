@@ -31,8 +31,12 @@ public interface PagosRepository extends JpaRepository<Pagos, Long> {
     /*// Combinaciones útiles
     List<Pagos> findByCreadoPor_CuiAndEstado(String cui, Pagos.EstadoDelPago estado);*/
 
+    List<Pagos> findByCreadoPor_Cui(String cui);
+
+
     List<Pagos> findByCreadoPor_CuiAndEstado(String cui, Pagos.EstadoDelPago estado);
 
+    //List<Pagos> findByCreadoPor_Cui(String cui);
 
 
 
@@ -57,5 +61,6 @@ public interface PagosRepository extends JpaRepository<Pagos, Long> {
 """)
     int contarCuotasPendientesPorUsuario(@Param("cui") String cui);
 
+    List<Pagos> findByCreadoPorCui(String cui);
 }
 

@@ -1,1 +1,118 @@
-<p>pagos works!</p>
+<div class="p-6">
+  <h1 class="text-2xl font-bold mb-4">Pagos</h1>
+
+  <div *ngIf="cuotasPendientes && cuotasPendientes.length === 0" class="text-gray-500">
+  No hay pagos registrados.
+</div>
+
+  <div *ngIf="cuotasPendientes && cuotasPendientes.length > 0">
+    <table class="w-full border border-gray-300 mb-6">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-2 text-left">Fecha</th>
+          <th class="p-2 text-left">Monto</th>
+          <th class="p-2 text-left">Exceso</th>
+          <th class="p-2 text-left">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cuota of cuotasPendientes" class="border-t">
+          <td class="p-2">{{ cuota.fechaPago ? (cuota.fechaPago | date) : '---' }}</td>
+          <td class="p-2">Q {{ cuota.montoTotal }}</td>
+          <td class="p-2">{{ cuota.detalles[0]?.descripcion || 'No aplica' }}</td>
+          <td class="p-2">
+            <span [ngClass]="{
+              'text-green-600 font-semibold': cuota.estado === 'COMPLETADO',
+              'text-red-600 font-semibold': cuota.estado === 'PENDIENTE'
+            }">
+              {{ cuota.estado }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <form [formGroup]="pagoForm" (ngSubmit)="abrirModal()" class="mb-8">
+    <label class="block mb-2">
+      <span class="text-sm text-gray-700">Metros cúbicos de excedente</span>
+      <input type="number" formControlName="metrosExceso"
+             class="mt-1 block w-full border rounded px-3 py-2" />
+    </label>
+
+    <div class="my-4">
+      <p><strong>Monto base:</strong> Q {{ montoBase }}</p>
+      <p><strong>Total a pagar:</strong> Q {{ totalPagar }}</p>
+    </div>
+
+    <button type="submit"
+            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+      Realizar pago con tarjeta
+    </button>
+  </form>
+
+  <div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-xl">
+      <h2 class="text-xl font-semibold mb-4">Información de Pago</h2>
+
+      <form [formGroup]="pagoForm" (ngSubmit)="pagar()">
+        <label class="block mb-2">
+          <span class="text-sm text-gray-700">Número de tarjeta</span>
+          <input type="text" maxlength="16" formControlName="numeroTarjeta"
+                 class="mt-1 block w-full border rounded px-3 py-2"
+                 [class.border-red-500]="pagoForm.get('numeroTarjeta')?.invalid && pagoForm.get('numeroTarjeta')?.touched" />
+          <small class="text-red-500" *ngIf="pagoForm.get('numeroTarjeta')?.hasError('pattern') && pagoForm.get('numeroTarjeta')?.touched">
+            El número de tarjeta debe tener 16 dígitos.
+          </small>
+          <small class="text-red-500" *ngIf="pagoForm.get('numeroTarjeta')?.hasError('required') && pagoForm.get('numeroTarjeta')?.touched">
+            El número de tarjeta es obligatorio.
+          </small>
+        </label>
+
+        <label class="block mb-2">
+          <span class="text-sm text-gray-700">CVV</span>
+          <input type="text" maxlength="4" formControlName="cvv"
+                 class="mt-1 block w-full border rounded px-3 py-2"
+                 [class.border-red-500]="pagoForm.get('cvv')?.invalid && pagoForm.get('cvv')?.touched" />
+          <small class="text-red-500" *ngIf="pagoForm.get('cvv')?.hasError('pattern') && pagoForm.get('cvv')?.touched">
+            El CVV debe tener 3 o 4 dígitos.
+          </small>
+          <small class="text-red-500" *ngIf="pagoForm.get('cvv')?.hasError('required') && pagoForm.get('cvv')?.touched">
+            El CVV es obligatorio.
+          </small>
+        </label>
+
+        <label class="block mb-4">
+          <span class="text-sm text-gray-700">Fecha vencimiento (MM/YY)</span>
+          <input type="text" formControlName="vencimiento"
+                 placeholder="MM/YY"
+                 class="mt-1 block w-full border rounded px-3 py-2"
+                 [class.border-red-500]="pagoForm.get('vencimiento')?.invalid && pagoForm.get('vencimiento')?.touched" />
+          <small class="text-red-500" *ngIf="pagoForm.get('vencimiento')?.hasError('pattern') && pagoForm.get('vencimiento')?.touched">
+            Formato inválido. Usa MM/YY.
+          </small>
+          <small class="text-red-500" *ngIf="pagoForm.get('vencimiento')?.hasError('required') && pagoForm.get('vencimiento')?.touched">
+            La fecha de vencimiento es obligatoria.
+          </small>
+        </label>
+
+        <div class="my-4">
+          <p><strong>Total a pagar:</strong> Q {{ totalPagar }}</p>
+        </div>
+
+        <div class="flex justify-end gap-4">
+          <button type="button" (click)="showModal = false"
+                  class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+            Cancelar
+          </button>
+          <button type="submit"
+                  class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                  [disabled]="pagoForm.invalid">
+            Confirmar Pago
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
