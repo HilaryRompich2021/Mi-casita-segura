@@ -4,6 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -88,4 +93,17 @@ public class JwtService {
         return Collections.emptyList();
     }
 
+    // 🔐 Método nuevo para Spring Security Context si deseas inyectarlo en filtros personalizados
+    public Authentication getAuthentication(String token) {
+        Claims claims = extractAllClaims(token);
+        String username = claims.getSubject();
+
+        @SuppressWarnings("unchecked")
+        List<String> roles = claims.get("roles", List.class);
+
+        List<? extends GrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toList());
+        return new UsernamePasswordAuthenticationToken(username, null, authorities);
+    }
 }

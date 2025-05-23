@@ -1,80 +1,72 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/ui/header/header.component';
 import { CommonModule } from '@angular/common';
 import SidebarComponent from './shared/sidebar/sidebar.component';
 import { filter } from 'rxjs';
 import HomeComponent from './home/home.component';
+import ResidenteSidebarComponent from './shared/sidebar/residente-sidebar/residente-sidebar.component';
+//import ResidenteSidebarComponent from "./shared/sidebar/residente-sidebar/residente-sidebar.component";
 //import { SidebarComponent } from "./shared/sidebar/sidebar.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SidebarComponent, CommonModule],
- // templateUrl: './app.component.html',
- // styleUrls: ['./app.component.css'],
-  template: `
-  <div class="flex min-h-screen">
-      <!-- sidebar solo si showSidebar===true -->
-      <app-sidebar *ngIf="showSidebar" class="w-72 flex-shrink-0"></app-sidebar>
-      <!-- contenido principal -->
-      <div class="flex-1">
+imports: [RouterOutlet, CommonModule, HeaderComponent, SidebarComponent, ResidenteSidebarComponent], // 🔧 ¡Sidebar removido aquí!
+templateUrl: './app.component.html',
+styleUrls: ['./app.component.css']
+
+/* template: `
+    <app-header></app-header>
+    <div class="h-screen flex">
+      <ng-container *ngIf="showSidebar">
+        <app-sidebar *ngIf="rol === 'ADMINISTRADOR'"></app-sidebar>
+        <app-residente-sidebar *ngIf="rol === 'RESIDENTE'"></app-residente-sidebar>
+      </ng-container>
+      <div class="flex-1 overflow-auto">
         <router-outlet></router-outlet>
       </div>
     </div>
-  `
-
-
+  `*/
 })
-export class AppComponent {
-  title = 'mi-casita-tailwind';
-
+export class AppComponent implements OnInit {
   showSidebar = false;
   rol: string = '';
 
-  constructor(private router: Router) {
-  this.router.events
-    .pipe(filter(e => e instanceof NavigationEnd))
-    .subscribe(() => {
-      const token = localStorage.getItem('auth_token');
-      const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
-      this.rol = payload.roles?.[0] || '';
-      this.showSidebar = !this.router.url.startsWith('/auth');
-    });
-}
- /* constructor(private router: Router) {
-  this.router.events
-    .pipe(filter(e => e instanceof NavigationEnd))
-    .subscribe(() => {
 
-      const payload = JSON.parse(atob((localStorage.getItem('auth_token') || '').split('.')[1]));
-      this.rol = payload.roles?.[0]; // ✅ Asegura que siempre se actualice
-      this.showSidebar = !this.router.url.startsWith('/auth') && this.rol === 'ADMINISTRADOR';
-    });
-}*/
-
-  /*
   constructor(private router: Router) {
-    // cada vez que cambie de ruta, compruebo si debo ocultar el sidebar
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
-        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-        this.rol = usuario.rol;
-
-        const rutaEsAuth = this.router.url.startsWith('/auth');
-        const esAdministrador = this.rol === 'ADMINISTRADOR';
-        // Si la ruta empieza por '/auth', ocultarlo
-        //this.showSidebar = !this.router.url.startsWith('/auth');
-        this.showSidebar = !rutaEsAuth && esAdministrador;
+        this.updateRoleFromToken(); // Usa solo esta función
+        this.showSidebar = !this.router.url.startsWith('/auth');
       });
   }
+   /* this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.updateRoleFromToken();
+        this.showSidebar = !this.router.url.startsWith('/auth');
+      });
+  }*/
 
-  rol: string = '';
-*/
-ngOnInit() {
-  const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-  this.rol = usuario.rol;
-}
 
+  ngOnInit(): void {
+    this.updateRoleFromToken();
+  }
+
+  private updateRoleFromToken(): void {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        this.rol = payload.roles?.[0] || '';
+      } catch (error) {
+        console.warn('Token inválido o malformado.');
+        this.rol = '';
+      }
+    } else {
+      this.rol = '';
+    }
+  }
 }

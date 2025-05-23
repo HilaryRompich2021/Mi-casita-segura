@@ -50,6 +50,9 @@ public class PagoService {
             detalle.setMonto(detDTO.getMonto());
             detalle.setServicioPagado(detDTO.getServicioPagado());
             detalle.setEstadoPago(detDTO.getEstadoPago());
+            pago.setEstado(Pagos.EstadoDelPago.COMPLETADO);
+
+            //detalle.setEstadoPago(detDTO.getEstadoPago());
             detalle.setPago(pago);
 
             if (detDTO.getReservaId() != null) {
@@ -100,5 +103,31 @@ public class PagoService {
         if (!dto.getFechaVencimiento().matches("^(0[1-9]|1[0-2])/\\d{2}$"))
             throw new IllegalArgumentException("La fecha de vencimiento debe tener formato MM/YY");
     }
+
+    public List<Pagos> obtenerPagosPorUsuario(String cui) {
+        List<Pagos> pagos = pagosRepo.findByCreadoPorCui(cui);
+
+        LocalDate hoy = LocalDate.now();
+        LocalDate fechaCorte = LocalDate.of(hoy.getYear(), hoy.getMonth(), 21);
+
+        // Verifica si hay algún pago COMPLETADO en el mes actual
+        boolean cuotaPagada = pagos.stream()
+                .anyMatch(p -> p.getFechaPago().getMonth() == hoy.getMonth()
+                        && p.getEstado() == Pagos.EstadoDelPago.COMPLETADO);
+
+        // Si no hay, crea una cuota pendiente
+        if (!cuotaPagada && hoy.isAfter(fechaCorte)) {
+            Pagos cuotaPendiente = new Pagos();
+            cuotaPendiente.setMontoTotal(BigDecimal.valueOf(550));
+            cuotaPendiente.setFechaPago(fechaCorte);
+            cuotaPendiente.setEstado(Pagos.EstadoDelPago.PENDIENTE);
+            Usuario usuario = usuarioRepo.findById(cui).orElse(null);
+            cuotaPendiente.setCreadoPor(usuario);
+            pagos.add(cuotaPendiente);
+        }
+
+        return pagos;
+    }
+
 
 }

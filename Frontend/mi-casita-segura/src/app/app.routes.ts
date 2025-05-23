@@ -9,9 +9,9 @@ export const routes: Routes = [
 
     { path: 'menu', component: HomeComponent },
 
-    {path: 'menuResidente',
+  /* {path: 'menuResidente',
       loadComponent: () => import('./shared/sidebar/residente-sidebar/residente-sidebar.component')
-    },
+    },*/
 
     { path: 'home',
       loadComponent: () => import('./shared/sidebar/sidebar.component')
@@ -31,6 +31,12 @@ export const routes: Routes = [
     path: 'visitantes',
 
     loadComponent: () => import('./visitante/visitante/visitante.component').then(m => m.default)
+
+  },
+  {
+    path: 'pagos',
+
+    loadComponent: () => import('./pagos/pagos.component').then(m => m.default)
 
   },
 

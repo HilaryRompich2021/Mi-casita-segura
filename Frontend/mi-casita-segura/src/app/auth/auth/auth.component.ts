@@ -86,7 +86,7 @@ export default class AuthComponent  {
           if (roles.includes('ADMINISTRADOR')) {
           this.router.navigate(['/menu']);
         } else if (roles.includes('RESIDENTE')){
-          this.router.navigate(['/menuResidente']);
+          this.router.navigate(['/pagos']);
         } else {
           this.router.navigate(['/visitantes'])
         }

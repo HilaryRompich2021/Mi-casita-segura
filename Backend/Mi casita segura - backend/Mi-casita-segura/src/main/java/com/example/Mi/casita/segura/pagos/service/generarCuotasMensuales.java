@@ -20,7 +20,7 @@ public class generarCuotasMensuales {
     private final UsuarioRepository usuarioRepo;
     private final PagosRepository pagosRepo;
 
-    @Scheduled(cron = "0 0 0 27 * ?") // Cada 27 del mes
+    @Scheduled(cron = "0 0 0 20 * ?") // Cada 27 del mes
     public void generarCuotasMensuales() {
         List<Usuario> residentes = usuarioRepo.findByRol(Usuario.Rol.RESIDENTE);
 

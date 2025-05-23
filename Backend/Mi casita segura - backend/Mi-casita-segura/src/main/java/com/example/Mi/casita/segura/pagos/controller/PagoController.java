@@ -39,6 +39,14 @@ public class PagoController {
         return ResponseEntity.ok(pagos);
     }
 
+    @PreAuthorize("hasRole('RESIDENTE') or hasRole('ADMINISTRADOR')")
+    @GetMapping("/todos/{cui}")
+    public List<Pagos> obtenerTodosLosPagos(@PathVariable String cui) {
+        //return pagosRepo.findByCreadoPor_Cui(cui);
+        return pagoService.obtenerPagosPorUsuario(cui);
+    }
+
+
 
 
 }
