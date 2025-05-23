@@ -24,11 +24,11 @@ public class Pagos {
     @Column(nullable = false)
     private LocalDate fechaPago;
 
-    // Estado del pago: COMPLETADO, PENDIENTE, ANULADO
-    @Column(nullable = false, length = 20)
-    private String estado;
+    // Estado del pago: COMPLETADO, PENDIENTE
+    @Enumerated(EnumType.STRING)
+    private EstadoDelPago estado;
 
-    // Tipo de pago: RESERVA, CUOTA, REINSTALACIÓN, etc.
+    //Tarjeta
     @Column(length = 30)
     private String metodoPago;
 
@@ -40,5 +40,11 @@ public class Pagos {
     // Detalle de conceptos individuales dentro del pago
     @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL)
     private List<Pago_Detalle> Pago_Detalle;
+
+    public enum EstadoDelPago {
+        COMPLETADO, PENDIENTE
+
+    }
+
 
 }

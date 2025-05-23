@@ -18,6 +18,10 @@ import Swal from 'sweetalert2';
 export default class RegistroVisitanteComponent implements  OnInit {
   form!: FormGroup;
 formulario: any;
+  rol: string = '';
+  numeroCasaUsuario: number | null = null;
+  cuiDelUsuario: string = '';
+
 /*
   visitanteForm = this.fb.group({
     cui:            ['', [Validators.required, Validators.pattern(/^\d{13}$/)]],
@@ -36,7 +40,26 @@ formulario: any;
   ) {}
 
   ngOnInit() {
-    this.form = this.fb.group({
+    const usuario = this.getCurrentUserData();
+    this.rol = usuario.rol;
+    //this.numeroCasaUsuario = usuario.numeroCasa;
+    const esResidente = usuario.roles?.includes('RESIDENTE');
+
+    const username = usuario.sub;     // Visible en el campo
+    const cui = usuario.cui;          // Enviado al backend
+
+
+      this.form = this.fb.group({
+    cui: ['', [Validators.required, Validators.pattern(/^\d{13}$/)]],
+    nombreVisitante: ['', [Validators.required, this.nombreValidoValidator]],
+    telefono: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+    numeroCasa: [{ value: null, disabled: false }, [Validators.required, Validators.min(1), Validators.max(300)]],
+    motivoVisita: ['', Validators.required],
+    nota: ['', Validators.required],
+    creadoPor: [this.getCurrentCui(), Validators.required],
+    estado: [true]
+  });
+   /* this.form = this.fb.group({
       cui: [
         '',
         [
@@ -55,8 +78,10 @@ formulario: any;
           Validators.pattern(/^\d{8}$/)
         ]
       ],
-      numeroCasa: [
-        null,
+      numeroCasa: [{
+       value: this.numeroCasaUsuario || null,
+       disabled: this.rol === 'RESIDENTE'
+      },
         [
           Validators.required,
           Validators.min(1),
@@ -66,10 +91,18 @@ formulario: any;
       motivoVisita: ['', Validators.required],
       nota: ['', Validators.required],
       // se sacará del token JWT
-      creadoPor: [ this.getCurrentCui(), Validators.required ],
+      creadoPor: [usuario.username || usuario.sub, Validators.required],
       // no mostramos al usuario, pero el back espera un boolean
       estado: [ true ]
-    });
+    });*/
+
+  // Forzar valor y estado del campo número de casa si el rol es RESIDENTE
+  if (esResidente) {
+    this.form.get('numeroCasa')?.setValue(usuario.numeroCasa);
+    this.form.get('numeroCasa')?.disable(); // Esto también lo puedes controlar desde el HTML con readonly si quieres reforzar
+  }
+  console.log(this.getCurrentUserData());
+  this.cuiDelUsuario = usuario.cui;
   }
 
   // Validador que retorna { nombreInvalido: true } si falla
@@ -83,30 +116,85 @@ formulario: any;
     return esValido ? null : { nombreInvalido: true };
   }
 
-  private getCurrentCui(): string {
+  private getCurrentUserData(): any {
     const token = localStorage.getItem('auth_token');
-    if (!token) return '';
+    if (!token) return {};
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.sub;
+    return payload;
   }
+
+  private getCurrentCui(): string {
+  const token = localStorage.getItem('auth_token');
+  if (!token) return '';
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  return payload.cui || ''; // ✅ Devuelve el CUI en lugar del sub
+}
+
 
   onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    this.svc.registrar(this.form.value).subscribe({
+
+    const visitanteDTO = this.form.getRawValue();
+    visitanteDTO.creadoPor = this.cuiDelUsuario;
+
+    this.svc.registrar(visitanteDTO).subscribe({
       next: () => {
         Swal.fire('¡Listo!','Visitante registrado con éxito','success');
-        this.form.reset({
-          creadoPor: this.getCurrentCui(),
-          estado: true
-        });
+
+        const user = this.getCurrentUserData();
+        const esResidente = user.roles?.includes('RESIDENTE');
+
+
+
+        this.form.reset();
+      this.form.patchValue({
+        creadoPor: user.sub, // Mostrar nuevamente el username
+        numeroCasa: esResidente ? user.numeroCasa : null,
+        estado: true
+      });
+
+        if (esResidente) {
+        this.form.get('numeroCasa')?.disable();
+      } else {
+        this.form.get('numeroCasa')?.enable();
+      }
       },
-      error: err => {
-        Swal.fire('Error', err.error || 'No fue posible registrar','error');
+      error: err => {Swal.fire('Error', this.obtenerMensajeDeError(err), 'error');
+
+
       }
     });
+    console.log('Visitante enviado al backend:', visitanteDTO);
+
   }
+
+  /*
+  private obtenerMensajeDeError(err: any): string {
+  if (typeof err.error === 'string') return err.error;
+  if (typeof err.message === 'string') return err.message;
+  return 'Ocurrió un error inesperado.';
+}*/
+private obtenerMensajeDeError(err: any): string {
+  // Caso típico de error enviado por Spring Boot
+  if (err.error && typeof err.error.message === 'string') {
+    return err.error.message;
+  }
+
+  // Si viene como string plano
+  if (typeof err.error === 'string') {
+    return err.error;
+  }
+
+  // Si viene como objeto completo con status
+  if (typeof err.message === 'string') {
+    return err.message;
+  }
+
+  return 'Ocurrió un error inesperado.';
+}
+
 
 }

@@ -1,6 +1,8 @@
 // src/main/java/com/example/Mi/casita/segura/usuarios/service/UsuarioService.java
 package com.example.Mi.casita.segura.usuarios.service;
 
+import com.example.Mi.casita.segura.Correo.Service.CorreoService;
+import com.example.Mi.casita.segura.Qr.service.QRService;
 import com.example.Mi.casita.segura.acceso.model.Acceso_QR;
 import com.example.Mi.casita.segura.acceso.repository.AccesoQRRepository;
 import com.example.Mi.casita.segura.notificaciones.service.NotificacionService;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +29,8 @@ public class UsuarioService {
     private final AccesoQRRepository accesoQRRepository;
     private final NotificacionService notificacionService;
     private final PasswordEncoder passwordEncoder;
+    private final QRService qrService;
+    private final CorreoService correoService;
 
     /**
      * Registra un usuario y genera un QR, devolviendo el DTO con el campo codigoQR rellenado.
@@ -33,6 +38,16 @@ public class UsuarioService {
     public UsuarioRegistroDTO registrarUsuario(UsuarioRegistroDTO dto) {
         if (usuarioRepository.existsById(dto.getCui())) {
             throw new IllegalArgumentException("El usuario ya existe");
+        }
+        // 2) Validar y ajustar número de casa según rol
+        if (dto.getRol() == Usuario.Rol.ADMINISTRADOR || dto.getRol() == Usuario.Rol.GUARDIA) {
+            dto.setNumeroCasa(0);
+        } else {
+            // RESIDENTE
+            Integer nc = dto.getNumeroCasa();
+            if (nc == null || nc < 1 || nc > 300) {
+                throw new IllegalArgumentException("El número de casa debe estar entre 1 y 300 para residentes");
+            }
         }
 
         // 1. Crear y guardar el Usuario
@@ -52,6 +67,14 @@ public class UsuarioService {
                         ? 0
                         : dto.getNumeroCasa()
         );
+
+        if (dto.getRol() == Usuario.Rol.ADMINISTRADOR || dto.getRol() == Usuario.Rol.GUARDIA) {
+            usuario.setNumeroCasa(0); //
+        } else {
+            usuario.setNumeroCasa(dto.getNumeroCasa());
+        }
+
+//guardar
         usuarioRepository.save(usuario);
 
         // 2. Generar y guardar el Acceso_QR para este usuario
@@ -64,14 +87,12 @@ public class UsuarioService {
         qr.setAsociado(usuario);
         accesoQRRepository.save(qr);
 
-        // 3. Rellenar el campo codigoQR del DTO de respuesta
-        dto.setCodigoQR(qr.getCodigoQR());
-
-        // 4. (Opcional) enviar notificación de bienvenida
-        // notificacionService.enviarBienvenida(usuario, qr.getCodigoQR());
+        // Enviar notificación
+       // notificacionService.enviarBienvenida(usuario, qr.getCodigoQR());
 
         return dto;
     }
+
 
     public void eliminarUsuario(String cui) {
         if (!usuarioRepository.existsById(cui)) {

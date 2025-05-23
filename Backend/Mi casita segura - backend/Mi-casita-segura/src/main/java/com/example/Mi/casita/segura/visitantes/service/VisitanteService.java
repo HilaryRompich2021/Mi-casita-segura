@@ -10,7 +10,9 @@ import com.example.Mi.casita.segura.visitantes.dto.VisitanteRegistroDTO;
 import com.example.Mi.casita.segura.visitantes.model.Visitante;
 import com.example.Mi.casita.segura.visitantes.repository.VisitanteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +31,9 @@ public class VisitanteService {
 
     public Visitante registrarVisitante(VisitanteRegistroDTO dto) {
         if (dto.getCui() != null && visitanteRepository.existsByCui(dto.getCui())) {
-            throw new IllegalArgumentException("El visitante ya existe");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El visitante ya existe");
+
+            //throw new IllegalArgumentException("El visitante ya existe");
         }
 
         Usuario creador = usuarioRepository.findById(dto.getCreadoPor())

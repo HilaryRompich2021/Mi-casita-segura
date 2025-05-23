@@ -79,6 +79,7 @@
             <input formControlName="numeroCasa"
                    type="number"
                    placeholder="Número de casa"
+                   [readonly]="rol === 'RESIDENTE'"
                    class="mt-1 block w-full bg-gray-100 h-11 rounded-xl shadow-lg focus:bg-blue-100 focus:ring-0">
             <div *ngIf="form.get('numeroCasa')?.touched && form.get('numeroCasa')?.hasError('required')"
                  class="text-red-500 text-xs mt-1">El número de casa es obligatorio</div>
@@ -105,6 +106,17 @@
                       class="mt-1 block w-full bg-gray-100 rounded-xl shadow-lg focus:bg-blue-100 focus:ring-0 p-3"></textarea>
             <div *ngIf="form.get('nota')?.touched && form.get('nota')?.hasError('required')"
                  class="text-red-500 text-xs mt-1">La nota es obligatoria</div>
+          </div>
+
+          <!-- Creado por (solo lectura) -->
+          <div>
+            <input
+              formControlName="creadoPor"
+              type="text"
+              placeholder="Creado por"
+              readonly
+              class="mt-1 block w-full bg-gray-200 h-11 rounded-xl shadow-lg cursor-not-allowed text-gray-500"
+            />
           </div>
 
           <!-- Botón Registrar -->

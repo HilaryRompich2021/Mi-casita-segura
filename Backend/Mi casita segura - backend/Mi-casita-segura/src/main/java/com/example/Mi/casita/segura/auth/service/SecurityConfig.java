@@ -48,8 +48,13 @@ public class SecurityConfig {
                                 "/api/usuarios/registrar",
                                 "/api/usuarios",
                                 "/api/usuarios/{cui}",
-                                "/api/visitantes/registro"
-                                ).permitAll()
+                                "/api/visitantes/registro",
+                                "/api/visitantes",
+                                "/api/pagos/registrarPago",
+                                "/api/pagos"
+                                )
+                        .permitAll()
+                        //.hasAnyRole("RESIDENTE", "ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
