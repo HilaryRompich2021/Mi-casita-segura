@@ -39,7 +39,13 @@ export class ScannerQrComponent implements OnInit {
 
   handleDevicesFound(devices: MediaDeviceInfo[]) {
     this.availableDevices = devices;
-    this.currentDevice    = devices[0];
+    if (devices && devices.length > 0) {
+  this.availableDevices = devices;
+  this.currentDevice = devices[0];
+} else {
+  alert('No se encontraron dispositivos disponibles');
+}
+
   }
 
   onDeviceSelect(event: Event) {

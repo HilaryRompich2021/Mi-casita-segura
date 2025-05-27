@@ -11,14 +11,14 @@ describe('QrScannerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      
+
       imports: [
         ScannerQrComponent,
         ZXingScannerModule,
         HttpClientTestingModule,
         RouterTestingModule
       ],
-      
+
       providers: [
         WebSocketService
       ]

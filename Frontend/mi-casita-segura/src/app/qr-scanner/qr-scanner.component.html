@@ -1,20 +1,31 @@
-<div class="scanner-container">
+<div class="scanner-container w-full max-w-lg mx-auto bg-white shadow-md p-4 rounded-lg mt-6">
+  <h2 class="text-lg font-semibold mb-4 text-center text-gray-800">Escáner de Código QR</h2>
+
+  <!-- Mostrar mensaje si no hay cámaras -->
+  <div *ngIf="availableDevices.length === 0" class="text-red-500 text-center mb-4">
+    No se encontraron cámaras disponibles o no se otorgaron permisos.
+  </div>
+
+  <!-- Escáner (solo si hay cámara disponible) -->
   <zxing-scanner
+    *ngIf="currentDevice"
     [device]="currentDevice"
     [formats]="formats"
     (camerasFound)="handleDevicesFound($event)"
     (permissionResponse)="onPermissionResponse($event)"
     (scanSuccess)="onCodeResult($event)"
     (scanError)="onScanError($event)"
-    (scanFailure)="onScanFailure()">
+    (scanFailure)="onScanFailure()"
+    class="w-full h-64 border border-gray-300 rounded mb-4"
+  >
   </zxing-scanner>
 
+  <!-- Selector de cámaras si hay más de una -->
   <div *ngIf="availableDevices.length > 1" class="mt-2">
-    <label for="deviceSelect" class="block mb-1">Elige cámara:</label>
+    <label for="deviceSelect" class="block mb-1 text-gray-700">Elige cámara:</label>
     <select id="deviceSelect" (change)="onDeviceSelect($event)"
-            class="border p-1 rounded w-full">
-      <option *ngFor="let dev of availableDevices; let i = index"
-              [value]="i">
+            class="border p-2 rounded w-full bg-white shadow-sm text-gray-800">
+      <option *ngFor="let dev of availableDevices; let i = index" [value]="i">
         {{ dev.label || ('Cámara ' + (i + 1)) }}
       </option>
     </select>
