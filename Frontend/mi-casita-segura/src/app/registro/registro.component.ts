@@ -5,7 +5,7 @@ import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModu
 import { RouterOutlet } from '@angular/router';
 import { RegistroService } from '../services/registro.service';
 import Swal from 'sweetalert2';
-import SidebarComponent from '../shared/sidebar/sidebar.component';
+import SidebarComponent from '../shared/Menu_Lateral/administrador-sidebar/sidebar.component';
 //import { SidebarComponent } from '../shared/sidebar/sidebar.component';
 
 

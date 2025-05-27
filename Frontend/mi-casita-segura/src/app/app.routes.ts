@@ -1,21 +1,21 @@
-
 import { Routes }           from '@angular/router';
-import HomeComponent from './home/home.component';
-
+import HomeComponent from './shared/Pages - Bienvenida/Bienvenida_Administrador/Home/home.component';
+//import HomeComponent from './shared/Pages - Bienvenida/Bienvenida_Administrador/home.component';
+//import HomeComponent from './shared/Pages - Bienvenida/Bienvenida_Administrador/home/home.component';
 
 export const routes: Routes = [
 
   { path: '',       redirectTo: 'auth', pathMatch: 'full' },
 
-    { path: 'menu', component: HomeComponent },
+//BIENVENIDA AL SISTEMA
+    { path: 'BienvenidaAdmin', component: HomeComponent },
 
-  /* {path: 'menuResidente',
-      loadComponent: () => import('./shared/sidebar/residente-sidebar/residente-sidebar.component')
-    },*/
 
+//Menu lateral de Administrador
     { path: 'home',
-      loadComponent: () => import('./shared/sidebar/sidebar.component')
+      loadComponent: () => import('./shared/Menu_Lateral/administrador-sidebar/sidebar.component')
      },
+
    {
     path: 'auth',
     loadComponent: () => import('./auth/auth/auth.component').then(m => m.default)

@@ -84,7 +84,7 @@ export default class AuthComponent  {
         }).then(() => {
           //Al cerrar alerta, dirigir según rol
           if (roles.includes('ADMINISTRADOR')) {
-          this.router.navigate(['/menu']);
+          this.router.navigate(['/BienvenidaAdmin']);
         } else if (roles.includes('RESIDENTE')){
           this.router.navigate(['/pagos']);
         } else {
