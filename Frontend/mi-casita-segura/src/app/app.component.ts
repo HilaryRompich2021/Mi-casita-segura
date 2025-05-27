@@ -1,26 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-<<<<<<< HEAD
-import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
-import { CommonModule, NgIf } from '@angular/common';
-import { filter } from 'rxjs/operators';
-import { HeaderComponent }              from './shared/ui/header/header.component';
-import { SidebarComponent }             from './shared/sidebar/sidebar.component';
-import { ResidenteSidebarComponent }    from './shared/sidebar/residente-sidebar/residente-sidebar.component';
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet,
-    NgIf,
-    HeaderComponent,
-    SidebarComponent,
-    ResidenteSidebarComponent
-  ],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-=======
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import SidebarComponent from './shared/Menu_Lateral/administrador-sidebar/sidebar.component';
@@ -33,28 +11,21 @@ imports: [RouterOutlet, CommonModule, SidebarComponent, ResidenteSidebarComponen
 templateUrl: './app.component.html',
 styleUrls: ['./app.component.css']
 
->>>>>>> 9907a2ef3b793537e9cea53f75801e1441bc5579
 })
 export class AppComponent implements OnInit {
   showSidebar = false;
-  rol = '';
+  rol: string = '';
+
 
   constructor(private router: Router) {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
-<<<<<<< HEAD
-        this.updateRoleFromToken();
-        this.showSidebar = !this.router.url.startsWith('/auth');
-      });
-  }
-=======
         this.updateRoleFromToken(); // Usa solo esta función
         this.showSidebar = !this.router.url.startsWith('/auth');
       });
   }
 
->>>>>>> 9907a2ef3b793537e9cea53f75801e1441bc5579
 
   ngOnInit(): void {
     this.updateRoleFromToken();
@@ -62,11 +33,15 @@ export class AppComponent implements OnInit {
 
   private updateRoleFromToken(): void {
     const token = localStorage.getItem('auth_token');
-    if (!token) { this.rol = ''; return; }
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      this.rol = payload.roles?.[0] || '';
-    } catch {
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        this.rol = payload.roles?.[0] || '';
+      } catch (error) {
+        console.warn('Token inválido o malformado.');
+        this.rol = '';
+      }
+    } else {
       this.rol = '';
     }
   }
