@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-//import { AuthService } from '../../services/auth.service';
-import { RouterOutlet } from '@angular/router';
 import { RegistroService } from '../services/registro.service';
 import Swal from 'sweetalert2';
-import SidebarComponent from '../shared/sidebar/sidebar.component';
+<<<<<<< HEAD
+
+=======
+import SidebarComponent from '../shared/Menu_Lateral/administrador-sidebar/sidebar.component';
 //import { SidebarComponent } from '../shared/sidebar/sidebar.component';
+>>>>>>> 9907a2ef3b793537e9cea53f75801e1441bc5579
 
 
 @Component({
@@ -17,7 +19,7 @@ import SidebarComponent from '../shared/sidebar/sidebar.component';
   styleUrl: './registro.component.css',
   //providers:[AuthService]
 })
-export default class RegistroComponent implements OnInit{
+export class RegistroComponent implements OnInit{
 
   formulario!: FormGroup;
   mensajeErrorNombre: string = '';

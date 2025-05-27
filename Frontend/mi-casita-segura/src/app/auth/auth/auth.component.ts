@@ -23,7 +23,7 @@ interface JWTPayload {
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.css'
 })
-export default class AuthComponent  {
+export class AuthComponent  {
 
   loginForm!: FormGroup;
   errorMessage = '';
@@ -80,15 +80,19 @@ export default class AuthComponent  {
           title: `¡Bienvenido ${userName}!`,
           icon: 'success',
           confirmButtonText: 'Aceptar',
-          allowOutsideClick: false
+          allowOutsideClick: true
         }).then(() => {
           //Al cerrar alerta, dirigir según rol
           if (roles.includes('ADMINISTRADOR')) {
+<<<<<<< HEAD
           this.router.navigate(['/menu']);
+        } else if (roles.includes('GUARDIA')){
+          this.router.navigate(['/menu']);
+=======
+          this.router.navigate(['/BienvenidaAdmin']);
+>>>>>>> 9907a2ef3b793537e9cea53f75801e1441bc5579
         } else if (roles.includes('RESIDENTE')){
-          this.router.navigate(['/pagos']);
-        } else {
-          this.router.navigate(['/visitantes'])
+          this.router.navigate(['/menu']);
         }
         });
       },
@@ -99,4 +103,8 @@ export default class AuthComponent  {
     });
   }
 
+
+
 }
+
+

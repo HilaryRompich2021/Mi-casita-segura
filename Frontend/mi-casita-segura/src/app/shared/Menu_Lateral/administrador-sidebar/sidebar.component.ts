@@ -3,12 +3,12 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-residente-sidebar',
+  selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterModule, RouterLink],
-  templateUrl: './residente-sidebar.component.html',
-  styleUrl: './residente-sidebar.component.css'
+  templateUrl: './sidebar.component.html',
+  styleUrl: './sidebar.component.css'
 })
-export default class ResidenteSidebarComponent {
+export class SidebarComponent {
 
 }

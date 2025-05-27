@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ResidenteSidebarComponent } from './residente-sidebar.component';
 
 describe('ResidenteSidebarComponent', () => {

@@ -1,59 +1,60 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { HeaderComponent } from './shared/ui/header/header.component';
-import { CommonModule } from '@angular/common';
-import { HeaderComponent } from './shared/ui/header/header.component';
-import SidebarComponent from './shared/sidebar/sidebar.component';
-import { Subscription } from 'rxjs';
-import { WebSocketService } from './services/web-socket.service';
-import { filter } from 'rxjs';
-import HomeComponent from './home/home.component';
-import ResidenteSidebarComponent from './shared/sidebar/residente-sidebar/residente-sidebar.component';
-//import ResidenteSidebarComponent from "./shared/sidebar/residente-sidebar/residente-sidebar.component";
-//import { SidebarComponent } from "./shared/sidebar/sidebar.component";
+<<<<<<< HEAD
+import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
+import { CommonModule, NgIf } from '@angular/common';
+import { filter } from 'rxjs/operators';
+import { HeaderComponent }              from './shared/ui/header/header.component';
+import { SidebarComponent }             from './shared/sidebar/sidebar.component';
+import { ResidenteSidebarComponent }    from './shared/sidebar/residente-sidebar/residente-sidebar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SidebarComponent, CommonModule],
- // templateUrl: './app.component.html',
- // styleUrls: ['./app.component.css'],
-  template: `
-  <div class="flex min-h-screen">
-      <!-- sidebar solo si showSidebar===true -->
-      <app-sidebar *ngIf="showSidebar" class="w-72 flex-shrink-0"></app-sidebar>
-      <!-- contenido principal -->
-      <div class="flex-1">
-        <router-outlet></router-outlet>
-      </div>
-    </div>
-  `*/
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    NgIf,
+    HeaderComponent,
+    SidebarComponent,
+    ResidenteSidebarComponent
+  ],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+=======
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import SidebarComponent from './shared/Menu_Lateral/administrador-sidebar/sidebar.component';
+import { filter } from 'rxjs';
+import ResidenteSidebarComponent from './shared/Menu_Lateral/residente-sidebar/residente-sidebar.component';
+@Component({
+  selector: 'app-root',
+  standalone: true,
+imports: [RouterOutlet, CommonModule, SidebarComponent, ResidenteSidebarComponent], // 🔧 ¡Sidebar removido aquí!
+templateUrl: './app.component.html',
+styleUrls: ['./app.component.css']
+
+>>>>>>> 9907a2ef3b793537e9cea53f75801e1441bc5579
 })
-export class AppComponent {
-  title = 'mi-casita-tailwind';
-
+export class AppComponent implements OnInit {
   showSidebar = false;
-  rol: string = '';
-
+  rol = '';
 
   constructor(private router: Router) {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
+<<<<<<< HEAD
+        this.updateRoleFromToken();
+        this.showSidebar = !this.router.url.startsWith('/auth');
+      });
+  }
+=======
         this.updateRoleFromToken(); // Usa solo esta función
         this.showSidebar = !this.router.url.startsWith('/auth');
       });
   }
-   /* this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.updateRoleFromToken();
-        this.showSidebar = !this.router.url.startsWith('/auth');
-      });
-  }*/
 
+>>>>>>> 9907a2ef3b793537e9cea53f75801e1441bc5579
 
   ngOnInit(): void {
     this.updateRoleFromToken();
@@ -61,15 +62,11 @@ export class AppComponent {
 
   private updateRoleFromToken(): void {
     const token = localStorage.getItem('auth_token');
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        this.rol = payload.roles?.[0] || '';
-      } catch (error) {
-        console.warn('Token inválido o malformado.');
-        this.rol = '';
-      }
-    } else {
+    if (!token) { this.rol = ''; return; }
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      this.rol = payload.roles?.[0] || '';
+    } catch {
       this.rol = '';
     }
   }
