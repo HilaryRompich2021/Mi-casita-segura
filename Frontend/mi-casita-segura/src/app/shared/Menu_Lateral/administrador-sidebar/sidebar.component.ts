@@ -9,6 +9,6 @@ import { RouterLink, RouterModule } from '@angular/router';
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
 })
-export class SidebarComponent {
+export default class SidebarComponent {
 
 }

@@ -12,9 +12,9 @@ export const routes: Routes = [
 
 
 //Menu lateral de Administrador
-    { path: 'home',
-      loadComponent: () => import('./shared/Menu_Lateral/administrador-sidebar/sidebar.component')
-     },
+  { path: 'home',
+    loadComponent: () => import('./shared/Menu_Lateral/administrador-sidebar/sidebar.component').then(m => m.default)
+  },
 
    {
     path: 'auth',

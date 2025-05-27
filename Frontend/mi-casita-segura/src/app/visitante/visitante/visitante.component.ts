@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
   templateUrl: './visitante.component.html',
   styleUrl: './visitante.component.css'
 })
-export class RegistroVisitanteComponent implements  OnInit {
+export default class RegistroVisitanteComponent implements  OnInit {
   form!: FormGroup;
 formulario: any;
   rol: string = '';

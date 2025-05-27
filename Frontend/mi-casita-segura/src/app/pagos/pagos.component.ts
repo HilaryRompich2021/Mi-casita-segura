@@ -18,7 +18,7 @@ import { AuthInterceptor } from '../auth/auth/auth-interceptor/auth-interceptor'
   templateUrl: './pagos.component.html',
   styleUrls: ['./pagos.component.css']
 })
-export class PagosComponent implements OnInit {
+export default class PagosComponent implements OnInit {
   cuotasPendientes: any[] = [];
   showModal = false;
   montoBase = 550;
