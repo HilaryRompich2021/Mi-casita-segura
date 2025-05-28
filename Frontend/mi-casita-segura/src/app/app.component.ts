@@ -3,7 +3,8 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import SidebarComponent from './shared/Menu_Lateral/administrador-sidebar/sidebar.component';
 import { filter } from 'rxjs';
-import ResidenteSidebarComponent from './shared/Menu_Lateral/residente-sidebar/residente-sidebar.component';
+import { ResidenteSidebarComponent } from './shared/Menu_Lateral/residente-sidebar/residente-sidebar.component';
+
 @Component({
   selector: 'app-root',
   standalone: true,

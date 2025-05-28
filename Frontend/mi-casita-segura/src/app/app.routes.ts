@@ -1,5 +1,5 @@
 import { Routes }           from '@angular/router';
-import HomeComponent from './shared/Pages - Bienvenida/Bienvenida_Administrador/Home/home.component';
+import { HomeComponent } from './shared/Pages - Bienvenida/Bienvenida_Administrador/Home/home.component';
 
 
 export const routes: Routes = [

@@ -16,5 +16,4 @@ public class UsuarioListadoDTO {
     private int numeroCasa;
     private Usuario.Rol rol;
     private boolean estado;
-    private String codigoQR;
 }

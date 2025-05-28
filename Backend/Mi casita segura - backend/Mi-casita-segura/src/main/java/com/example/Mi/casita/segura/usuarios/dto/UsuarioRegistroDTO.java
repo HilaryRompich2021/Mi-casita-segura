@@ -6,6 +6,9 @@ import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.springframework.data.jdbc.repository.query.Query;
+
+import java.util.List;
 
 @Data
 public class UsuarioRegistroDTO {

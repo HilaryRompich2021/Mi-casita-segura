@@ -122,8 +122,7 @@ public class UsuarioService {
                             u.getTelefono(),
                             u.getNumeroCasa(),
                             u.getRol(),
-                            u.isEstado(),
-                            qrCode
+                            u.isEstado()
                     );
                 })
                 .collect(Collectors.toList());
@@ -154,4 +153,36 @@ public class UsuarioService {
         } while (usuarioRepository.existsByUsuario(intentoFinal));
         return intentoFinal;
     }
+
+
+    /**
+     * Retorna todos los usuarios cuyo nombre contenga q.
+     * Si q es null o vacío, devuelve todos.
+     */
+    public List<UsuarioListadoDTO> buscarDirectorio(String q) {
+        List<Usuario> usuarios = (q == null || q.isBlank())
+                ? usuarioRepository.findAll()
+                : usuarioRepository.findByNombreContainingIgnoreCase(q);
+
+        return usuarios.stream()
+                .map(u -> {
+                    // Opcionalmente incluyes también el código QR aquí
+                    String qrCode = accesoQRRepository
+                            .findFirstByAsociadoOrderByFechaGeneracionDesc(u)
+                            .map(Acceso_QR::getCodigoQR)
+                            .orElse(null);
+
+                    return new UsuarioListadoDTO(
+                            u.getCui(),
+                            u.getNombre(),
+                            u.getCorreoElectronico(),
+                            u.getTelefono(),
+                            u.getNumeroCasa(),
+                            u.getRol(),
+                            u.isEstado()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 }

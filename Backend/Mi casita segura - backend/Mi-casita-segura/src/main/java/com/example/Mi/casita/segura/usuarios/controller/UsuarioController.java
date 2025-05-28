@@ -47,4 +47,14 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
     }
 
+    /**
+     * GET /api/usuarios/directorio?q=texto
+     * Si no se pasa 'q', devuelve todo el directorio.
+     */
+    @GetMapping("/directorio")
+    public ResponseEntity<List<UsuarioListadoDTO>> directorio(
+            @RequestParam(name = "q", required = false) String q) {
+        List<UsuarioListadoDTO> lista = usuarioService.buscarDirectorio(q);
+        return ResponseEntity.ok(lista);
+    }
 }

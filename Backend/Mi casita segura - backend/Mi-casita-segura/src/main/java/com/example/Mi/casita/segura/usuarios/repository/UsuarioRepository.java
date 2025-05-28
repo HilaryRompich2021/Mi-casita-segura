@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,8 +33,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
     //buscar por rol
     List<Usuario> findByRol(Usuario.Rol rol);
 
+    // Para listar por roles (administradores + guardias por defecto)
+    List<Usuario> findByRolIn(Collection<Usuario.Rol> roles);
+
+    // Para búsqueda por nombre
+    List<Usuario> findByNombreContainingIgnoreCase(
+            String nombre
+    );
+
     @Modifying
     @Query("UPDATE Usuario u SET u.estado = false WHERE u.cui = :cui")
     void desactivarUsuario(@Param("cui") String cui);
 
+    List<Usuario> nombre(String nombre);
 }
