@@ -2,14 +2,9 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpInterceptorFn, HttpRequest
 import { Component, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-/*@Component({
-  selector: 'app-auth-interceptor',
-  imports: [],
-  templateUrl: './auth-interceptor.component.html',
-  styleUrl: './auth-interceptor.component.css'
-})*/
+
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('auth_token');
 
   if (token) {
     const cloned = req.clone({

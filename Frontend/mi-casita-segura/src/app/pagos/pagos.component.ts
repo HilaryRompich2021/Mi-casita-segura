@@ -42,18 +42,45 @@ export default class PagosComponent implements OnInit {
 });
 
 
-  constructor(private pagosService: PagosService, private jwtHelper: JwtHelperService) {}
-
-  ngOnInit(): void {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = this.jwtHelper.decodeToken(token);
-      this.cuiUsuario = decoded.cui;
-      this.obtenerTodosLosPagos();
-    }
+  constructor(private pagosService: PagosService, private jwtHelper: JwtHelperService) {
+    console.log('PagosComponent se inicializó');
   }
 
-  obtenerTodosLosPagos() {
+  ngOnInit(): void {
+  const token = localStorage.getItem('auth_token');
+  console.log('Token recuperado:', token);
+
+  if (token) {
+    const decoded = this.jwtHelper.decodeToken(token);
+    console.log('Token decodificado:', decoded);
+    this.cuiUsuario = decoded.cui;
+    console.log('CUI extraído:', this.cuiUsuario);
+
+    this.obtenerTodosLosPagos();  // <-- queremos verificar que esto se dispare
+  } else {
+    console.warn('Token no encontrado');
+  }
+}
+
+obtenerTodosLosPagos() {
+  console.log('Solicitando pagos con CUI:', this.cuiUsuario);
+  this.pagosService.obtenerTodosLosPagos(this.cuiUsuario).subscribe({
+    next: data => {
+      console.log('Pagos recibidos:', data);
+      if (!data || data.length === 0) {
+        console.warn('No se recibieron pagos.');
+      }
+      this.cuotasPendientes = data;
+    },
+    error: err => {
+      console.error('Error al cargar pagos:', err);
+    }
+  });
+}
+
+
+ /* obtenerTodosLosPagos() {
+    console.log('Solicitando pagos con CUI:', this.cuiUsuario);
     this.pagosService.obtenerTodosLosPagos(this.cuiUsuario).subscribe({
       next: data => {
         console.log('Pagos recibidos:', data);
@@ -63,7 +90,7 @@ export default class PagosComponent implements OnInit {
         console.error('Error al cargar pagos:', err);
       }
     });
-  }
+  }*/
 
    abrirModal() {
     this.showModal = true;
@@ -138,7 +165,7 @@ export default class PagosComponent implements OnInit {
         this.showModal = false;
         this.pagoForm.reset({ metrosExceso: 0 });
         this.calcularTotal();
-        this.obtenerTodosLosPagos;
+        this.obtenerTodosLosPagos();
       },
       error: err => {
         console.error('Error al registrar pago:', err);

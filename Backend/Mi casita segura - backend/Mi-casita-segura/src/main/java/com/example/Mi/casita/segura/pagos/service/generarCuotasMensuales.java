@@ -20,7 +20,7 @@ public class generarCuotasMensuales {
     private final UsuarioRepository usuarioRepo;
     private final PagosRepository pagosRepo;
 
-    @Scheduled(cron = "0 0 0 20 * ?") // Cada 27 del mes
+    @Scheduled(cron = "0 0 0 20 * ?") // Cada 20 del mes
     public void generarCuotasMensuales() {
         List<Usuario> residentes = usuarioRepo.findByRol(Usuario.Rol.RESIDENTE);
 
@@ -34,7 +34,7 @@ public class generarCuotasMensuales {
                 cuota.setMontoTotal(new BigDecimal("550.00"));
                 cuota.setFechaPago(hoy); // fecha de emisión
                 cuota.setEstado(Pagos.EstadoDelPago.PENDIENTE);
-                cuota.setMetodoPago("EFECTIVO");
+                cuota.setMetodoPago("TARJETA");
                 cuota.setCreadoPor(residente);
                 pagosRepo.save(cuota);
             }

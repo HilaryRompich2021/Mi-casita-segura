@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class PagoRequestDTO {
     private BigDecimal montoTotal;
-    private String metodoPago; // TARJETA, EFECTIVO
+    private String metodoPago; // TARJETA
     private Pagos.EstadoDelPago estado;     // COMPLETADO, PENDIENTE
     private String creadoPor;  // CUI del usuario
     private List<PagoDetalleDTO> detalles;
