@@ -22,7 +22,6 @@ export const routes: Routes = [
   },
   {
     path: 'registro',
-    //loadChildren: () => import('./auth/registro/registro.route'),
     loadComponent: () => import('./registro/registro.component').then(m => m.default)
 
   },
@@ -37,6 +36,11 @@ export const routes: Routes = [
 
     loadComponent: () => import('./pagos/pagos.component').then(m => m.default)
 
+  },
+
+  {
+    path: 'directorio',
+    loadComponent: () => import('./directorio/directorio.component').then(m => m.default)
   },
 
   {

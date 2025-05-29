@@ -7,8 +7,6 @@ import { provideZoneChangeDetection } from '@angular/core';
 import { AuthInterceptor } from './app/auth/auth/auth-interceptor/auth-interceptor';
 
 
-
-
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
