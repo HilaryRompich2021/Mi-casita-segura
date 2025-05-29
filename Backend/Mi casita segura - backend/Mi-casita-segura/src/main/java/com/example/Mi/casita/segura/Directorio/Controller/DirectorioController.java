@@ -22,7 +22,8 @@ public class DirectorioController {
     /** GET sin parámetro → lista por defecto */
     @GetMapping
     public List<UsuarioListadoDTO> obtenerDirectorio(
-            @RequestParam(value="q", required=false) String q
+            @RequestParam(value="q", required=false)
+            String q
     ) {
         return (q == null)
                 ? directorioService.listaDefault()

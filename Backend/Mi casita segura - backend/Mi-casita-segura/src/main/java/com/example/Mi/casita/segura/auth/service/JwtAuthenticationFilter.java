@@ -45,7 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
                 filterChain.doFilter(request, response);
@@ -56,7 +57,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         }
-        filterChain.doFilter(request, response);
     }
 
     //no filtrar /ws/**

@@ -17,53 +17,50 @@
       </button>
     </div>
 
-    <!-- Tabla de residentes (solo si hay resultados) -->
+    <!-- Tabla de residentes -->
     <div *ngIf="residentes.length > 0; else sinResidentes" class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="px-4 py-2">Nombre</th>
-            <th class="px-4 py-2">Casa</th>
-            <th class="px-4 py-2">Teléfono</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let u of residentes" class="hover:bg-gray-50">
-            <td class="px-4 py-2">{{ u.nombre }} {{ u.apellido }}</td>
-            <td class="px-4 py-2">{{ u.numeroCasa }}</td>
-            <td class="px-4 py-2">{{ u.telefono }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <ng-template #sinResidentes>
-      <p class="text-center text-gray-500">No hay residentes para mostrar.</p>
-    </ng-template>
+    <table class="w-full">
+      <thead>
+        <tr class="bg-gray-100">
+          <th>Nombre</th>
+          <th>Casa</th>
+          <th>Teléfono</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of residentes">
+          <td>{{ u.nombre }}</td>
+          <td>{{ u.numeroCasa }}</td>
+          <td>{{ u.telefono }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+  <ng-template #sinResidentes>
+    <p class="text-center text-gray-500">No hay residentes.</p>
+  </ng-template>
 
-  <!-- 2) Tabla por defecto: administradores y guardias -->
-  <div class="space-y-2">
-    <h2 class="text-xl font-semibold">MI CASITA SEGURA</h2>
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="px-4 py-2">Nombre</th>
-            <th class="px-4 py-2">Correo</th>
-            <th class="px-4 py-2">Teléfono</th>
-            <th class="px-4 py-2">Rol</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let u of adminGuardias" class="hover:bg-gray-50">
-            <td class="px-4 py-2">{{ u.nombre }} {{ u.apellido }}</td>
-            <td class="px-4 py-2">{{ u.correo }}</td>
-            <td class="px-4 py-2">{{ u.telefono }}</td>
-            <td class="px-4 py-2">{{ u.roles.join(', ') }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- Tabla admins/guardias -->
+  <h2 class="text-xl font-semibold">Administradores y Guardias</h2>
+  <div *ngIf="adminGuardias.length > 0; else sinAdmins" class="overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="bg-gray-100">
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Rol</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of adminGuardias">
+          <td>{{ u.nombre }}</td>
+          <td>{{ u.correoElectronico }}</td>
+          <td>{{ u.telefono }}</td>
+          <td>{{ u.rol }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <ng-template #sinAdmins>
     <p class="text-center text-gray-500">No hay administradores ni guardias.</p>

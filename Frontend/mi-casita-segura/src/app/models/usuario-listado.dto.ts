@@ -1,10 +1,9 @@
 export interface UsuarioListadoDTO {
-  id: number;
+  cui: string;
   nombre: string;
-  apellido: string;
-  correo: string;
+  correoElectronico: string;
+  telefono: string;
   numeroCasa: number;
-  roles: string[];   
-  telefono: string;   
-  estado?: string;      
+  rol: string;
+  estado: boolean;
 }
