@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+//@Controller
+@RestController
 @RequestMapping("/api/pagos")
 @RequiredArgsConstructor
 public class PagoController {
@@ -45,8 +46,6 @@ public class PagoController {
         //return pagosRepo.findByCreadoPor_Cui(cui);
         return pagoService.obtenerPagosPorUsuario(cui);
     }
-
-
 
 
 }

@@ -12,8 +12,6 @@ import java.util.List;
 @Repository
 public interface PagosRepository extends JpaRepository<Pagos, Long> {
 
-    // Buscar todos los pagos realizados por un usuario (por CUI)
-    //List<Pagos> findByCreadoPor_Cui(String cui, Pagos.EstadoDelPago estado ) ;
 
     // Buscar pagos por estado (COMPLETADO, PENDIENTE, ANULADO)
     List<Pagos> findByEstado(Pagos.EstadoDelPago estado);
@@ -28,15 +26,11 @@ public interface PagosRepository extends JpaRepository<Pagos, Long> {
     // Buscar pagos entre fechas
     List<Pagos> findByFechaPagoBetween(LocalDate desde, LocalDate hasta);
 
-    /*// Combinaciones útiles
-    List<Pagos> findByCreadoPor_CuiAndEstado(String cui, Pagos.EstadoDelPago estado);*/
 
     List<Pagos> findByCreadoPor_Cui(String cui);
 
 
     List<Pagos> findByCreadoPor_CuiAndEstado(String cui, Pagos.EstadoDelPago estado);
-
-    //List<Pagos> findByCreadoPor_Cui(String cui);
 
 
 

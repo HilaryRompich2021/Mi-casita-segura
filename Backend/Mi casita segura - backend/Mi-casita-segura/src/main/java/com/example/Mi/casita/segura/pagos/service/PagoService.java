@@ -25,7 +25,6 @@ import java.util.List;
 public class PagoService {
 
     private final PagosRepository pagosRepo;
-    private final PagoDetalleRepository detalleRepo;
     private final UsuarioRepository usuarioRepo;
     private final ReservaRepository reservaRepo;
     private final ReinstalacionRepository reinstalacionRepo;
@@ -34,6 +33,9 @@ public class PagoService {
         Usuario usuario = usuarioRepo.findById(dto.getCreadoPor())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario creador no encontrado"));
 
+        List<Pagos> cuotasPendientes = pagosRepo.findByCreadoPor_CuiAndEstado(dto.getCreadoPor(), Pagos.EstadoDelPago.PENDIENTE);
+        int cuotasPendientesPrevias = cuotasPendientes.size();
+
         Pagos pago = new Pagos();
         pago.setMontoTotal(dto.getMontoTotal());
         pago.setFechaPago(LocalDate.now());
@@ -41,8 +43,14 @@ public class PagoService {
         pago.setEstado(dto.getEstado());
         pago.setCreadoPor(usuario);
 
+        validarTarjeta(dto);
+
+
         // Crear y asociar detalles
         List<Pago_Detalle> detalles = new ArrayList<>();
+        BigDecimal montoTotal = BigDecimal.ZERO;
+        //int cuotasPendientesPagadas = 0;
+
         for (PagoDetalleDTO detDTO : dto.getDetalles()) {
             Pago_Detalle detalle = new Pago_Detalle();
             detalle.setConcepto(detDTO.getConcepto());
@@ -50,9 +58,7 @@ public class PagoService {
             detalle.setMonto(detDTO.getMonto());
             detalle.setServicioPagado(detDTO.getServicioPagado());
             detalle.setEstadoPago(detDTO.getEstadoPago());
-            pago.setEstado(Pagos.EstadoDelPago.COMPLETADO);
 
-            //detalle.setEstadoPago(detDTO.getEstadoPago());
             detalle.setPago(pago);
 
             if (detDTO.getReservaId() != null) {
@@ -79,11 +85,38 @@ public class PagoService {
             } else {
                 detalle.setMonto(detDTO.getMonto()); // para los otros servicios
             }
-
-
+            montoTotal = montoTotal.add(detalle.getMonto());
             detalles.add(detalle);
         }
 
+        // ✅ Agregar cargo por reinstalación si cancela 2 o más cuotas pendientes
+        if (cuotasPendientesPrevias >= 2) {
+            ReinstalacionServicio reinstalacion = new ReinstalacionServicio();
+            reinstalacion.setUsuario(usuario);
+            reinstalacion.setFecha_solicitud(LocalDate.now());
+            reinstalacion.setEstado("PENDIENTE");
+            reinstalacion.setMonto(new BigDecimal("89.00"));
+
+            reinstalacion = reinstalacionRepo.save(reinstalacion);
+
+
+            Pago_Detalle cargoReinstalacion = new Pago_Detalle();
+            cargoReinstalacion.setConcepto("Reinstalación de servicio");
+            cargoReinstalacion.setDescripcion("Cargo adicional por 2 meses o más en atraso");
+            cargoReinstalacion.setMonto(new BigDecimal("89.00"));
+            cargoReinstalacion.setServicioPagado(Pago_Detalle.ServicioPagado.REINSTALACION);
+            cargoReinstalacion.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+            cargoReinstalacion.setPago(pago);
+            cargoReinstalacion.setReinstalacion(reinstalacion);
+
+            montoTotal = montoTotal.add(cargoReinstalacion.getMonto());
+            detalles.add(cargoReinstalacion);
+
+
+            // Actualizar monto total
+            //pago.setMontoTotal(pago.getMontoTotal().add(new BigDecimal("89.00")));
+        }
+        pago.setMontoTotal(montoTotal);
         pago.setPago_Detalle(detalles);
 
         return pagosRepo.save(pago);

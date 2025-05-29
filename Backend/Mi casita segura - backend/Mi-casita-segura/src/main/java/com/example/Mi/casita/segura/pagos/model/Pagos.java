@@ -3,6 +3,7 @@ package com.example.Mi.casita.segura.pagos.model;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Data
+
 public class Pagos {
 
     @Id
@@ -45,6 +47,5 @@ public class Pagos {
         COMPLETADO, PENDIENTE
 
     }
-
 
 }
