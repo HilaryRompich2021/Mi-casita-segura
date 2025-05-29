@@ -1,5 +1,6 @@
 package com.example.Mi.casita.segura.pagos.model;
 
+import com.example.Mi.casita.segura.pagos.dto.PagoConsultaDTO;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,11 +43,12 @@ public class Pagos {
 
     // Detalle de conceptos individuales dentro del pago
     @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL)
-    private List<Pago_Detalle> Pago_Detalle;
+    private List<Pago_Detalle> detalles;
 
     public enum EstadoDelPago {
         COMPLETADO, PENDIENTE
 
     }
+
 
 }

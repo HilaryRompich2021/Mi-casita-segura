@@ -1,5 +1,7 @@
 package com.example.Mi.casita.segura.pagos.service;
 
+import com.example.Mi.casita.segura.pagos.dto.PagoConsultaDTO;
+import com.example.Mi.casita.segura.pagos.dto.PagoDetalleConsultaDTO;
 import com.example.Mi.casita.segura.pagos.dto.PagoDetalleDTO;
 import com.example.Mi.casita.segura.pagos.dto.PagoRequestDTO;
 import com.example.Mi.casita.segura.pagos.model.Pago_Detalle;
@@ -12,6 +14,9 @@ import com.example.Mi.casita.segura.reservas.repository.ReservaRepository;
 import com.example.Mi.casita.segura.soporte.repository.ReinstalacionRepository;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
+
+
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -117,7 +123,7 @@ public class PagoService {
             //pago.setMontoTotal(pago.getMontoTotal().add(new BigDecimal("89.00")));
         }
         pago.setMontoTotal(montoTotal);
-        pago.setPago_Detalle(detalles);
+        pago.setDetalles(detalles);
 
         return pagosRepo.save(pago);
     }
@@ -160,6 +166,34 @@ public class PagoService {
         }
 
         return pagos;
+    }
+
+    public List<PagoConsultaDTO> obtenerPagosPorCui(String cui) {
+        List<Pagos> pagos = pagosRepo.findByCreadoPorCui(cui);
+
+        return pagos.stream().map(pago -> {
+            PagoConsultaDTO dto = new PagoConsultaDTO();
+            dto.setId(pago.getId());
+            dto.setMontoTotal(pago.getMontoTotal());
+            dto.setMetodoPago(pago.getMetodoPago());
+            dto.setEstado(pago.getEstado());
+            dto.setFechaPago(pago.getFechaPago());
+
+            // Mapear detalles
+            List<PagoDetalleConsultaDTO> detalleDTOs = pago.getDetalles().stream().map(detalle -> {
+                PagoDetalleConsultaDTO detalleDTO = new PagoDetalleConsultaDTO();
+                detalleDTO.setConcepto(detalle.getConcepto());
+                detalleDTO.setDescripcion(detalle.getDescripcion());
+                detalleDTO.setMonto(detalle.getMonto());
+                detalleDTO.setServicioPagado(detalle.getServicioPagado());
+                detalleDTO.setEstadoPago(detalle.getEstadoPago());
+                return detalleDTO;
+            }).collect(Collectors.toList());
+
+            dto.setDetalles(detalleDTOs);
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 
 

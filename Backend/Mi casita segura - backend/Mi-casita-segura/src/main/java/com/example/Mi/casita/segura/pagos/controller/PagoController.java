@@ -1,11 +1,13 @@
 package com.example.Mi.casita.segura.pagos.controller;
 
+import com.example.Mi.casita.segura.pagos.dto.PagoConsultaDTO;
 import com.example.Mi.casita.segura.pagos.dto.PagoRequestDTO;
 import com.example.Mi.casita.segura.pagos.model.Pagos;
 import com.example.Mi.casita.segura.pagos.repository.PagosRepository;
 import com.example.Mi.casita.segura.pagos.service.PagoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -45,6 +47,12 @@ public class PagoController {
     public List<Pagos> obtenerTodosLosPagos(@PathVariable String cui) {
         //return pagosRepo.findByCreadoPor_Cui(cui);
         return pagoService.obtenerPagosPorUsuario(cui);
+    }
+
+    @GetMapping(value ="/listar/{cui}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PagoConsultaDTO>> listarPagos(@PathVariable String cui) {
+        List<PagoConsultaDTO> pagos = pagoService.obtenerPagosPorCui(cui);
+        return ResponseEntity.ok(pagos);
     }
 
 

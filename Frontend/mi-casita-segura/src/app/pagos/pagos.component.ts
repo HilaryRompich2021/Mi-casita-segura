@@ -64,7 +64,7 @@ export default class PagosComponent implements OnInit {
 
 obtenerTodosLosPagos() {
   console.log('Solicitando pagos con CUI:', this.cuiUsuario);
-  this.pagosService.obtenerTodosLosPagos(this.cuiUsuario).subscribe({
+  this.pagosService.getPagosPorCui(this.cuiUsuario).subscribe({
     next: data => {
       console.log('Pagos recibidos:', data);
       if (!data || data.length === 0) {
@@ -79,18 +79,6 @@ obtenerTodosLosPagos() {
 }
 
 
- /* obtenerTodosLosPagos() {
-    console.log('Solicitando pagos con CUI:', this.cuiUsuario);
-    this.pagosService.obtenerTodosLosPagos(this.cuiUsuario).subscribe({
-      next: data => {
-        console.log('Pagos recibidos:', data);
-        this.cuotasPendientes = data;
-      },
-      error: err => {
-        console.error('Error al cargar pagos:', err);
-      }
-    });
-  }*/
 
    abrirModal() {
     this.showModal = true;
@@ -102,30 +90,6 @@ obtenerTodosLosPagos() {
     const extra = metros > 4 ? (metros - 4) * 23.5 : 0;
     this.totalPagar = this.montoBase + extra;
   }
-
-
-/*
-  cargarCuotasPendientes() {
-    this.pagosService.obtenerCuotasPendientes(this.cuiUsuario).subscribe(data => {
-      console.log('Cuotas cargadas:', data);
-      this.cuotasPendientes = data;
-    });
-  }*/
-
-  /*  cargarCuotasPendientes() {
-  this.pagosService.obtenerCuotasPendientes(this.cuiUsuario).subscribe({
-    next: data => {
-      this.cuotasPendientes = data;
-    },
-    error: err => {
-      console.error('Error al cargar cuotas pendientes:', err);
-    }
-  });
-}
-*/
-
-
-
 
 
    pagar() {
