@@ -37,6 +37,12 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
+
+  /** Cerrar sesión */
+  logout(): void {
+    localStorage.removeItem(this.tokenKey);
+  }
+
 }
 
 
