@@ -1,6 +1,7 @@
 package com.example.Mi.casita.segura.reinstalacion.model;
 
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +33,7 @@ public class ReinstalacionServicio {
     // Usuario afectado (residente fk)
     @ManyToOne
     @JoinColumn(name = "cui_usuario", referencedColumnName = "cui")
+    @JsonIgnore
     private Usuario usuario;
 
 
