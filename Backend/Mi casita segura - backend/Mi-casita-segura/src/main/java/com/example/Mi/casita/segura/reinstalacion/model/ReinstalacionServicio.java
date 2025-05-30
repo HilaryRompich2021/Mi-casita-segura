@@ -26,7 +26,6 @@ public class ReinstalacionServicio {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal monto;
 
-    // Estado del proceso: PENDIENTE, REALIZADO, CANCELADO, etc.
     @Column(length = 20, nullable = false)
     private String estado;
 

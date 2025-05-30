@@ -125,7 +125,16 @@ public class PagoService {
         pago.setMontoTotal(montoTotal);
         pago.setDetalles(detalles);
 
-        return pagosRepo.save(pago);
+        //return pagosRepo.save(pago);
+        Pagos pagoGuardado = pagosRepo.save(pago);
+
+        // ✅ Actualizar todas las cuotas pendientes a COMPLETADO
+        for (Pagos cuota : cuotasPendientes) {
+            cuota.setEstado(Pagos.EstadoDelPago.COMPLETADO);
+            pagosRepo.save(cuota); // Puedes optimizar con saveAll si prefieres
+
+        }
+        return pagoGuardado;
     }
 
 

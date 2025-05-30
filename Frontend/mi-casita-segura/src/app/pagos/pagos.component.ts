@@ -32,6 +32,8 @@ totalConMulta: number = 0;
 
 
   pagoForm = new FormGroup({
+    nombreTitular: new FormControl('',
+       Validators.required,),
     metrosExceso: new FormControl(0),
     numeroTarjeta: new FormControl('', [
       Validators.required,
@@ -126,6 +128,15 @@ totalConMulta: number = 0;
   }
 
   continuarATarjeta() {
+    if (this.detalleForm.invalid) {
+    this.detalleForm.markAllAsTouched();
+    Swal.fire({
+      icon: 'warning',
+      title: 'Campos requeridos',
+      text: 'Por favor, completa los campos de concepto, descripción y servicio pagado antes de continuar.'
+    });
+    return;
+  }
     const detalleFormValue = this.detalleForm.value;
 
     this.detallesPago = this.detallesPago.map(det => ({

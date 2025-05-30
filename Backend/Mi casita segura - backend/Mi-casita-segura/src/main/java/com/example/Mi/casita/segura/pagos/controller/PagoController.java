@@ -25,17 +25,6 @@ public class PagoController {
     private final PagoService pagoService;
     private final PagosRepository pagosRepo;
     //private final Pagos pagos;
-/*
-    @PreAuthorize("hasRole('RESIDENTE') or hasRole('ADMINISTRADOR')")
-    @PostMapping("/registrarPago")
-    public ResponseEntity<?> registrar(@Valid @RequestBody PagoRequestDTO dto) {
-        try {
-            Pagos pago = pagoService.registrarPago(dto);
-            return ResponseEntity.ok(pago);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }*/
 
     @PostMapping("/registrarPago")
     @PreAuthorize("hasRole('RESIDENTE') or hasRole('ADMINISTRADOR')")
