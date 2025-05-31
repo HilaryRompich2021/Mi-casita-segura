@@ -6,11 +6,14 @@ import com.example.Mi.casita.segura.Qr.service.QRService;
 import com.example.Mi.casita.segura.acceso.model.Acceso_QR;
 import com.example.Mi.casita.segura.acceso.repository.AccesoQRRepository;
 import com.example.Mi.casita.segura.notificaciones.service.NotificacionService;
+import com.example.Mi.casita.segura.usuarios.dto.ActualizarPerfilDTO;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioListadoDTO;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioRegistroDTO;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -183,6 +186,50 @@ public class UsuarioService {
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario findByUsernameOrThrow(String username) {
+        return usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+    }
+
+    /**
+     * Obtiene un DTO con los datos del usuario para mostrar en el perfil.
+     */
+    @Transactional(readOnly = true)
+    public UsuarioListadoDTO obtenerPerfil(String username) {
+        Usuario u = findByUsernameOrThrow(username);
+        return new UsuarioListadoDTO(
+                u.getCui(),
+                u.getNombre(),
+                u.getCorreoElectronico(),
+                u.getTelefono(),
+                u.getNumeroCasa(),
+                u.getRol(),
+                u.isEstado()
+        );
+    }
+
+    /**
+     * Actualiza únicamente correoElectronico y teléfono del usuario identificado por 'username'.
+     */
+    public UsuarioListadoDTO actualizarPerfil(String username, ActualizarPerfilDTO dto) {
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        usuario.setCorreoElectronico(dto.getCorreoElectronico());
+        usuario.setTelefono(dto.getTelefono());
+        usuarioRepository.save(usuario);
+
+        return new UsuarioListadoDTO(
+                usuario.getCui(),
+                usuario.getNombre(),
+                usuario.getCorreoElectronico(),
+                usuario.getTelefono(),
+                usuario.getNumeroCasa(),
+                usuario.getRol(),
+                usuario.isEstado()
+        );
     }
 
 }

@@ -2,6 +2,22 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+export interface UsuarioListadoDTO {
+  cui: string;
+  nombre: string;
+  correoElectronico: string;
+  telefono: string;
+  numeroCasa: number;
+  rol: string;
+  estado: boolean;
+}
+
+
+export interface UsuarioUpdateDTO {
+  correoElectronico: string;
+  telefono: string;
+}
+
 interface RegistroDTO {
   cui: string;
   nombre: string;
@@ -29,9 +45,20 @@ export class RegistroService {
 
   obtenerUsuarios(): Observable<any[]> {
   return this.http.get<any[]>(`${this.baseUrl}`);
-}
+  }
 
-eliminarUsuario(cui: string): Observable<any> {
-  return this.http.delete(`${this.baseUrl}/${cui}`);
-}
+  eliminarUsuario(cui: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${cui}`);
+  }
+
+  obtenerPerfilActual(): Observable<UsuarioListadoDTO> {
+    return this.http.get<UsuarioListadoDTO>(`${this.baseUrl}/me`);
+  }
+
+  actualizarPerfilActual(dto: UsuarioUpdateDTO): Observable<UsuarioListadoDTO> {
+    return this.http.put<UsuarioListadoDTO>(`${this.baseUrl}/me`, dto, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
 }

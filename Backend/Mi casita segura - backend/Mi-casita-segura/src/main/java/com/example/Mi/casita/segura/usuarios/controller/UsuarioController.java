@@ -1,5 +1,6 @@
 package com.example.Mi.casita.segura.usuarios.controller;
 
+import com.example.Mi.casita.segura.usuarios.dto.ActualizarPerfilDTO;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioListadoDTO;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioRegistroDTO;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,25 +38,34 @@ public class UsuarioController {
         return ResponseEntity.ok("Usuario eliminado correctamente");
     }
 
-   /* @GetMapping("/rol/{rol}")
-    public ResponseEntity<List<UsuarioListadoDTO>> buscarUsuarioPorRol(@PathVariable String rol) {
-        return ResponseEntity.ok(usuarioService.buscarUsuarioPorRol(rol));
-    }*/
-
-
     @GetMapping
     public ResponseEntity<List<UsuarioListadoDTO>> listarUsuarios() {
         return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
     }
 
-    /**
-     * GET /api/usuarios/directorio?q=texto
-     * Si no se pasa 'q', devuelve todo el directorio.
-     */
     @GetMapping("/directorio")
     public ResponseEntity<List<UsuarioListadoDTO>> directorio(
             @RequestParam(name = "q", required = false) String q) {
         List<UsuarioListadoDTO> lista = usuarioService.buscarDirectorio(q);
         return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioListadoDTO> perfilActual(Authentication auth) {
+        // auth.getName() es el "username" (campo 'usuario') dentro del JWT
+        String username = auth.getName();
+        UsuarioListadoDTO dto = usuarioService.obtenerPerfil(username);
+        return ResponseEntity.ok(dto);
+    }
+
+
+    @PutMapping("/me")
+    public ResponseEntity<UsuarioListadoDTO> actualizarMiPerfil(
+            Authentication auth,
+            @Valid @RequestBody ActualizarPerfilDTO dto
+    ) {
+        String username = auth.getName();
+        UsuarioListadoDTO actualizado = usuarioService.actualizarPerfil(username, dto);
+        return ResponseEntity.ok(actualizado);
     }
 }
