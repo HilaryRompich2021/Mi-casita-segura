@@ -16,7 +16,7 @@ export default class SidebarComponent {
     private router: Router
   ) {}
 
-  //Cerrar sesión
+//Cerrar sesión
   logout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);

@@ -1,6 +1,8 @@
 <!-- src/app/visitantes/registro/visitante-registro.component.html -->
 <div class="font-sans">
-  <div class="relative min-h-screen flex flex-col sm:justify-center items-center bg-gray-100">
+  <div class="relative min-h-screen flex flex-col justify-start items-center
+             px-4 sm:px-0
+             sm:justify-center bg-gray-100">
     <div class="relative sm:max-w-sm w-full">
       <div class="card bg-blue-400 shadow-lg w-full h-full rounded-3xl absolute transform -rotate-6"></div>
       <div class="card bg-red-400  shadow-lg w-full h-full rounded-3xl absolute transform rotate-6"></div>
@@ -131,4 +133,37 @@
       </div>
     </div>
   </div>
+  
+  <div *ngIf="visitantes.length > 0; else sinVisitantes"
+       class="overflow-x-auto max-w-full">
+    <table class="inline-block min-w-max table-auto whitespace-nowrap w-full">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="px-2 py-1 text-left">Nombre</th>
+          <th class="px-2 py-1 text-left sm:table-cell">Casa</th>
+          <th class="px-2 py-1 text-left lg:table-cell">Fecha ingreso</th>
+          <th class="px-2 py-1 text-left lg:table-cell">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let v of visitantes" class="hover:bg-gray-50">
+          <td class="px-2 py-1">{{ v.nombreVisitante }}</td>
+          <td class="px-2 py-1 sm:table-cell">{{ v.numeroCasa }}</td>
+          <td class="px-2 py-1 lg:table-cell">{{ v.fechaDeIngreso | date:'shortDate' }}</td>
+          <td class="px-2 py-1 lg:table-cell">
+            <span 
+              [ngClass]="{ 'text-green-600': v.estado, 'text-red-600': !v.estado }">
+              {{ v.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje si no hay visitantes -->
+  <ng-template #sinVisitantes>
+    <p class="text-center text-gray-500">No hay visitantes registrados.</p>
+  </ng-template>
+  
 </div>

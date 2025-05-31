@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VisitanteRegistroDTO {
 
-    @NotBlank
     @NotNull(message = "El cui no puede ser nulo")
+    @NotBlank(message = "El cui no puede quedar vacío")
     @Pattern(regexp = "\\d{13}", message = "El CUI debe tener exactamente 13 dígitos")
     @ValidCui
     private String cui;
 
-    @NotBlank
+    @NotBlank(message = "El nombre no puede estar vacío")
     @NombreValido
     private String nombreVisitante;
 
@@ -36,10 +36,11 @@ public class VisitanteRegistroDTO {
     private Integer numeroCasa;
 
     @NotBlank
+    @NotNull(message = "El capo no puede quedar vacío")
     private String motivoVisita;
 
     @NotBlank
-
+    @NotNull(message = "El capo no puede quedar vacío")
     private String nota;
 
     // ID del usuario que lo crea (Administrador o Residente)

@@ -1,37 +1,39 @@
-<div class="container mx-auto p-4 space-y-8">
+<div class="container mx-auto px-4 md:px-0 py-4 space-y-8">
 
   <!-- 1) Sección de búsqueda de residentes -->
   <div class="space-y-2">
-    <div class="flex">
+    <div class="flex flex-col sm:flex-row items-stretch gap-2">
       <input
         type="text"
         (input)="searchTerm = $any($event.target).value"
         placeholder="Buscar residente..."
-        class="flex-1 p-2 border rounded-l focus:outline-none"
+        class="w-full sm:flex-1 p-2 border rounded-lg sm:rounded-r-none focus:outline-none"
       />
       <button
         (click)="buscar()"
-        class="px-4 py-2 bg-green-500 text-white rounded-r hover:bg-green-600 focus:ring"
+        class="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded-lg sm:rounded-l-none hover:bg-green-600 focus:ring"
       >
         Buscar
       </button>
     </div>
+  </div>
 
-    <!-- Tabla de residentes -->
-    <div *ngIf="residentes.length > 0; else sinResidentes" class="overflow-x-auto">
-    <table class="w-full">
+  <!-- 2) Tabla de residentes -->
+  <div *ngIf="residentes.length > 0; else sinResidentes"
+       class="overflow-x-auto">
+    <table class="table-auto w-full">
       <thead>
         <tr class="bg-gray-100">
-          <th>Nombre</th>
-          <th>Casa</th>
-          <th>Teléfono</th>
+          <th class="px-2 py-1 text-left">Nombre</th>
+          <th class="px-2 py-1 text-left sm:table-cell ">Casa</th>
+          <th class="px-2 py-1 text-left lg:table-cell ">Teléfono</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let u of residentes">
-          <td>{{ u.nombre }}</td>
-          <td>{{ u.numeroCasa }}</td>
-          <td>{{ u.telefono }}</td>
+        <tr *ngFor="let u of residentes" class="hover:bg-gray-50">
+          <td class="px-2 py-1">{{ u.nombre }}</td>
+          <td class="px-2 py-1 sm:table-cell ">{{ u.numeroCasa }}</td>
+          <td class="px-2 py-1 lg:table-cell ">{{ u.telefono }}</td>
         </tr>
       </tbody>
     </table>
@@ -40,24 +42,24 @@
     <p class="text-center text-gray-500">No hay residentes.</p>
   </ng-template>
 
-  <!-- Tabla admins/guardias -->
-  <h2 class="text-xl font-semibold">Administradores y Guardias</h2>
-  <div *ngIf="adminGuardias.length > 0; else sinAdmins" class="overflow-x-auto">
-    <table class="w-full">
+  <!-- 3) Tabla administradores y guardias -->
+  <h2 class="text-xl font-semibold">Equipo Mi Casita Segura</h2>
+  <div *ngIf="adminGuardias.length > 0" class="overflow-x-auto">
+   <table class="w-full">
       <thead>
         <tr class="bg-gray-100">
-          <th>Nombre</th>
-          <th>Correo</th>
-          <th>Teléfono</th>
-          <th>Rol</th>
+          <th class="px-2 py-1 text-left">Nombre</th>
+          <th class="px-2 py-1 text-left md:table-cell ">Correo</th>
+          <th class="px-2 py-1 text-left lg:table-cell ">Teléfono</th>
+          <th class="px-2 py-1 text-left sm:table-cell ">Rol</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let u of adminGuardias">
-          <td>{{ u.nombre }}</td>
-          <td>{{ u.correoElectronico }}</td>
-          <td>{{ u.telefono }}</td>
-          <td>{{ u.rol }}</td>
+        <tr *ngFor="let u of adminGuardias" class="hover:bg-gray-50">
+          <td class="px-2 py-1">{{ u.nombre }}</td>
+          <td class="px-2 py-1 md:table-cell ">{{ u.correoElectronico }}</td>
+          <td class="px-2 py-1 lg:table-cell ">{{ u.telefono }}</td>
+          <td class="px-2 py-1 sm:table-cell ">{{ u.rol }}</td>
         </tr>
       </tbody>
     </table>
@@ -65,4 +67,5 @@
   <ng-template #sinAdmins>
     <p class="text-center text-gray-500">No hay administradores ni guardias.</p>
   </ng-template>
+
 </div>

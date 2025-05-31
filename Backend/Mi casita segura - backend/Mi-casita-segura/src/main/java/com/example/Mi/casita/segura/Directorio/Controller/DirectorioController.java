@@ -2,7 +2,6 @@ package com.example.Mi.casita.segura.Directorio.Controller;
 
 import com.example.Mi.casita.segura.Directorio.Service.DirectorioService;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioListadoDTO;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

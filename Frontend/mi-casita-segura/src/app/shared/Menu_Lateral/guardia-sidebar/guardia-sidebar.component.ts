@@ -1,16 +1,17 @@
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-residente-sidebar',
+  selector: 'app-guardia-sidebar',
   standalone: true,
   imports: [CommonModule, RouterModule, RouterLink],
-  templateUrl: './residente-sidebar.component.html',
-  styleUrl: './residente-sidebar.component.css'
+  templateUrl: './guardia-sidebar.component.html',
+  styleUrl: './guardia-sidebar.component.css'
 })
-export class ResidenteSidebarComponent {
+
+export class GuardiaSidebarComponent {
   constructor(
     private auth: AuthService,
     private router: Router
@@ -22,3 +23,4 @@ export class ResidenteSidebarComponent {
     this.router.navigate(['/login']);
   }
 }
+

@@ -106,4 +106,27 @@ public class VisitanteService {
         return visitanteRepository.save(visitante);
     }
 
+    public List<VisitanteListadoDTO> listaDefault(String creadorCui) {
+        return visitanteRepository                    // <-- usas la variable que definiste
+                .findByCreadoPor_Cui(creadorCui)
+                .stream()
+                .map(v -> {
+                    VisitanteListadoDTO dto = new VisitanteListadoDTO();
+                    dto.setId(v.getId());
+                    dto.setCui(v.getCui());
+                    dto.setNombreVisitante(v.getNombreVisitante());
+                    dto.setEstado(v.isEstado());
+                    dto.setFechaDeIngreso(v.getFechaDeIngreso());
+                    dto.setTelefono(v.getTelefono());
+                    dto.setNumeroCasa(v.getNumeroCasa());
+                    dto.setMotivoVisita(v.getMotivoVisita());
+                    dto.setNota(v.getNota());
+                    dto.setCreadoPor(v.getCreadoPor().getCui());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
 }

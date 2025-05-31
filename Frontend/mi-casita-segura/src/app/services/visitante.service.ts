@@ -38,9 +38,9 @@ export interface Visitante {
   motivoVisita: string;
   nota: string;
   creadoPor: {
-    cui: string;
-    nombre: string;
-    // …otros campos del Usuario si los necesitas…
+  cui: string;
+  nombre: string;
+
   };
   acceso_QR: {
     id: number;
@@ -74,29 +74,25 @@ export class VisitanteService {
     };
   }
 
-  /** POST /api/visitantes/registro */
-  registrar(dto: VisitanteRegistroDTO): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}/registro`,
-      dto,
-      this.authHeaders()
-    );
+  /** POST registro visitante*/
+  registrar(dto: VisitanteRegistroDTO): Observable<VisitanteListadoDTO> {
+    return this.http.post<VisitanteListadoDTO>(`${this.baseUrl}/registro`, dto, this.authHeaders());
   }
+  
 
-  /** GET /api/visitantes */
+  /** GET administrador, todos */
   listar(): Observable<VisitanteListadoDTO[]> {
-    return this.http.get<VisitanteListadoDTO[]>(
-      this.baseUrl,
-      this.authHeaders()
-    );
+    return this.http.get<VisitanteListadoDTO[]>(this.baseUrl,this.authHeaders());
   }
 
-  /** PUT /api/visitantes/{id} */
-  actualizar(id: number, dto: VisitanteRegistroDTO): Observable<any> {
-    return this.http.put(
-      `${this.baseUrl}/${id}`,
-      dto,
-      this.authHeaders()
-    );
+  /** PUT actualizar visitante admin */
+  actualizar(id: number, dto: VisitanteRegistroDTO): Observable<VisitanteListadoDTO> {
+    return this.http.put<VisitanteListadoDTO>(`${this.baseUrl}/${id}`, dto,this.authHeaders());
   }
+
+  //GET visitantes que residente creo
+  listarPropios(): Observable<VisitanteListadoDTO[]> {
+    return this.http.get<VisitanteListadoDTO[]>(`${this.baseUrl}/propios`,this.authHeaders());
+  }
+
 }

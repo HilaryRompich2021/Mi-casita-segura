@@ -86,9 +86,9 @@ export default class AuthComponent  {
           if (roles.includes('ADMINISTRADOR')) {
           this.router.navigate(['/BienvenidaAdmin']);
         } else if (roles.includes('RESIDENTE')){
-          this.router.navigate(['/pagos']);
-        } else {
-          this.router.navigate(['/visitantes'])
+          this.router.navigate(['/BienvenidaAdmin']);
+        } else if (roles.includes('GUARDIA')){
+          this.router.navigate(['/BienvenidaAdmin'])
         }
         });
       },

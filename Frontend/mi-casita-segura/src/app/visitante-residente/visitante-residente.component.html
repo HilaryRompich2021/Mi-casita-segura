@@ -1,0 +1,116 @@
+<div class="container mx-auto p-4 space-y-6">
+
+  <!-- Formulario de alta -->
+  <div class="bg-white p-4 rounded shadow-md space-y-4">
+    <h3 class="text-lg font-semibold">Registrar nuevo visitante</h3>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- CUI -->
+      <div>
+        <label class="block text-sm">CUI</label>
+        <input formControlName="cui" type="text" placeholder="13 dígitos"
+               class="w-full mt-1 p-2 border rounded" />
+        <p *ngIf="form.get('cui')?.touched && form.get('cui')?.hasError('required')"
+           class="text-red-500 text-xs">Obligatorio</p>
+        <p *ngIf="form.get('cui')?.touched && form.get('cui')?.hasError('pattern')"
+           class="text-red-500 text-xs">Debe tener 13 dígitos</p>
+      </div>
+
+      <!-- Nombre -->
+      <div>
+        <label class="block text-sm">Nombre completo</label>
+        <input formControlName="nombreVisitante" type="text" placeholder="Ej. Juan Pérez"
+               class="w-full mt-1 p-2 border rounded" />
+        <p *ngIf="form.get('nombreVisitante')?.touched && form.get('nombreVisitante')?.hasError('required')"
+           class="text-red-500 text-xs">Obligatorio</p>
+        <p *ngIf="form.get('nombreVisitante')?.touched && form.get('nombreVisitante')?.hasError('nombreInvalido')"
+           class="text-red-500 text-xs">Al menos 2 palabras de 3 letras</p>
+      </div>
+
+      <!-- Teléfono -->
+      <div>
+        <label class="block text-sm">Teléfono</label>
+        <input formControlName="telefono" type="text" placeholder="8 dígitos"
+               class="w-full mt-1 p-2 border rounded" />
+        <p *ngIf="form.get('telefono')?.touched && form.get('telefono')?.hasError('required')"
+           class="text-red-500 text-xs">Obligatorio</p>
+        <p *ngIf="form.get('telefono')?.touched && form.get('telefono')?.hasError('pattern')"
+           class="text-red-500 text-xs">Debe tener 8 dígitos</p>
+      </div>
+
+      <!-- Número de casa -->
+      <div>
+        <label class="block text-sm">Casa</label>
+        <input formControlName="numeroCasa" type="number"
+               class="w-full mt-1 p-2 border rounded"
+               [readonly]="rol==='RESIDENTE'" />
+        <p *ngIf="form.get('numeroCasa')?.touched && form.get('numeroCasa')?.hasError('required')"
+           class="text-red-500 text-xs">Obligatorio</p>
+        <p *ngIf="form.get('numeroCasa')?.touched && form.get('numeroCasa')?.hasError('min')"
+           class="text-red-500 text-xs">>=1</p>
+        <p *ngIf="form.get('numeroCasa')?.touched && form.get('numeroCasa')?.hasError('max')"
+           class="text-red-500 text-xs"><=300</p>
+      </div>
+
+      <!-- Motivo -->
+      <div>
+        <label class="block text-sm">Motivo</label>
+        <input formControlName="motivoVisita" type="text"
+               class="w-full mt-1 p-2 border rounded" />
+        <p *ngIf="form.get('motivoVisita')?.touched && form.get('motivoVisita')?.hasError('required')"
+           class="text-red-500 text-xs">Obligatorio</p>
+      </div>
+
+      <!-- Nota -->
+      <div class="md:col-span-2">
+        <label class="block text-sm">Notas adicionales</label>
+        <textarea formControlName="nota" rows="2"
+                  class="w-full mt-1 p-2 border rounded"></textarea>
+        <p *ngIf="form.get('nota')?.touched && form.get('nota')?.hasError('required')"
+           class="text-red-500 text-xs">Obligatorio</p>
+      </div>
+
+      <!-- Botón -->
+      <div class="md:col-span-2 text-right">
+        <button type="submit"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                [disabled]="form.invalid">
+          Registrar
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Tabla de “Mis visitantes” -->
+  <div *ngIf="visitantes.length > 0; else sinVisitantes"
+       class="overflow-x-auto max-w-full">
+    <table class="inline-block min-w-max table-auto whitespace-nowrap w-full">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="px-2 py-1 text-left">Nombre</th>
+          <th class="px-2 py-1 text-left sm:table-cell">Casa</th>
+          <th class="px-2 py-1 text-left lg:table-cell">Fecha ingreso</th>
+          <th class="px-2 py-1 text-left lg:table-cell">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let v of visitantes" class="hover:bg-gray-50">
+          <td class="px-2 py-1">{{ v.nombreVisitante }}</td>
+          <td class="px-2 py-1 sm:table-cell">{{ v.numeroCasa }}</td>
+          <td class="px-2 py-1 lg:table-cell">
+            {{ v.fechaDeIngreso | date:'shortDate' }}
+          </td>
+          <td class="px-2 py-1 lg:table-cell">
+            <span [ngClass]="{ 'text-green-600': v.estado, 'text-red-600': !v.estado }">
+              {{ v.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #sinVisitantes>
+    <p class="text-center text-gray-500">No has registrado visitantes.</p>
+  </ng-template>
+</div>

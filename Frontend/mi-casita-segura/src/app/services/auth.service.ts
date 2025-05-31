@@ -43,6 +43,23 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
   }
 
+  getUserFromToken(): any {
+    const token = this.getToken();
+    if (!token) {
+      return {};
+    }
+    try {
+      // El payload está entre el segundo y tercer punto del JWT
+      const payloadBase64 = token.split('.')[1];
+      // atob decodifica Base64 → String JSON
+      const payloadJson = atob(payloadBase64);
+      return JSON.parse(payloadJson);
+    } catch (e) {
+      console.error('Error al decodificar token JWT:', e);
+      return {};
+    }
+  }
+  
 }
 
 

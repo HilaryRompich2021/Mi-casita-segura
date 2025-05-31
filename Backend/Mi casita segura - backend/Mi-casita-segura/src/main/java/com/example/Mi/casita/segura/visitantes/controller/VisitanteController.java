@@ -1,14 +1,19 @@
-package com.example.Mi.casita.segura.visitantes.Controller;
+package com.example.Mi.casita.segura.visitantes.controller;
 
+import com.example.Mi.casita.segura.usuarios.model.Usuario;
+import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
 import com.example.Mi.casita.segura.visitantes.dto.VisitanteListadoDTO;
 import com.example.Mi.casita.segura.visitantes.dto.VisitanteRegistroDTO;
 import com.example.Mi.casita.segura.visitantes.model.Visitante;
 import com.example.Mi.casita.segura.visitantes.service.VisitanteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,6 +23,7 @@ import java.util.List;
 public class VisitanteController {
 
     private final VisitanteService visitanteService;
+    private final UsuarioRepository usuarioRepo;
 
     @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('RESIDENTE')")
     @PostMapping("/registro")
@@ -40,4 +46,17 @@ public class VisitanteController {
         Visitante actualizado = visitanteService.actualizarVisitante(id, dto);
         return ResponseEntity.ok(actualizado);
     }
+
+    @GetMapping("/propios")
+    public List<VisitanteListadoDTO> obtenerPropios(Authentication auth) {
+        // 1) auth.getName() devuelve el nombre de usuario (sub) de tu JWT
+        String nombreUsuario = auth.getName();
+        // 2) busco el Usuario para extraer su CUI (o, si guardaste el CUI como sub en el token, omites este paso)
+        Usuario u = usuarioRepo.findByUsuario(nombreUsuario)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+        // 3) devuelvo lista filtrada
+        return visitanteService.listaDefault(u.getCui());
+    }
+
 }

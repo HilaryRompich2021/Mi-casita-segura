@@ -1,87 +1,128 @@
-<aside class="w-72 bg-[#1c212c] min-h-full h-screen flex flex-col items-center pt-5 pb-2 space-y-7">
+<aside class="w-16 md:w-72 bg-[#1c212c] min-h-full h-screen 
+             flex flex-col items-center md:items-start 
+             pt-5 pb-2 md:space-y-7 space-y-0">
     <!-- Home -->
   <div class="w-full pr-3 flex flex-col gap-y-1 text-gray-500 fill-gray-500 text-sm">
-    <div class="font-QuicksandMedium pl-4 text-gray-400/60 text-xs text-[11px] uppercase">Menu</div>
+  <div class="font-QuicksandMedium pl-4 text-gray-400/60 text-xs text-[11px] uppercase">Menu</div>
 
-    <a
-      routerLink="/BienvenidaAdmin"
-      routerLinkActive="bg-white/10 text-white"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="w-full flex items-center gap-x-1.5 group select-none bg-white/10 text-white hover:bg-white/20 transition-all duration-200 rounded pl-2"
-    >
-      <div class="w-1 rounded-xl h-8 bg-transparent relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-[102%] bg-red-600 transition-all duration-300 group-hover:translate-y-0"></div>
-      </div>
-      <svg class="h-5 w-5 !fill-red-500 group-hover:fill-red-600 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <!-- tu path aquí -->
-      </svg>
-      <span class="font-QuicksandMedium">Inicio</span>
-    </a>
+  <!-- Página de inicio -->
+  <a
+    routerLink="/BienvenidaAdmin"
+    routerLinkActive="bg-white/10 text-white"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="w-full flex items-center gap-x-1.5 group select-none bg-white/10 text-white hover:bg-white/20 transition-all duration-200 rounded pl-2">
+    <div class="w-1 rounded-xl h-8 bg-transparent relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-[102%] bg-red-600 transition-all duration-300 group-hover:translate-y-0"></div>
+    </div>
+    <svg class="h-5 w-5 !fill-red-500 group-hover:fill-red-600 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z"/>
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M9 21V12h6v9"/>
+    </svg>
+    <span class="hidden md:inline font-QuicksandMedium">Inicio</span>
+  </a>
 
     <!-- …el resto del menú… -->
   </div>
 
-        <!-- Registro -->
-    <a
-      routerLink="/registro"
-      routerLinkActive="bg-white/10 text-white"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="w-full flex items-center gap-x-1.5 group select-none"
-    >
-      <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
-        <div
-          class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300"
-        ></div>
-      </div>
+      <!-- Registro -->
+  <a
+    routerLink="/registro"
+    routerLinkActive="bg-white/10 text-white"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="w-full flex items-center gap-x-1.5 group select-none">
+    <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
       <div
-        class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm"
-      >
-        <!-- Ícono de “Registro” (puedes cambiarlo por uno de QR o un “+”) -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 fill-gray-500 group-hover:fill-red-600 transition-colors duration-200"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M12 2a1 1 0 011 1v8h8a1 1 0 110 2h-8v8a1 1 0 11-2 0v-8H3a1 1 0 110-2h8V3a1 1 0 011-1z"
-          />
-        </svg>
-        <span class="font-QuicksandMedium">Registro de usuarios</span>
+        class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300">
       </div>
-    </a>
-
-
-    <!-- Visitante -->
-     <a
-     routerLink="/visitantes"
-      routerLinkActive="bg-white/10 text-white"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="w-full flex items-center gap-x-1.5 group select-none"
+    </div>
+    <div
+      class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm"
     >
-    <div class="w-full flex items-center gap-x-1.5 group select-none">
-      <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300"></div>
-      </div>
-      <div class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm">
-        <!-- Ícono de “Registro” (puedes cambiarlo por uno de QR o un “+”) -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 fill-gray-500 group-hover:fill-red-600 transition-colors duration-200"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M12 2a1 1 0 011 1v8h8a1 1 0 110 2h-8v8a1 1 0 11-2 0v-8H3a1 1 0 110-2h8V3a1 1 0 011-1z"
-          />
-        </svg>
-        <svg class="h-5 w-5 group-hover:fill-red-600 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <g>…</g>
-        </svg>
-        <span class="font-QuicksandMedium">Registro visitantes</span>
-      </div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 fill-gray-500 group-hover:fill-red-600 transition-colors duration-200"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M17 20h5v-2a4 4 0 00-3-3.87
+          M9 20H4v-2a4 4 0 013-3.87
+          m13-6a4 4 0 11-8 0 4 4 0 018 0
+          zm-9 0a4 4 0 11-8 0 4 4 0 018 0" />
+      </svg>
+      <span class="hidden md:inline font-QuicksandMedium">Registro de usuario</span>
     </div>
   </a>
 
-    <!-- Friends -->
+
+  <!-- Visitante -->
+  <a
+    routerLink="/visitantes"
+    routerLinkActive="bg-white/10 text-white"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="w-full flex items-center gap-x-1.5 group select-none"
+  >
+    <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
+      <div
+        class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300">
+      </div>
+    </div>
+    <div class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-colors duration-200"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+            d="M5.121 17.804A9.966 9.966 0 0112 15
+              c2.21 0 4.21.896 5.879 2.359
+              M15 11a3 3 0 11-6 0 3 3 0 016 0z
+              M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2" />
+      </svg>
+      <span class="hidden md:inline font-QuicksandMedium">Registro de visitante</span>
+    </div>
+  </a>
+
+   <!-- Correspondencia -->
+  <a
+    routerLink="/correspondencia"
+    routerLinkActive="bg-white/10 text-white"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="w-full flex items-center gap-x-1.5 group select-none"
+  >
+    <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
+      <div
+        class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300">
+      </div>
+    </div>
+    <div class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-colors duration-200"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3 8l7.89 5.26a2 2 0 
+             002.22 0L21 8m-18 8h18a2 2 0 
+             002-2V6a2 2 0 00-2-2H3a2 2 0 
+             00-2 2v8a2 2 0 002 2z"
+        />
+      </svg>
+      <span class="hidden md:inline font-QuicksandMedium">Correspondencia</span>
+    </div>
+  </a>
+
+    <!-- Directorio -->
   <a
   routerLink="/directorio"
   routerLinkActive="bg-white/10 text-white"
@@ -93,34 +134,197 @@
         <div class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300"></div>
       </div>
       <div class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm">
-        <svg class="h-5 w-5 group-hover:fill-red-600 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M12 12c2.7 0 4-1.5 4-3s-1.3-3-4-3-4 1.5-4 3 1.3 3 4 3zm0 2c-3 0-6 1.5-6 3v2h12v-2c0-1.5-3-3-6-3z" />
+        <svg xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-colors duration-200"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M3 7a2 2 0 012-2h6l2 2h6a2 
+             2 0 012 2v7a2 2 0 01-2 2H5a2
+             2 0 01-2-2V7z" />
         </svg>
-        <span class="font-QuicksandMedium">Directorio</span>
+        <span class="hidden md:inline font-QuicksandMedium">Directorio</span>
       </div>
     </div>
   </a>
 
-
-  <!-- profile group -->
-  <div class="w-full pr-3 flex flex-col gap-y-1 text-gray-500 fill-gray-500 text-sm">
-    <div class="font-QuicksandMedium pl-4 text-gray-400/60 text-xs text-[11px] uppercase">Perfil</div>
-
-    <!-- edit profile -->
+      <!-- Pagos -->
+  <a
+  routerLink="/pagos"
+  routerLinkActive="bg-white/10 text-white"
+  [routerLinkActiveOptions]="{ exact: true }"
+  class="w-full flex items-center gap-x-1.5 group select-none"
+  >
     <div class="w-full flex items-center gap-x-1.5 group select-none">
       <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300"></div>
       </div>
       <div class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm">
-        <svg class="h-5 w-5 group-hover:fill-red-600 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zM21.41 6.34a1.25 1.25 0 0 0 0-1.77l-2.34-2.34a1.25 1.25 0 0 0-1.77 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-colors duration-200"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3 7a1 1 0 011-1h16a1 1 0 011 1v4H2V7z"
+        />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M2 13h20v4a1 1 0 01-1 1H3a1 1 0 01-1-1v-4z"
+        />
         </svg>
-        <span class="font-QuicksandMedium">Editar Información</span>
+        <span class="hidden md:inline font-QuicksandMedium">Pagos</span>
       </div>
     </div>
+  </a>
 
+      <!-- Reservas -->
+  <a
+  routerLink="/reserva"
+  routerLinkActive="bg-white/10 text-white"
+  [routerLinkActiveOptions]="{ exact: true }"
+  class="w-full flex items-center gap-x-1.5 group select-none">
+    <div class="w-full flex items-center gap-x-1.5 group select-none">
+      <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300"></div>
+      </div>
+      <div class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-colors duration-200"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M8 7V4m8 3V4m-9 8h10m-10 4h10m-5-16a2 2 0 00-2 2v2h4V3a2 2 0 00-2-2zM3 6h18a1 1 0 011 1v13a1 1 0 01-1 1H3a1 1 0 01-1-1V7a1 1 0 011-1z"/>
+      </svg>
+        <span class="hidden md:inline font-QuicksandMedium">Reservas</span>
+      </div>
+    </div>
+  </a>
+
+      <!-- Notificaciones -->
+  <a
+  routerLink="/notificaciones"
+  routerLinkActive="bg-white/10 text-white"
+  [routerLinkActiveOptions]="{ exact: true }"
+  class="w-full flex items-center gap-x-1.5 group select-none"
+  >
+    <div class="w-full flex items-center gap-x-1.5 group select-none">
+      <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300"></div>
+      </div>
+      <div class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-colors duration-200"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15 17h5l-1.405-1.405A2.032 2.032
+             0 0118 14.158V11a6.002 6.002 0 
+             00-4-5.659V4a2 2 0 10-4 
+             0v1.341C8.67 6.165 8 7.388 8 
+             9v5.159c0 .538-.214 1.055-.595 
+             1.436L6 17h5m4 0v1a3 3 0 
+             11-6 0v-1m6 0H9"
+        />
+        </svg>
+        <span class="hidden md:inline font-QuicksandMedium">Notificaciones</span>
+      </div>
+    </div>
+  </a>
+
+      <!-- Soporte -->
+  <a
+    routerLink="/soporte"
+    routerLinkActive="bg-white/10 text-white"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="w-full flex items-center gap-x-1.5 group select-none"
+  >
+    <div class="w-full flex items-center gap-x-1.5 group select-none">
+      <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300"></div>
+      </div>
+      <div class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-colors duration-200"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M18 12a6 6 0 00-6-6m0 0a6 6 0 100 
+             12m0-12v12m0 0a6 6 0 006-6m-6 
+             6a6 6 0 01-6-6"
+        />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 6l1.5-1.5M12 18l1.5 1.5M6 12L4.5 
+             10.5M18 12l1.5-1.5M12 6l-1.5-1.5M12 
+             18l-1.5 1.5M6 12l-1.5 1.5M18 
+             12l1.5 1.5"
+        />
+      </svg>
+        <span class="hidden md:inline font-QuicksandMedium">Soporte</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- profile group -->
+  <div class="w-full pr-3 flex flex-col gap-y-1 text-gray-500 fill-gray-500 text-sm">
+    <div class="font-QuicksandMedium pl-4 text-gray-400/60 text-xs text-[11px] uppercase">Perfil</div>
+
+    <!-- editar perfil -->
+    <a
+      routerLink="/perfil"
+      routerLinkActive="bg-white/10 text-white"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="w-full flex items-center gap-x-1.5 group select-none"
+    >
+      <div class="w-full flex items-center gap-x-1.5 group select-none">
+        <div class="w-1 rounded-xl h-8 bg-transparent transition-colors duration-200 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-[102%] translate-y-full group-hover:translate-y-0 bg-red-600 transition-all duration-300"></div>
+        </div>
+        <div class="group-hover:bg-white/10 w-full group-active:scale-95 self-stretch pl-2 rounded flex items-center space-x-2 transition-all duration-200 text-sm">
+          <svg
+            class="h-5 w-5 group-hover:fill-red-600 transition-colors duration-200"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24">
+            <path
+              d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zM21.41 6.34a1.25 1.25 0 0 0 0-1.77l-2.34-2.34a1.25 1.25 0 0 0-1.77 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+            />
+          </svg>
+          <span class="hidden md:inline font-QuicksandMedium">Editar perfil</span>
+        </div>
+      </div>
+    </a>
+
+    <a>
+      <div></div>
+    </a>
     <!-- logout -->
-     <a
+      <a
       (click)="logout()"
       class="w-full flex items-center gap-x-1.5 group select-none cursor-pointer"
       >
@@ -132,7 +336,7 @@
           <svg class="h-5 w-5 group-hover:fill-red-600 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M16 17l1.41-1.41L13.83 12l3.58-3.59L16 7l-5 5 5 5zM4 4h8v2H6v12h6v2H4V4z" />
           </svg>
-          <span class="font-QuicksandMedium">Salir</span>
+          <span class="hidden md:inline font-QuicksandMedium">Salir</span>
         </div>
       </div>
     </a>  
