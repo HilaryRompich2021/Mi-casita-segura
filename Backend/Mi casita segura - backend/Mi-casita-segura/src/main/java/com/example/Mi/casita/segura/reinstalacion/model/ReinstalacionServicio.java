@@ -1,6 +1,7 @@
 package com.example.Mi.casita.segura.reinstalacion.model;
 
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,13 +26,13 @@ public class ReinstalacionServicio {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal monto;
 
-    // Estado del proceso: PENDIENTE, REALIZADO, CANCELADO, etc.
     @Column(length = 20, nullable = false)
     private String estado;
 
     // Usuario afectado (residente fk)
     @ManyToOne
     @JoinColumn(name = "cui_usuario", referencedColumnName = "cui")
+    @JsonIgnore
     private Usuario usuario;
 
 

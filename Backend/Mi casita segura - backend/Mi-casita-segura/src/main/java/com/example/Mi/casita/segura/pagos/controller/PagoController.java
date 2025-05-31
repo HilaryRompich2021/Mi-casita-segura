@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 //@Controller
 @RestController
@@ -25,16 +26,17 @@ public class PagoController {
     private final PagosRepository pagosRepo;
     //private final Pagos pagos;
 
-    @PreAuthorize("hasRole('RESIDENTE') or hasRole('ADMINISTRADOR')")
     @PostMapping("/registrarPago")
+    @PreAuthorize("hasRole('RESIDENTE') or hasRole('ADMINISTRADOR')")
     public ResponseEntity<?> registrar(@Valid @RequestBody PagoRequestDTO dto) {
         try {
-            Pagos pago = pagoService.registrarPago(dto);
-            return ResponseEntity.ok(pago);
+            pagoService.registrarPago(dto);
+            return ResponseEntity.ok(Map.of("mensaje", "Pago registrado correctamente"));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
 
     @GetMapping("/pendientes/{cui}")
     public ResponseEntity<List<Pagos>> obtenerPagosPendientes(@PathVariable String cui) {

@@ -2,6 +2,8 @@ package com.example.Mi.casita.segura.pagos.model;
 
 import com.example.Mi.casita.segura.reinstalacion.model.ReinstalacionServicio;
 import com.example.Mi.casita.segura.reservas.model.Reserva;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -33,16 +35,20 @@ public class Pago_Detalle {
     //  Relación muchos a uno hacia Pago
     @ManyToOne
     @JoinColumn(name = "pago_id")
+    //@JsonIgnore
+    @JsonBackReference
     private Pagos pago;
 
     //  Relación opcional hacia Reserva (puede ser null)
     @ManyToOne
     @JoinColumn(name = "referencia_reserva_id", nullable = true)
+    @JsonIgnore
     private Reserva reserva;
 
     //  Relación opcional hacia ReinstalacionServicio (puede ser null)
     @ManyToOne
     @JoinColumn(name = "referencia_reinstalacion_id", nullable = true)
+    @JsonIgnore
     private ReinstalacionServicio reinstalacion;
 
     public enum EstadoPago {

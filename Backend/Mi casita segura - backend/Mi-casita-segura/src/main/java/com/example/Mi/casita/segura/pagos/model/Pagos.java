@@ -2,6 +2,7 @@ package com.example.Mi.casita.segura.pagos.model;
 
 import com.example.Mi.casita.segura.pagos.dto.PagoConsultaDTO;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.repository.query.Param;
@@ -42,6 +43,7 @@ public class Pagos {
     private Usuario creadoPor;
 
     // Detalle de conceptos individuales dentro del pago
+    @JsonManagedReference
     @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL)
     private List<Pago_Detalle> detalles;
 

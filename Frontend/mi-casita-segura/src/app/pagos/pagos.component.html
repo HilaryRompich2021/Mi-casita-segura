@@ -36,8 +36,8 @@
     </table>
   </div>
 
-  <!-- Formulario -->
-  <form [formGroup]="pagoForm" (ngSubmit)="abrirModal()" class="mt-8 bg-white p-6 rounded-lg shadow-md space-y-4">
+  <!-- Formulario para metros cúbicos -->
+  <form [formGroup]="pagoForm" (ngSubmit)="abrirResumenPago()" class="mt-8 bg-white p-6 rounded-lg shadow-md space-y-4">
     <label>
       <span class="block text-sm font-medium text-gray-700">Metros cúbicos de excedente</span>
       <input type="number" formControlName="metrosExceso"
@@ -46,68 +46,143 @@
 
     <div class="bg-gray-50 p-4 rounded border text-sm">
       <p><strong>Monto base:</strong> Q {{ montoBase }}</p>
-      <p><strong>Total a pagar:</strong> Q {{ totalPagar }}</p>
+      <p><strong>Total estimado:</strong> Q {{ totalPagar }}</p>
     </div>
 
     <button type="submit"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
-      Realizar pago con tarjeta
+      Ver resumen de pago
     </button>
   </form>
 
-  <!-- Modal -->
-  <div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
-      <h2 class="text-xl font-bold mb-4 text-gray-800">Información de Pago</h2>
+  <!-- Modal de resumen del pago editable -->
+  <div *ngIf="showResumenPago" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <h2 class="text-xl font-bold mb-4 text-gray-800">Resumen de cuotas a pagar</h2>
 
+      <div class="space-y-2 max-h-[40vh] overflow-y-auto pr-2">
+        <div *ngFor="let detalle of detallesPago" class="border-b pb-2">
+          <p><strong>Concepto:</strong> {{ detalle.concepto }}</p>
+          <p><strong>Descripción:</strong> {{ detalle.descripcion }}</p>
+          <p><strong>Servicio:</strong> {{ detalle.servicioPagado }}</p>
+          <p><strong>Monto:</strong> Q {{ detalle.monto }}</p>
+        </div>
+
+      </div>
+
+      <hr class="my-4">
+
+      <h3 class="text-lg font-semibold mb-2">Detalle general para la transacción</h3>
+      <form [formGroup]="detalleForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Concepto</label>
+          <input type="text" formControlName="concepto" class="w-full border-gray-300 rounded shadow-sm text-sm" />
+          <p *ngIf="detalleForm.get('concepto')?.invalid && detalleForm.get('concepto')?.touched" class="text-red-500 text-xs mt-1">
+            Este campo es obligatorio.
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Descripción</label>
+          <textarea formControlName="descripcion" rows="2" class="w-full border-gray-300 rounded shadow-sm text-sm"></textarea>
+          <p *ngIf="detalleForm.get('descripcion')?.invalid && detalleForm.get('descripcion')?.touched" class="text-red-500 text-xs mt-1">
+            Este campo es obligatorio.
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Servicio pagado</label>
+          <input type="text" formControlName="servicioPagado" class="w-full border-gray-300 rounded shadow-sm text-sm" />
+          <p *ngIf="detalleForm.get('servicioPagado')?.invalid && detalleForm.get('servicioPagado')?.touched" class="text-red-500 text-xs mt-1">
+            Este campo es obligatorio.
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Total a pagar cuotas </label>
+          <input type="text" [value]="totalPagar" readonly class="w-full bg-gray-100 border border-gray-300 rounded shadow-sm text-sm" />
+        </div>
+
+        <div *ngIf="montoReinstalacion > 0">
+    <label class="block text-sm font-medium text-red-700 flex items-center gap-1">
+      <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-5a.75.75 0 011.5 0v1.5a.75.75 0 01-1.5 0V13zm0-6.75a.75.75 0 011.5 0v4.5a.75.75 0 01-1.5 0v-4.5z" clip-rule="evenodd" />
+      </svg>
+      Multa / Reinstalación
+    </label>
+    <input type="text" [value]="montoReinstalacion" readonly class="w-full bg-red-50 border border-red-300 rounded shadow-sm text-sm text-red-700" />
+  </div>
+
+  <div class="mt-4">
+    <label class="block text-sm font-bold text-gray-800">Total a pagar</label>
+    <input type="text" [value]="totalConMulta" readonly class="w-full bg-green-50 border border-green-300 rounded shadow-sm text-sm font-bold text-green-800" />
+  </div>
+      </form>
+
+      <div class="flex justify-end gap-4 mt-6">
+        <button (click)="cancelarResumen()" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+          Cancelar
+        </button>
+        <button (click)="continuarATarjeta()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Continuar a pago con tarjeta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de pago con tarjeta -->
+  <div *ngIf="showPagoTarjeta" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
+      <h2 class="text-xl font-bold mb-4 text-gray-800">Pago con tarjeta</h2>
       <form [formGroup]="pagoForm" (ngSubmit)="pagar()" class="space-y-4">
-        <!-- Número de tarjeta -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nombre del titular</label>
+          <input
+            type="text"
+            formControlName="nombreTitular"
+            class="mt-1 w-full rounded shadow-sm text-sm"
+            [ngClass]="{
+              'border-red-500': pagoForm.get('nombreTitular')?.invalid && pagoForm.get('nombreTitular')?.touched,
+              'border-gray-300': !(pagoForm.get('nombreTitular')?.invalid && pagoForm.get('nombreTitular')?.touched)
+            }"
+          />
+          <div *ngIf="pagoForm.get('nombreTitular')?.invalid && pagoForm.get('nombreTitular')?.touched" class="text-red-600 text-xs mt-1">
+          <span *ngIf="pagoForm.get('nombreTitular')?.errors?.['required']">El nombre del titular no puede estar vacío </span>
+        </div>
+        </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Número de tarjeta</label>
-          <input type="text" maxlength="16" formControlName="numeroTarjeta"
-                 class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                 [class.border-red-500]="pagoForm.get('numeroTarjeta')?.invalid && pagoForm.get('numeroTarjeta')?.touched" />
-          <small class="text-red-500" *ngIf="pagoForm.get('numeroTarjeta')?.invalid && pagoForm.get('numeroTarjeta')?.touched">
-            Ingrese 16 dígitos válidos.
-          </small>
+          <input type="text" maxlength="16" formControlName="numeroTarjeta" class="mt-1 w-full border-gray-300 rounded shadow-sm text-sm" />
+        <div *ngIf="pagoForm.get('numeroTarjeta')?.invalid && pagoForm.get('numeroTarjeta')?.touched" class="text-red-600 text-xs mt-1">
+          <span *ngIf="pagoForm.get('numeroTarjeta')?.errors?.['required']">El campo no puede estar vacío, debe contener al menos 16 dígitos.</span>
+          <span *ngIf="pagoForm.get('numeroTarjeta')?.errors?.['pattern']">El número de tarjeta no es válida, debe contener 16 dígitos.</span>
         </div>
-
-        <!-- CVV -->
+        </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">CVV</label>
-          <input type="text" maxlength="4" formControlName="cvv"
-                 class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                 [class.border-red-500]="pagoForm.get('cvv')?.invalid && pagoForm.get('cvv')?.touched" />
-          <small class="text-red-500" *ngIf="pagoForm.get('cvv')?.invalid && pagoForm.get('cvv')?.touched">
-            Ingrese 3 o 4 dígitos válidos.
-          </small>
+          <input type="text" maxlength="4" formControlName="cvv" class="mt-1 w-full border-gray-300 rounded shadow-sm text-sm" />
+        <div *ngIf="pagoForm.get('cvv')?.invalid && pagoForm.get('cvv')?.touched" class="text-red-600 text-xs mt-1">
+          <span *ngIf="pagoForm.get('cvv')?.errors?.['required']">El CVV no puede quedar vacío, debe contener un número de 3 o 4 dígitos. </span>
+          <span *ngIf="pagoForm.get('cvv')?.errors?.['pattern']">El CVV no es válido, debe contener un número de 3 o 4 dígitos. </span>
         </div>
-
-        <!-- Fecha vencimiento -->
+        </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Fecha vencimiento (MM/YY)</label>
-          <input type="text" placeholder="MM/YY" formControlName="vencimiento"
-                 class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                 [class.border-red-500]="pagoForm.get('vencimiento')?.invalid && pagoForm.get('vencimiento')?.touched" />
-          <small class="text-red-500" *ngIf="pagoForm.get('vencimiento')?.invalid && pagoForm.get('vencimiento')?.touched">
-            Formato inválido. Usa MM/YY.
-          </small>
+          <input type="text" formControlName="vencimiento" placeholder="MM/YY" class="mt-1 w-full border-gray-300 rounded shadow-sm text-sm" />
+        <div *ngIf="pagoForm.get('vencimiento')?.invalid && pagoForm.get('vencimiento')?.touched" class="text-red-600 text-xs mt-1">
+          <span *ngIf="pagoForm.get('vencimiento')?.errors?.['required']">El campo no puede estar vacío, debe contener el formato mes y año, Ej.: 01/25 </span>
+          <span *ngIf="pagoForm.get('vencimiento')?.errors?.['pattern']">La fecha de vencimiento no es válida, debe contener el formato mes y año, Ej.: 01/25 </span>
         </div>
-
-        <!-- Total -->
+        </div>
         <div class="text-sm bg-gray-50 p-3 rounded border">
-          <p><strong>Total a pagar:</strong> Q {{ totalPagar }}</p>
+          <p><strong>Total cuotas pendientes:</strong> Q {{ totalPagar }}</p>
         </div>
-
-        <!-- Acciones -->
+        <div class="mt-4">
+        <label class="block text-sm font-bold text-gray-800">Total final</label>
+        <input type="text" [value]="totalConMulta" readonly class="w-full bg-green-50 border border-green-300 rounded shadow-sm text-sm font-bold text-green-800" />
+      </div>
         <div class="flex justify-end gap-4">
-          <button type="button" (click)="showModal = false"
-                  class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+          <button type="button" (click)="showPagoTarjeta = false" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
             Cancelar
           </button>
-          <button type="submit"
-                  class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                  [disabled]="pagoForm.invalid">
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" [disabled]="pagoForm.invalid">
             Confirmar Pago
           </button>
         </div>
