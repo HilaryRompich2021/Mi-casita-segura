@@ -14,7 +14,7 @@ import { AccesoService }  from '../services/acceso.service';
   templateUrl: './qr-scanner.component.html',
   styleUrls: ['./qr-scanner.component.css']
 })
-export class ScannerQrComponent implements OnInit {
+export default class ScannerQrComponent implements OnInit {
   @Input() esEntrada = true;
 
   availableDevices: MediaDeviceInfo[] = [];

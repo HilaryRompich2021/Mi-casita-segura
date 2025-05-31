@@ -93,6 +93,12 @@ export const routes: Routes = [
     path: 'correspondencia',
     loadComponent: () => import('./correspondencia/correspondencia.component').then(m => m.default)
   },
+
+  {
+    path: 'qr-scanner',
+    loadComponent: () => import('./qr-scanner/qr-scanner.component').then(m => m.default)
+  },
+  
   
   {
     path: '**',
