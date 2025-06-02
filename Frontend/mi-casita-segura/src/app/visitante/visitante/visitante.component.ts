@@ -1,3 +1,4 @@
+// src/app/visitante/visitante.component.ts
 import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -45,11 +46,10 @@ export default class RegistroVisitanteComponent implements OnInit {
   ngOnInit(): void {
     // 1) Extraer datos del token
     const usuario = this.getCurrentUserData();
-    // Si el payload viene con un array de roles, verificamos si contiene 'RESIDENTE'
     this.rol = Array.isArray(usuario.roles) && usuario.roles.includes('RESIDENTE')
                ? 'RESIDENTE'
                : usuario.roles?.[0] || '';
-    this.cuiDelUsuario = usuario.cui || '';
+    this.cuiDelUsuario   = usuario.cui;
     this.numeroCasaUsuario = usuario.numeroCasa ?? null;
 
     // 2) Construir el formulario solo UNA vez
@@ -117,7 +117,7 @@ export default class RegistroVisitanteComponent implements OnInit {
 
     this.svc.registrar(dto).subscribe({
       next: () => {
-        Swal.fire('¡Listo!', 'Visitante registrado con éxito', 'success');
+        Swal.fire('¡Listo!','Visitante registrado con éxito','success');
 
         // Después de registrar, reiniciamos el formulario:
         //   - Conservamos creadoPor y, si es residente, el número de casa
@@ -138,8 +138,6 @@ export default class RegistroVisitanteComponent implements OnInit {
         // Finalmente, recargamos la lista completa de visitantes
         this.loadAllVisitors();
       },
-      error: err => {
-        Swal.fire('Error', this.obtenerMensajeDeError(err), 'error');
       error: err => {
         Swal.fire('Error', this.obtenerMensajeDeError(err), 'error');
       }
