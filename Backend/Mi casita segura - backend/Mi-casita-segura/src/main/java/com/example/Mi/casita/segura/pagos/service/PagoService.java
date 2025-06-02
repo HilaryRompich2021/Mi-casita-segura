@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +35,7 @@ public class PagoService {
     private final UsuarioRepository usuarioRepo;
     private final ReservaRepository reservaRepo;
     private final ReinstalacionRepository reinstalacionRepo;
+    private final PagoDetalleRepository pagoDetalleRepo;
 
     public Pagos registrarPago(PagoRequestDTO dto) {
         Usuario usuario = usuarioRepo.findById(dto.getCreadoPor())
@@ -58,6 +60,7 @@ public class PagoService {
         //int cuotasPendientesPagadas = 0;
 
         for (PagoDetalleDTO detDTO : dto.getDetalles()) {
+
             Pago_Detalle detalle = new Pago_Detalle();
             detalle.setConcepto(detDTO.getConcepto());
             detalle.setDescripcion(detDTO.getDescripcion());
@@ -66,6 +69,8 @@ public class PagoService {
             detalle.setEstadoPago(detDTO.getEstadoPago());
 
             detalle.setPago(pago);
+
+            System.out.println("ReservaId recibido: " + detDTO.getReservaId());
 
             if (detDTO.getReservaId() != null) {
                 Reserva reserva = reservaRepo.findById(detDTO.getReservaId())
@@ -95,7 +100,7 @@ public class PagoService {
             detalles.add(detalle);
         }
 
-        // ✅ Agregar cargo por reinstalación si cancela 2 o más cuotas pendientes
+        //  Agregar cargo por reinstalación si cancela 2 o más cuotas pendientes
         if (cuotasPendientesPrevias >= 2) {
             ReinstalacionServicio reinstalacion = new ReinstalacionServicio();
             reinstalacion.setUsuario(usuario);
@@ -128,12 +133,43 @@ public class PagoService {
         //return pagosRepo.save(pago);
         Pagos pagoGuardado = pagosRepo.save(pago);
 
-        // ✅ Actualizar todas las cuotas pendientes a COMPLETADO
+        // Actualizar todas las cuotas pendientes a COMPLETADO
         for (Pagos cuota : cuotasPendientes) {
             cuota.setEstado(Pagos.EstadoDelPago.COMPLETADO);
             pagosRepo.save(cuota); // Puedes optimizar con saveAll si prefieres
 
         }
+
+        for (PagoDetalleDTO detDTO : dto.getDetalles()) {
+            if (detDTO.getReservaId() != null) {
+                // Buscamos el Pago_Detalle pendiente para esa reserva:
+                Optional<Pago_Detalle> optDetallePendiente =
+                        pagoDetalleRepo.findFirstByReserva_IdAndEstadoPago(
+                                detDTO.getReservaId(),
+                                Pago_Detalle.EstadoPago.PENDIENTE
+                        );
+
+                // Desempaquetamos el Optional. Si no existe, detallePendiente será null.
+                Pago_Detalle detallePendiente = optDetallePendiente.orElse(null);
+
+                if (detallePendiente != null) {
+                    detallePendiente.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+                    pagoDetalleRepo.save(detallePendiente);
+                }
+            }
+        }
+
+
+        // Confirmar las reservas si el pago fue exitoso
+        for (PagoDetalleDTO detDTO : dto.getDetalles()) {
+            if (detDTO.getReservaId() != null) {
+                Reserva reserva = reservaRepo.findById(detDTO.getReservaId())
+                        .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada para actualización de estado"));
+                reserva.setEstado(Reserva.EstadoReserva.RESERVADO);
+                reservaRepo.save(reserva);
+            }
+        }
+
         return pagoGuardado;
     }
 
@@ -196,7 +232,16 @@ public class PagoService {
                 detalleDTO.setMonto(detalle.getMonto());
                 detalleDTO.setServicioPagado(detalle.getServicioPagado());
                 detalleDTO.setEstadoPago(detalle.getEstadoPago());
+
+                // si este Pago_Detalle tiene reserva asociada, setea el id:
+                if (detalle.getReserva() != null) {
+
+                    detalleDTO.setReservaId(detalle.getReserva().getId());
+                }
+
                 return detalleDTO;
+
+
             }).collect(Collectors.toList());
 
             dto.setDetalles(detalleDTOs);

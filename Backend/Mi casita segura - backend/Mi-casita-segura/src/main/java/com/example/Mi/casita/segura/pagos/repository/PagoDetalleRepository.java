@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PagoDetalleRepository extends JpaRepository <Pago_Detalle, Long> {
@@ -19,5 +20,16 @@ public interface PagoDetalleRepository extends JpaRepository <Pago_Detalle, Long
     List<Pago_Detalle> findByServicioPagado(String servicioPagado);
 
     // Puedes agregar más métodos según necesites
+
+    Optional<Pago_Detalle> findFirstByReserva_IdAndServicioPagadoAndEstadoPago(
+            Long reservaId,
+            Pago_Detalle.ServicioPagado servicio,
+            Pago_Detalle.EstadoPago estado
+    );
+
+    Optional<Pago_Detalle> findFirstByReserva_IdAndEstadoPago(Long reservaId,
+                                                              Pago_Detalle.EstadoPago estadoPago);
+
 }
+
 

@@ -14,10 +14,9 @@ export class AuthService {
   private baseUrl = 'http://localhost:8080/api/auth';
   private tokenKey = 'auth_token';
 
-  constructor(private http: HttpClient
-              //private  authService: AuthService
-
-  ){}
+  constructor(private http: HttpClient){
+    this.limpiarTokenExpirado();
+  }
 
   /** POST /api/auth/login */
   login(credentials: { usuario: string; contrasena: string }): Observable<AuthResponse> {
@@ -60,6 +59,29 @@ export class AuthService {
     }
   }
   
+   /** Si el token guardado ya expiró, lo elimina de inmediato */
+  private limpiarTokenExpirado() {
+    const token = this.getToken();
+    if (!token) {
+      return;
+    }
+
+    // Extraer "exp" del payload del JWT
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+      const ahora = Math.floor(Date.now() / 1000);
+
+      if (decoded.exp && decoded.exp <= ahora) {
+        // Si expiró, lo borro
+        this.logout();
+      }
+    } catch {
+      // Si no se puede decodificar, también borra para evitar errores
+      this.logout();
+    }
+  }
+
 }
 
 

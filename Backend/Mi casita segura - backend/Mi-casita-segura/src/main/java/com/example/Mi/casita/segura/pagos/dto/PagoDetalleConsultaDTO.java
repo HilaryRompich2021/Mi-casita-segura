@@ -13,4 +13,8 @@ public class PagoDetalleConsultaDTO {
     private BigDecimal monto;
     private Pago_Detalle.ServicioPagado servicioPagado;
     private Pago_Detalle.EstadoPago estadoPago;
+    private Long reservaId;
+
+   /* public void setReservaId(Long id) {
+    }*/
 }

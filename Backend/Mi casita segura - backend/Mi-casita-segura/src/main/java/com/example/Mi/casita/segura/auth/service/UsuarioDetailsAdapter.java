@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+//Constructor recibe una instancia de usuaris y extra de ella:
 @RequiredArgsConstructor
 public class UsuarioDetailsAdapter implements UserDetails {
     private final Usuario usuario;
