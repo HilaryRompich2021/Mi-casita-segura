@@ -22,17 +22,6 @@ formulario: any;
   numeroCasaUsuario: number | null = null;
   cuiDelUsuario: string = '';
 
-/*
-  visitanteForm = this.fb.group({
-    cui:            ['', [Validators.required, Validators.pattern(/^\d{13}$/)]],
-    nombreVisitante:['', [Validators.required]],
-    telefono:       ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-    numeroCasa:     [null, [Validators.required, Validators.min(1), Validators.max(300)]],
-    motivoVisita:   ['', [Validators.required]],
-    nota:           ['', [Validators.required]],
-    creadoPor:      [{value: '', disabled: true}, [Validators.required]]
-  });
-*/
   constructor(
     private fb: FormBuilder,
     private svc: VisitanteService,
@@ -42,7 +31,6 @@ formulario: any;
   ngOnInit() {
     const usuario = this.getCurrentUserData();
     this.rol = usuario.rol;
-    //this.numeroCasaUsuario = usuario.numeroCasa;
     const esResidente = usuario.roles?.includes('RESIDENTE');
 
     const username = usuario.sub;     // Visible en el campo
@@ -59,42 +47,7 @@ formulario: any;
     creadoPor: [this.getCurrentCui(), Validators.required],
     estado: [true]
   });
-   /* this.form = this.fb.group({
-      cui: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^\d{13}$/)
-        ]
-      ],
-      nombreVisitante: ['', [ Validators.required,
-        this.nombreValidoValidator
-      ]
-      ],
-      telefono: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^\d{8}$/)
-        ]
-      ],
-      numeroCasa: [{
-       value: this.numeroCasaUsuario || null,
-       disabled: this.rol === 'RESIDENTE'
-      },
-        [
-          Validators.required,
-          Validators.min(1),
-          Validators.max(300)
-        ]
-      ],
-      motivoVisita: ['', Validators.required],
-      nota: ['', Validators.required],
-      // se sacará del token JWT
-      creadoPor: [usuario.username || usuario.sub, Validators.required],
-      // no mostramos al usuario, pero el back espera un boolean
-      estado: [ true ]
-    });*/
+
 
   // Forzar valor y estado del campo número de casa si el rol es RESIDENTE
   if (esResidente) {
@@ -127,7 +80,7 @@ formulario: any;
   const token = localStorage.getItem('auth_token');
   if (!token) return '';
   const payload = JSON.parse(atob(token.split('.')[1]));
-  return payload.cui || ''; // ✅ Devuelve el CUI en lugar del sub
+  return payload.cui || ''; //  Devuelve el CUI en lugar del sub
 }
 
 
@@ -171,12 +124,6 @@ formulario: any;
 
   }
 
-  /*
-  private obtenerMensajeDeError(err: any): string {
-  if (typeof err.error === 'string') return err.error;
-  if (typeof err.message === 'string') return err.message;
-  return 'Ocurrió un error inesperado.';
-}*/
 private obtenerMensajeDeError(err: any): string {
   // Caso típico de error enviado por Spring Boot
   if (err.error && typeof err.error.message === 'string') {

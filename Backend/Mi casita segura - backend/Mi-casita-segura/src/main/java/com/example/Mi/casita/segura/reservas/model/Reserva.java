@@ -5,6 +5,7 @@ import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -34,6 +35,21 @@ public class Reserva {
     @ManyToOne
     @JoinColumn(name = "asociado_a", referencedColumnName = "cui")
     private Usuario residente;
+
+
+    @Column(nullable = false)
+    private BigDecimal costoTotal;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EstadoReserva estado = EstadoReserva.PENDIENTE;
+
+    public enum EstadoReserva {
+        PENDIENTE,
+        RESERVADO,
+        INACTIVO
+    }
+
 
    /* @OneToMany(mappedBy = "reserva")
     private List<Pago_Detalle> detallesPago;*/

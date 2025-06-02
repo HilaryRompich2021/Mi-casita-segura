@@ -4,4 +4,5 @@ export interface PagoDetalleConsultaDTO {
   monto: number;
   servicioPagado: 'AGUA' | 'LUZ' | 'RECOLLECION_DE_BASURA' | 'RESERVA' | 'REINSTALACION' | 'CUOTA';
   estadoPago: 'COMPLETADO' | 'PENDIENTE';
+  reservaId?: number | null;
 }

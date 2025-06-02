@@ -105,29 +105,6 @@ registrarUsuario(): void {
   });
 }
 
-
-/*
-  registrarUsuario(): void {
-    if (this.formulario.valid) {
-      this.registroService.registrar(this.formulario.value).subscribe({
-        next: (respuesta: any) => {console.log('Registrado:', respuesta);
-          this.mensajeErrorNombre = ''; // Limpia errores anteriores
-        },
-        error: (error: any) => {console.error('Error al registrar:', error);
-
-          if (error.status === 400 && error.error?.errors) {
-      const errores = error.error.errors;
-
-      const errorNombre = errores.find((e: any) => e.field === 'nombre');
-      if (errorNombre) {
-        this.mensajeErrorNombre = errorNombre.defaultMessage;
-      }
-    }
-        }
-      });
-    }
-  }*/
-
   nombreValidoValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   if (!value || value.trim() === '') return { nombreInvalido: true };

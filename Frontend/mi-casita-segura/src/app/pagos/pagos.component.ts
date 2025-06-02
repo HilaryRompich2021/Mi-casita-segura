@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AuthInterceptor } from '../auth/auth/auth-interceptor/auth-interceptor';
 
 
@@ -23,12 +22,17 @@ export default class PagosComponent implements OnInit {
   showModal = false;
   showResumenPago = false;
   showPagoTarjeta = false;
+
   montoBase = 550;
   totalPagar = 0;
   cuiUsuario: string = '';
   detallesPago: any[] = [];
   montoReinstalacion: number = 0;
 totalConMulta: number = 0;
+
+totalCuotas = 0;
+totalReservas = 0;
+
 
 
   pagoForm = new FormGroup({
@@ -75,7 +79,8 @@ totalConMulta: number = 0;
     this.pagosService.getPagosPorCui(this.cuiUsuario).subscribe({
       next: data => {
         this.cuotasPendientes = data || [];
-        this.calcularTotal();
+        this.detallesPago = this.cuotasPendientes;
+        this.calcularTotalDesglosado();
       },
       error: err => {
         console.error('Error al cargar pagos:', err);
@@ -92,27 +97,58 @@ totalConMulta: number = 0;
     const costoExcedente = excedente * 23.5;
     const montoPorCuota = this.montoBase + costoExcedente;
 
-    this.detallesPago = this.cuotasPendientes
-      .filter(c => c.estado === 'PENDIENTE')
-      .map((cuota, index) => ({
-        concepto: 'Pago mensual de mantenimiento',
-        descripcion: `Pago de cuota ${index + 1} con ${metrosExceso} m³ de agua (${excedente} m³ extra)`,
-        monto: montoPorCuota,
-        servicioPagado: 'CUOTA',
-        estadoPago: 'COMPLETADO'
-      }));
+     // Usar los detalles originales sin alterar el servicioPagado
+  this.detallesPago = this.cuotasPendientes
+    .filter(c => c.estado === 'PENDIENTE')
+    .flatMap((cuota, index) => {
+      if (!cuota.detalles || cuota.detalles.length === 0) {
+        // Si no hay detalles, se muestra como "sin descripción"
+        return [{
+          concepto: 'Pago pendiente',
+          descripcion: 'Sin detalle disponible',
+          monto: cuota.montoTotal,
+          servicioPagado: 'DESCONOCIDO',
+          estadoPago: 'COMPLETADO',
+          reservaId: null
+        }];
+      }
 
-      const cuotasPendientes = this.detallesPago.length;
-    //this.totalPagar = cuotasPendientes * montoPorCuota;
+      return cuota.detalles.map((detalle: any) => {
+        let descripcion = detalle.descripcion;
 
-    this.totalPagar = parseFloat(
-  this.detallesPago.reduce((acc, d) => acc + d.monto, 0).toFixed(2)
+        if (detalle.servicioPagado === 'CUOTA') {
+          descripcion = `Pago de cuota ${index + 1} con ${metrosExceso} m³ de agua (${excedente} m³ extra)`;
+        }
+
+        return {
+          concepto: detalle.concepto || 'Pago',
+          descripcion,
+          monto: detalle.servicioPagado === 'CUOTA' ? (550 + costoExcedente) : detalle.monto,
+          servicioPagado: detalle.servicioPagado,
+          estadoPago: 'COMPLETADO',
+          reservaId: detalle.reservaId || null
+        };
+      });
+    });
+
+  // Recalcula total de cuotas y reservas
+  this.totalCuotas = this.detallesPago
+    .filter(d => d.servicioPagado === 'CUOTA')
+    .reduce((sum, d) => sum + d.monto, 0);
+
+  this.totalReservas = this.detallesPago
+    .filter(d => d.servicioPagado === 'RESERVA')
+    .reduce((sum, d) => sum + d.monto, 0);
+
+  // Nuevo: Total general considerando TODOS los detalles
+this.totalPagar = parseFloat(
+  this.detallesPago.reduce((sum, d) => sum + d.monto, 0).toFixed(2)
 );
 
-// Mostrar multa visual si hay 2 o más cuotas
-  this.montoReinstalacion = cuotasPendientes >= 2 ? 89.00 : 0;
+  // Multa solo si hay 2 o más cuotas mensuales
+  this.montoReinstalacion = this.detallesPago.filter(d => d.servicioPagado === 'CUOTA').length >= 2 ? 89.00 : 0;
 
-  // Total con multa solo visual
+  // Total visual con multa (no se envía)
   this.totalConMulta = parseFloat((this.totalPagar + this.montoReinstalacion).toFixed(2));
 
 
@@ -124,7 +160,6 @@ totalConMulta: number = 0;
   continuarAPago() {
     this.showResumenPago = false;
     this.showModal = true;
-    //this.calcularTotal();
   }
 
   continuarATarjeta() {
@@ -158,19 +193,6 @@ totalConMulta: number = 0;
     this.showPagoTarjeta = false;
   }
 
-  /*
-  calcularTotal() {
-    const metrosExceso = this.pagoForm.get('metrosExceso')?.value || 0;
-    const excedente = metrosExceso > 4 ? metrosExceso - 4 : 0;
-    const costoExcedente = excedente * 23.5;
-    const montoPorCuota = this.montoBase + costoExcedente;
-
-    const cuotas = this.cuotasPendientes.filter(c => c.estado === 'PENDIENTE').length;
-    let total = cuotas * montoPorCuota;
-
-    //if (cuotas >= 2) total += 89;
-    this.totalPagar = parseFloat(total.toFixed(2));
-  }*/
 
     calcularTotal() {
   // Si no hay detalles cargados, no se recalcula nada
@@ -192,7 +214,15 @@ totalConMulta: number = 0;
     const form = this.pagoForm.value;
 
     // Excluir detalle visual de reinstalación
-  const detallesParaEnviar = this.detallesPago;
+  const detallesParaEnviar = this.detallesPago.map(d => ({
+    concepto: d.concepto,
+    descripcion: d.descripcion,
+    monto: d.monto,
+    estadoPago: d.estadoPago,
+    servicioPagado: d.servicioPagado,
+    reservaId: d.reservaId || null,             // Actualizar reserva en la entidad reserva
+    reinstalacionId: d.reinstalacionId || null  // Actualiza la entidad reinstalación
+  }));
 
   const pago = {
   montoTotal: parseFloat(
@@ -207,17 +237,6 @@ totalConMulta: number = 0;
   detalles: detallesParaEnviar
 };
 
-    /*const pago = {
-      montoTotal: this.totalPagar,
-      metodoPago: 'TARJETA',
-      estado: 'COMPLETADO',
-      creadoPor: this.cuiUsuario,
-      numeroTarjeta: form.numeroTarjeta,
-      cvv: form.cvv,
-      fechaVencimiento: form.vencimiento,
-      detalles: detallesParaEnviar
-      //detalles: this.detallesPago
-    };*/
 
     this.pagosService.registrarPago(pago).subscribe({
       next: () => {
@@ -233,4 +252,17 @@ totalConMulta: number = 0;
       }
     });
   }
+
+  calcularTotalDesglosado() {
+  const cuotasMensuales = this.detallesPago.filter(d => d.servicioPagado === 'CUOTA');
+    const reservas = this.detallesPago.filter(d => d.servicioPagado === 'RESERVA');
+
+    this.totalCuotas = cuotasMensuales.reduce((sum, d) => sum + d.monto, 0);
+    this.totalReservas = reservas.reduce((sum, d) => sum + d.monto, 0);
+
+    //this.montoReinstalacion = cuotasMensuales.length >= 2 ? 89.0 : 0;
+    this.totalPagar = this.totalCuotas;
+   // this.totalConMulta = parseFloat((this.totalPagar + this.montoReinstalacion).toFixed(2));
+  }
+
 }

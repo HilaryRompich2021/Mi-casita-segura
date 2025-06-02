@@ -62,24 +62,5 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
-    /*@PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        // Autenticación con Spring Security
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsuario(),
-                        request.getContrasena()
-                )
-        );
 
-        // Buscar el usuario en la base de datos
-        Usuario usuario = usuarioRepository.findByUsuario(request.getUsuario())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-
-        // Generar el JWT
-        String token = jwtService.generateToken(new UsuarioDetailsAdapter(usuario));
-
-
-        return ResponseEntity.ok(new AuthResponse(token));
-    }*/
 }

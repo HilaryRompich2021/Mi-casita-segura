@@ -24,12 +24,12 @@ public class generarCuotasMensuales {
     private final PagoDetalleRepository pagoDetalleRepo;
 
 
-    //@Scheduled(cron = "0 0 0 20 * ?") // Cada 20 del mes
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 0 20 * ?") // Cada 20 del mes
+    //@Scheduled(cron = "0 * * * * ?")
     public void generarCuotasMensuales() {
         List<Usuario> residentes = usuarioRepo.findByRol(Usuario.Rol.RESIDENTE);
 
-        // ✅ LOG para verificar que el método se está ejecutando
+        //  LOG para verificar que el método se está ejecutando
         System.out.println("⏳ Ejecutando generación automática de cuota para: " + LocalDate.now());
 
 
@@ -39,7 +39,7 @@ public class generarCuotasMensuales {
             //Simular más pagos pendientes para la reinstalación
             boolean yaTiene = pagosRepo.existsByCreadoPorAndMesAndAnio(residente.getCui(), hoy.getMonthValue(), hoy.getYear());
 //el if para simular
-            if (!yaTiene) {
+           // if (!yaTiene) {
                 Pagos cuota = new Pagos();
                 cuota.setMontoTotal(new BigDecimal("550.00"));
                 cuota.setFechaPago(hoy); // fecha de emisión
@@ -62,7 +62,7 @@ public class generarCuotasMensuales {
                 // ✅ LOG para cada residente que reciba cuota
                 System.out.println("➡️ Cuota creada para: " + residente.getNombre() + " (CUI: " + residente.getCui() + ")");
 
-           }
+           //}
         }
     }
 
