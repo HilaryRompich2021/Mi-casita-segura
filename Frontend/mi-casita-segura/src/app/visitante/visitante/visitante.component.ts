@@ -178,4 +178,5 @@ private obtenerMensajeDeError(err: any): string {
     const esValido = palabras.length >= 2 && palabras.every((p: string) => p.length >= 3);
     return esValido ? null : { nombreInvalido: true };
   }
+  }
 }
