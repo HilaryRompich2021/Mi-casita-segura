@@ -1,4 +1,3 @@
-// src/app/visitante/visitante/visitante.component.ts
 import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -43,7 +42,7 @@ export default class RegistroVisitanteComponent implements OnInit {
     private authSrv: AuthService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     // 1) Extraer datos del token
     const usuario = this.getCurrentUserData();
     this.rol = Array.isArray(usuario.roles) && usuario.roles.includes('RESIDENTE')
@@ -52,131 +51,131 @@ export default class RegistroVisitanteComponent implements OnInit {
     this.cuiDelUsuario   = usuario.cui;
     this.numeroCasaUsuario = usuario.numeroCasa ?? null;
 
-    // 2) Construir el formulario
+    // 2) Construir el formulario solo UNA vez
     this.form = this.fb.group({
       cui:                ['', [Validators.required, Validators.pattern(/^\d{13}$/)]],
       nombreVisitante:    ['', [Validators.required, this.nombreValidoValidator]],
       telefono:           ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      numeroCasa:         [{ value: this.numeroCasaUsuario, disabled: this.rol === 'RESIDENTE' },
+      numeroCasa:         [{ value: this.numeroCasaUsuario, disabled: false },
                            [Validators.required, Validators.min(1), Validators.max(300)]],
       motivoVisita:       ['', Validators.required],
       nota:               ['', Validators.required],
       creadoPor:          [ this.cuiDelUsuario, Validators.required ],
       estado:             [ true ]
     });
-    this.rol = usuario.rol;
-    const esResidente = usuario.roles?.includes('RESIDENTE');
 
-    const username = usuario.sub;     // Visible en el campo
-    const cui = usuario.cui;          // Enviado al backend
-
-
-      this.form = this.fb.group({
-    cui: ['', [Validators.required, Validators.pattern(/^\d{13}$/)]],
-    nombreVisitante: ['', [Validators.required, this.nombreValidoValidator]],
-    telefono: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-    numeroCasa: [{ value: null, disabled: false }, [Validators.required, Validators.min(1), Validators.max(300)]],
-    motivoVisita: ['', Validators.required],
-    nota: ['', Validators.required],
-    creadoPor: [this.getCurrentCui(), Validators.required],
-    estado: [true]
-  });
-
-
+    // Si el usuario es RESIDENTE, forzamos número de casa y deshabilitamos el campo
     if (this.rol === 'RESIDENTE') {
-      // Si es residente, forzamos el valor y deshabilitamos
       this.form.get('numeroCasa')?.setValue(this.numeroCasaUsuario);
       this.form.get('numeroCasa')?.disable();
     }
 
-    // 3) Cargar todos los visitantes al iniciar
+    // 3) Cargar todos los visitantes (funcionalidad de administrador)
     this.loadAllVisitors();
   }
 
-  // Validador que retorna { nombreInvalido: true } si falla
+  // ----------------------------------------------------------
+  // 4) Definición del validador “nombre válido”
+  //    (retorna null si es válido o { nombreInvalido: true } en caso contrario)
+  // ----------------------------------------------------------
   nombreValidoValidator(control: AbstractControl): ValidationErrors | null {
-    const val = control.value as string;
-    if (!val) return null; // lo deja pasar al required
+    const val = (control.value || '') as string;
+    if (!val.trim()) return null; // el Validators.required ya cubre el no vacío
     const palabras = val.trim().split(/\s+/);
-    // al menos 2 palabras y cada una ≥ 3 letras
+    // Al menos dos palabras con mínimo 3 letras cada una
     const esValido =
       palabras.length >= 2 && palabras.every(p => p.length >= 3);
     return esValido ? null : { nombreInvalido: true };
   }
 
-  private getCurrentUserData(): any {
-    const token = localStorage.getItem('auth_token');
-    if (!token) return {};
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload;
+  // ----------------------------------------------------------
+  // 5) Método para cargar **todos** los visitantes (administrador)
+  // ----------------------------------------------------------
+  private loadAllVisitors(): void {
+    this.svc.listar().subscribe({
+      next: (data: VisitanteListadoDTO[]) => {
+        this.visitantes = data;
+      },
+      error: (err: any) => {
+        console.error('No se pudieron cargar los visitantes:', err);
+      }
+    });
   }
 
-  private getCurrentCui(): string {
-  const token = localStorage.getItem('auth_token');
-  if (!token) return '';
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  return payload.cui || ''; // ✅ Devuelve el CUI en lugar del sub
-}
-
-
-  onSubmit() {
+  // ----------------------------------------------------------
+  // 6) Método de envío del formulario
+  // ----------------------------------------------------------
+  onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    // Leer el DTO directamente del form (ya contiene createdBy y estado)
+    // Obtenemos el DTO directamente desde el form (incluye creadoPor y estado)
     const dto: VisitanteRegistroDTO = this.form.getRawValue();
 
     this.svc.registrar(dto).subscribe({
       next: () => {
         Swal.fire('¡Listo!','Visitante registrado con éxito','success');
 
-        const user = this.getCurrentUserData();
-        const esResidente = user.roles?.includes('RESIDENTE');
+        // Después de registrar, reiniciamos el formulario:
+        //   - Conservamos creadoPor y, si es residente, el número de casa
+        const esResidente = this.rol === 'RESIDENTE';
 
-
-
-        this.form.reset();
-      this.form.patchValue({
-        creadoPor: user.sub, // Mostrar nuevamente el username
-        numeroCasa: esResidente ? user.numeroCasa : null,
-        estado: true
-      });
+        this.form.reset({
+          numeroCasa: esResidente ? this.numeroCasaUsuario : null,
+          creadoPor: this.cuiDelUsuario,
+          estado: true
+        });
 
         if (esResidente) {
-        this.form.get('numeroCasa')?.disable();
-      } else {
-        this.form.get('numeroCasa')?.enable();
-      }
+          this.form.get('numeroCasa')?.disable();
+        } else {
+          this.form.get('numeroCasa')?.enable();
+        }
+
+        // Finalmente, recargamos la lista completa de visitantes
+        this.loadAllVisitors();
       },
-      error: err => {Swal.fire('Error', this.obtenerMensajeDeError(err), 'error');
-
-
+      error: err => {
+        Swal.fire('Error', this.obtenerMensajeDeError(err), 'error');
       }
     });
-    console.log('Visitante enviado al backend:', visitanteDTO);
 
+    // (Solo para debugging en consola, si lo deseas):
+    console.log('Visitante enviado al backend:', dto);
   }
 
-  /*
+  // ----------------------------------------------------------
+  // 7) Extraer mensaje de error del backend
+  // ----------------------------------------------------------
   private obtenerMensajeDeError(err: any): string {
-  if (typeof err.error === 'string') return err.error;
-  if (typeof err.message === 'string') return err.message;
-  return 'Ocurrió un error inesperado.';
-}*/
-private obtenerMensajeDeError(err: any): string {
-  // Caso típico de error enviado por Spring Boot
-  if (err.error && typeof err.error.message === 'string') {
-    return err.error.message;
+    // Caso típico: Spring Boot envía { message: "...mensaje..." }
+    if (err.error && typeof err.error.message === 'string') {
+      return err.error.message;
+    }
+    // Si el error es simplemente un string
+    if (typeof err.error === 'string') {
+      return err.error;
+    }
+    if (typeof err.message === 'string') {
+      return err.message;
+    }
+    return 'Ocurrió un error inesperado.';
   }
 
-  /** Validador que exige al menos 2 palabras de 3+ letras */
-  nombreValidoValidator(ctrl: AbstractControl): ValidationErrors | null {
-    const val = (ctrl.value || '') as string;
-    const palabras = val.trim().split(/\s+/);
-    const esValido = palabras.length >= 2 && palabras.every((p: string) => p.length >= 3);
-    return esValido ? null : { nombreInvalido: true };
-  }
+  // ----------------------------------------------------------
+  // 8) Obtener datos del token JWT (payload)
+  // ----------------------------------------------------------
+  private getCurrentUserData(): any {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      return {};
+    }
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch {
+      return {};
+    }
   }
 }
