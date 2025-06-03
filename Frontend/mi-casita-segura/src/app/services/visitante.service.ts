@@ -78,7 +78,7 @@ export class VisitanteService {
   registrar(dto: VisitanteRegistroDTO): Observable<VisitanteListadoDTO> {
     return this.http.post<VisitanteListadoDTO>(`${this.baseUrl}/registro`, dto, this.authHeaders());
   }
-  
+
 
   /** GET administrador, todos */
   listar(): Observable<VisitanteListadoDTO[]> {

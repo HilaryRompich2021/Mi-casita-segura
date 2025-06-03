@@ -1,0 +1,65 @@
+<div class="max-w-md mx-auto mt-8 bg-white shadow-lg rounded-lg p-6">
+  <h2 class="text-2xl font-semibold mb-4">Cargo por Exceso de Agua</h2>
+
+  <form [formGroup]="cargoForm" (ngSubmit)="onSubmit()">
+    <!-- CUI -->
+    <div class="mb-4">
+      <label for="cui" class="block font-medium mb-1">CUI del Residente:</label>
+      <input
+        id="cui"
+        type="text"
+        formControlName="cui"
+        class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        placeholder="Ej. 3037324580110"
+      />
+      <div
+        *ngIf="cui?.touched && cui?.invalid"
+        class="text-red-600 text-sm mt-1"
+      >
+        <small *ngIf="cui?.errors?.['required']">El CUI es obligatorio.</small>
+        <small *ngIf="cui?.errors?.['pattern']">Debe tener 13 dígitos numéricos.</small>
+      </div>
+    </div>
+
+    <!-- Metros Cúbicos Usados -->
+    <div class="mb-4">
+      <label for="metrosCubicosUsados" class="block font-medium mb-1">
+        Metros Cúbicos Usados:
+      </label>
+      <input
+        id="metrosCubicosUsados"
+        type="number"
+        formControlName="metrosCubicosUsados"
+        class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        min="0"
+        step="0.01"
+        placeholder="Ej. 6.50"
+      />
+      <div
+        *ngIf="metrosCubicosUsados?.touched && metrosCubicosUsados?.invalid"
+        class="text-red-600 text-sm mt-1"
+      >
+        <small *ngIf="metrosCubicosUsados?.errors?.['required']">
+          El consumo es obligatorio.
+        </small>
+        <small *ngIf="metrosCubicosUsados?.errors?.['min']">
+          Debe ser un valor ≥ 0.
+        </small>
+        <small *ngIf="metrosCubicosUsados?.errors?.['max']">
+          Valor muy grande.
+        </small>
+      </div>
+    </div>
+
+    <!-- Botón -->
+    <div class="flex justify-end">
+      <button
+        type="submit"
+        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+        [disabled]="cargoForm.invalid"
+      >
+        Generar Cargo
+      </button>
+    </div>
+  </form>
+</div>

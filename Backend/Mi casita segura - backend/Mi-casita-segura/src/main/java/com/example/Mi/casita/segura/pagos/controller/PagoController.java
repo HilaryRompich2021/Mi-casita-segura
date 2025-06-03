@@ -1,5 +1,6 @@
 package com.example.Mi.casita.segura.pagos.controller;
 
+import com.example.Mi.casita.segura.pagos.dto.AguaCargoDTO;
 import com.example.Mi.casita.segura.pagos.dto.PagoConsultaDTO;
 import com.example.Mi.casita.segura.pagos.dto.PagoRequestDTO;
 import com.example.Mi.casita.segura.pagos.model.Pagos;
@@ -57,5 +58,11 @@ public class PagoController {
         return ResponseEntity.ok(pagos);
     }
 
+    @PostMapping("/cargo-agua")
+    public ResponseEntity<?> cargoAgua(@RequestBody AguaCargoDTO dto) {
+        // Puedes validar aquí que el usuario actual tenga rol ADMIN antes de procesar
+        Pagos pago = pagoService.generarCargoAgua(dto);
+        return ResponseEntity.ok(pago);
+    }
 
 }

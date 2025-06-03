@@ -1,9 +1,6 @@
 package com.example.Mi.casita.segura.pagos.service;
 
-import com.example.Mi.casita.segura.pagos.dto.PagoConsultaDTO;
-import com.example.Mi.casita.segura.pagos.dto.PagoDetalleConsultaDTO;
-import com.example.Mi.casita.segura.pagos.dto.PagoDetalleDTO;
-import com.example.Mi.casita.segura.pagos.dto.PagoRequestDTO;
+import com.example.Mi.casita.segura.pagos.dto.*;
 import com.example.Mi.casita.segura.pagos.model.Pago_Detalle;
 import com.example.Mi.casita.segura.pagos.model.Pagos;
 import com.example.Mi.casita.segura.pagos.repository.PagoDetalleRepository;
@@ -16,7 +13,7 @@ import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
 
 
-
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -187,6 +184,50 @@ public class PagoService {
         if (!dto.getFechaVencimiento().matches("^(0[1-9]|1[0-2])/\\d{2}$"))
             throw new IllegalArgumentException("La fecha de vencimiento debe tener formato MM/YY");
     }
+
+    /**
+     * Genera un cargo de agua en estado PENDIENTE para un residente.
+     * Calcula el exceso (metros – 4) y suma al monto base (550 Q).
+     */
+    @Transactional
+    public Pagos generarCargoAgua(AguaCargoDTO dto) {
+        Usuario residente = usuarioRepo.findById(dto.getCui())
+                .orElseThrow(() -> new IllegalArgumentException("Residente no encontrado con CUI " + dto.getCui()));
+
+        double usados = dto.getMetrosCubicosUsados() != null ? dto.getMetrosCubicosUsados() : 0.0;
+        double exceso = usados > 4.0 ? usados - 4.0 : 0.0;
+
+        BigDecimal cuotaBase = new BigDecimal("550.00");
+        BigDecimal montoExceso = BigDecimal.valueOf(exceso * 23.50);
+        BigDecimal montoTotal = cuotaBase.add(montoExceso);
+
+        Pagos pago = new Pagos();
+        pago.setCreadoPor(residente);
+        pago.setFechaPago(LocalDate.now());
+        pago.setMetodoPago("AGUA");
+        pago.setEstado(Pagos.EstadoDelPago.PENDIENTE);
+        pago.setMontoTotal(montoTotal);
+
+        Pago_Detalle detalleAgua = new Pago_Detalle();
+        detalleAgua.setPago(pago);
+        detalleAgua.setServicioPagado(Pago_Detalle.ServicioPagado.AGUA);
+        detalleAgua.setEstadoPago(Pago_Detalle.EstadoPago.PENDIENTE);
+
+        String descripcion = String.format(
+                "Consumo de agua: %.2f m³ (Excedente: %.2f m³). Monto: Q%.2f (Q550 base + Q%.2f exceso)",
+                usados, exceso, montoTotal.doubleValue(), montoExceso.doubleValue()
+        );
+        detalleAgua.setDescripcion(descripcion);
+        detalleAgua.setConcepto("Cargo mensual de agua");
+        detalleAgua.setMonto(montoTotal);
+
+        Pagos pagoGuardado = pagosRepo.save(pago);
+        detalleAgua.setPago(pagoGuardado);
+        pagoDetalleRepo.save(detalleAgua);
+
+        return pagoGuardado;
+    }
+
 
     public List<Pagos> obtenerPagosPorUsuario(String cui) {
         List<Pagos> pagos = pagosRepo.findByCreadoPorCui(cui);

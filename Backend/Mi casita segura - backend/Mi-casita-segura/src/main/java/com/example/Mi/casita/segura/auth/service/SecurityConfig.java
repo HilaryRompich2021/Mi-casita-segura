@@ -64,7 +64,8 @@ public class SecurityConfig {
                                 "/api/pagos/pendientes/*",
                                 "/api/pagos/todos/**",
                                 "/api/pagos/listar/**",
-                                "/api/reservas/**"
+                                "/api/reservas/**",
+                                "/api/pagos/cargo-agua"
                                 )
                         .permitAll()
                         //.hasAnyRole("RESIDENTE", "ADMINISTRADOR")
