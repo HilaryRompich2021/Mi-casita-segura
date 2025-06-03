@@ -4,6 +4,7 @@ import com.example.Mi.casita.segura.pagos.model.Pago_Detalle;
 import com.example.Mi.casita.segura.pagos.model.Pagos;
 import com.example.Mi.casita.segura.pagos.repository.PagosRepository;
 import com.example.Mi.casita.segura.reservas.dto.ReservaDTO;
+import com.example.Mi.casita.segura.reservas.dto.ReservaListadoDTO;
 import com.example.Mi.casita.segura.reservas.model.Reserva;
 import com.example.Mi.casita.segura.reservas.repository.ReservaRepository;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -95,6 +97,43 @@ public class ReservaService {
         pagosRepo.save(pago);
 
         return reservaGuardada;
+    }
+
+    /**
+     * Obtener reservas activas de un residente (por CUI)
+     */
+    public List<ReservaListadoDTO> obtenerReservasActivasPorCui(String cui) {
+        List<Reserva> listaEntidades = reservaRepo.findByResidenteCuiAndEstado(cui, Reserva.EstadoReserva.RESERVADO);
+        return listaEntidades.stream()
+                .map(r -> new ReservaListadoDTO(
+                        r.getId(),
+                        r.getAreaComun(),
+                        r.getFecha(),
+                        r.getHoraInicio(),
+                        r.getHoraFin(),
+                        r.getEstado().name(),
+                        r.getCostoTotal()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Nuevo: obtener todas las reservas activas ordenadas para el administrador
+     */
+    /** ADMIN: ahora devolvemos SOLO las reservas confirmadas (estado = RESERVADO), ordenadas */
+    public List<ReservaListadoDTO> obtenerReservasConfirmadasOrdenadas() {
+        List<Reserva> listaEntidades = reservaRepo.findByEstadoOrderByFechaAscHoraInicioAsc(Reserva.EstadoReserva.RESERVADO);
+        return listaEntidades.stream()
+                .map(r -> new ReservaListadoDTO(
+                        r.getId(),
+                        r.getAreaComun(),
+                        r.getFecha(),
+                        r.getHoraInicio(),
+                        r.getHoraFin(),
+                        r.getEstado().name(),
+                        r.getCostoTotal()
+                ))
+                .collect(Collectors.toList());
     }
 
     // 🧠 Método para calcular el costo

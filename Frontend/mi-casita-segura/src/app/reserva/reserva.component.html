@@ -1,1 +1,234 @@
-<p>reserva works!</p>
+<div class="container mx-auto p-4 space-y-8">
+  <!-- ================= TITULO PRINCIPAL ================= -->
+  <h2 class="text-2xl font-semibold mb-4">
+    {{ esAdmin
+      ? 'Reservas Confirmadas'
+      : (!areaSeleccionada
+        ? 'Elige un área para reservar'
+        : 'Reservar ' + areaSeleccionada) }}
+  </h2>
+
+  <!-- ================ TARJETAS DE RESERVA (solo residente) ================ -->
+  <ng-container *ngIf="!esAdmin && !areaSeleccionada">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Piscina -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-lg">
+        <img
+          src="assets/images/piscina.jpg"
+          alt="Piscina"
+          class="w-full h-48 object-cover"
+        />
+        <div class="p-4 text-center">
+          <h3 class="text-xl font-medium mb-2">Piscina</h3>
+          <button
+            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            (click)="seleccionarArea('Piscina')"
+          >
+            Reservar
+          </button>
+        </div>
+      </div>
+
+      <!-- Cancha -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-lg">
+        <img
+          src="assets/images/cancha.jpg"
+          alt="Cancha"
+          class="w-full h-48 object-cover"
+        />
+        <div class="p-4 text-center">
+          <h3 class="text-xl font-medium mb-2">Cancha</h3>
+          <button
+            class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+            (click)="seleccionarArea('Cancha')"
+          >
+            Reservar
+          </button>
+        </div>
+      </div>
+
+      <!-- Salón -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-lg">
+        <img
+          src="assets/images/salon.jpg"
+          alt="Salón"
+          class="w-full h-48 object-cover"
+        />
+        <div class="p-4 text-center">
+          <h3 class="text-xl font-medium mb-2">Salón</h3>
+          <button
+            class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition"
+            (click)="seleccionarArea('Salón')"
+          >
+            Reservar
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ============== FORMULARIO DE RESERVA (solo residente) ============== -->
+  <ng-container *ngIf="!esAdmin && areaSeleccionada">
+    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
+      <h3 class="text-xl font-semibold mb-4">Reservar {{ areaSeleccionada }}</h3>
+      <p class="mb-4 text-gray-700">
+        Selecciona la fecha y el horario para tu reserva de
+        <strong>{{ areaSeleccionada }}</strong>.
+      </p>
+
+      <form [formGroup]="reservaForm" (ngSubmit)="onSubmitReserva()">
+        <!-- Fecha -->
+        <div class="mb-4">
+          <label for="fecha" class="block font-medium mb-1">Fecha:</label>
+          <input
+            type="date"
+            id="fecha"
+            formControlName="fecha"
+            class="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+          <div
+            *ngIf="
+              reservaForm.get('fecha')?.touched &&
+              reservaForm.get('fecha')?.invalid
+            "
+            class="text-red-600 text-sm mt-1"
+          >
+            <small>La fecha es obligatoria.</small>
+          </div>
+        </div>
+
+        <!-- Número de horas -->
+        <div class="mb-4">
+          <label for="numeroHoras" class="block font-medium mb-1"
+            >Cantidad de horas:</label
+          >
+          <select
+            id="numeroHoras"
+            formControlName="numeroHoras"
+            class="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            <option value="" disabled>-- Selecciona horas --</option>
+            <option *ngFor="let h of opcionesHoras" [value]="h">
+              {{ h }} hora{{ h > 1 ? 's' : '' }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              reservaForm.get('numeroHoras')?.touched &&
+              reservaForm.get('numeroHoras')?.invalid
+            "
+            class="text-red-600 text-sm mt-1"
+          >
+            <small>Debes elegir entre 1 y 10 horas.</small>
+          </div>
+        </div>
+
+        <!-- Hora de inicio -->
+        <div class="mb-4" *ngIf="opcionesHoraInicio.length > 0">
+          <label for="horaInicio" class="block font-medium mb-1"
+            >Hora de inicio:</label
+          >
+          <select
+            id="horaInicio"
+            formControlName="horaInicio"
+            class="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            <option value="" disabled>-- Selecciona hora de inicio --</option>
+            <option *ngFor="let h of opcionesHoraInicio" [value]="h">
+              {{ h.slice(0, 5) }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              reservaForm.get('horaInicio')?.touched &&
+              reservaForm.get('horaInicio')?.invalid
+            "
+            class="text-red-600 text-sm mt-1"
+          >
+            <small>Selecciona una hora de inicio válida.</small>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-between mt-6">
+          <button
+            type="button"
+            class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
+            (click)="cancelarReserva()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            [disabled]="reservaForm.invalid"
+          >
+            Confirmar Reserva
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+
+  <!-- ============ LISTADO DE RESERVAS (residente/admin) ============ -->
+  <div class="max-w-4xl mx-auto">
+    <!-- Si no hay reservas, mostramos mensaje apropiado -->
+    <div *ngIf="misReservas.length === 0" class="text-gray-600">
+      <p>
+        {{ esAdmin
+          ? 'No hay reservas confirmadas en el sistema.'
+          : 'No tienes reservas activas.' }}
+      </p>
+    </div>
+
+    <!-- Tabla de reservas confirmadas con scroll vertical si son muchas filas -->
+    <div *ngIf="misReservas.length > 0"
+         class="overflow-x-auto max-h-96 overflow-y-auto">
+      <table class="min-w-full bg-white divide-y divide-gray-200 shadow-md rounded-lg overflow-hidden">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              scope="col"
+              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Área
+            </th>
+            <th
+              scope="col"
+              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Fecha
+            </th>
+            <th
+              scope="col"
+              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Inicio
+            </th>
+            <th
+              scope="col"
+              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Fin
+            </th>
+            <th
+              scope="col"
+              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Costo (Q)
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let r of misReservas" class="hover:bg-gray-50">
+            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{{ r.areaComun }}</td>
+            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{{ r.fecha }}</td>
+            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{{ r.horaInicio }}</td>
+            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{{ r.horaFin }}</td>
+            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">{{ r.costoTotal }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

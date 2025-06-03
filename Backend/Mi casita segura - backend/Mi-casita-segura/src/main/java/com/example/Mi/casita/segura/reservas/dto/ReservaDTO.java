@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+//DTO para la creación de reservas
 @Data
 public class ReservaDTO {
     private String cui;
