@@ -66,6 +66,7 @@ export default class VisitanteResidenteComponent implements OnInit {
     });
   }
 
+  //enviar form
   onSubmit(): void {
   if (this.form.invalid) {
     this.form.markAllAsTouched();
@@ -120,5 +121,32 @@ private handleSuccess(): void {
     const palabras = val.trim().split(/\s+/);
     const esValido = palabras.length >= 2 && palabras.every(p => p.length >= 3);
     return esValido ? null : { nombreInvalido: true };
+  }
+
+  //cambiar estado
+  onCambiarEstado(v: VisitanteListadoDTO): void {
+    const nuevoEstado = !v.estado;
+
+    //confirmación antes de cambiar
+    Swal.fire({
+      title: nuevoEstado ? 'Activar visitante' : 'Desactivar visitante',
+      text: `¿Estás seguro que quieres ${nuevoEstado ? 'activar' : 'desactivar'} a este visitante?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.svc.cambiarEstado(v.id, nuevoEstado).subscribe({
+          next: () => {
+            Swal.fire('¡Listo!', `Visitante ${nuevoEstado ? 'activado' : 'desactivado'} correctamente`, 'success');
+            this.loadVisitantes();
+          },
+          error: (err) => {
+            Swal.fire('Error', 'No se pudo cambiar el estado.', 'error');
+          }
+        });
+      }
+    });
   }
 }
