@@ -179,4 +179,37 @@ export default class RegistroVisitanteComponent implements OnInit {
       return {};
     }
   }
+
+  //Cambiar estado visitante:
+  onCambiarEstado(v: VisitanteListadoDTO): void {
+    const nuevoEstado = !v.estado;
+    Swal.fire({
+      title: nuevoEstado ? 'Activar visitante' : 'Desactivar visitante',
+      text: `¿Estás seguro que quieres ${nuevoEstado ? 'activar' : 'desactivar'} a este visitante?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.svc.cambiarEstado(v.id, nuevoEstado).subscribe({
+          next: () => {
+            Swal.fire(
+              '¡Listo!',
+              `Visitante ${nuevoEstado ? 'activado' : 'desactivado'} correctamente`,
+              'success'
+            );
+            this.loadAllVisitors();
+          },
+          error: (err) => {
+            console.error('Error en cambiarEstado:', err);
+            Swal.fire('Error', 'No se pudo cambiar el estado.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+
+
 }

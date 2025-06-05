@@ -2,6 +2,7 @@ package com.example.Mi.casita.segura.visitantes.controller;
 
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
+import com.example.Mi.casita.segura.visitantes.dto.VisitanteEstadoDTO;
 import com.example.Mi.casita.segura.visitantes.dto.VisitanteListadoDTO;
 import com.example.Mi.casita.segura.visitantes.dto.VisitanteRegistroDTO;
 import com.example.Mi.casita.segura.visitantes.model.Visitante;
@@ -58,5 +59,18 @@ public class VisitanteController {
         // 3) devuelvo lista filtrada
         return visitanteService.listaDefault(u.getCui());
     }
+
+    //@PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('RESIDENTE')")
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<VisitanteListadoDTO> cambiarEstado(
+            @PathVariable Long id,
+            @RequestBody VisitanteEstadoDTO estadoDTO
+    ) {
+        Visitante actualizado = visitanteService.cambiarEstado(id, estadoDTO.getEstado());
+        VisitanteListadoDTO dto = visitanteService.toListadoDTO(actualizado);
+        return ResponseEntity.ok(dto);
+    }
+
+
 
 }

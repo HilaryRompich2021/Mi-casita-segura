@@ -95,4 +95,8 @@ export class VisitanteService {
     return this.http.get<VisitanteListadoDTO[]>(`${this.baseUrl}/propios`,this.authHeaders());
   }
 
+  //Cambiar estado
+  cambiarEstado(id: number, estado: boolean) {
+    return this.http.patch(`${this.baseUrl}/${id}/estado`, { estado }, this.authHeaders());
+  }
 }

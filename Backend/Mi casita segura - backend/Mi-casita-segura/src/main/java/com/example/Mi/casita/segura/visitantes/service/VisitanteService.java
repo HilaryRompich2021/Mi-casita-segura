@@ -127,6 +127,29 @@ public class VisitanteService {
                 .collect(Collectors.toList());
     }
 
+    public Visitante cambiarEstado(Long id, boolean nuevoEstado) {
+        Visitante visitante = visitanteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Visitante no encontrado"));
 
+        visitante.setEstado(nuevoEstado);
+        return visitanteRepository.save(visitante);
+    }
 
+    public VisitanteListadoDTO toListadoDTO(Visitante v) {
+        VisitanteListadoDTO dto = new VisitanteListadoDTO();
+        dto.setId(v.getId());
+        dto.setCui(v.getCui());
+        dto.setNombreVisitante(v.getNombreVisitante());
+        dto.setEstado(v.isEstado());
+        dto.setFechaDeIngreso(v.getFechaDeIngreso());
+        dto.setTelefono(v.getTelefono());
+        dto.setNumeroCasa(v.getNumeroCasa());
+        dto.setMotivoVisita(v.getMotivoVisita());
+        dto.setNota(v.getNota());
+        // Asegúrate que el DTO tenga este campo, si no, puedes omitirlo
+        if (v.getCreadoPor() != null) {
+            dto.setCreadoPor(v.getCreadoPor().getCui());
+        }
+        return dto;
+    }
 }

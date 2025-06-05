@@ -60,6 +60,7 @@ public class Usuario {
 
     // Relación con los visitantes creados por este usuario
     @OneToMany(mappedBy = "creadoPor", cascade = CascadeType.ALL)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Visitante> visitantes;
 
     // Relación con accesos QR generados por este usuario

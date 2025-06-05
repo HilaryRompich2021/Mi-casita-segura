@@ -143,6 +143,7 @@
           <th class="px-2 py-1 text-left sm:table-cell">Casa</th>
           <th class="px-2 py-1 text-left lg:table-cell">Fecha ingreso</th>
           <th class="px-2 py-1 text-left lg:table-cell">Estado</th>
+          <th class="px-2 py-1 text-left lg:table-cell">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -155,6 +156,18 @@
               [ngClass]="{ 'text-green-600': v.estado, 'text-red-600': !v.estado }">
               {{ v.estado ? 'Activo' : 'Inactivo' }}
             </span>
+          </td>
+          <td class="px-2 py-1 lg:table-cell">
+            <button
+              (click)="onCambiarEstado(v)"
+              class="px-3 py-1 rounded-lg text-xs font-semibold shadow transition
+                    duration-200"
+              [ngClass]="{
+                'bg-green-500 text-white hover:bg-green-600': !v.estado,
+                'bg-red-500 text-white hover:bg-red-600': v.estado
+              }">
+              {{ v.estado ? 'Desactivar' : 'Activar' }}
+            </button>
           </td>
         </tr>
       </tbody>
