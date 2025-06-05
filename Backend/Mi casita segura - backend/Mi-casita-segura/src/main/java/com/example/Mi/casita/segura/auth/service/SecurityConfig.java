@@ -56,6 +56,7 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/usuarios/registrar",
                                 "/api/usuarios",
+                                "/api/usuarios/**",
                                 "/api/usuarios/{cui}",
                                 "/api/visitantes/registro",
                                 "/api/visitantes",
@@ -69,6 +70,25 @@ public class SecurityConfig {
                                 )
                         .permitAll()
                         //.hasAnyRole("RESIDENTE", "ADMINISTRADOR")
+
+                        // 1) Registro de paquetes: solo RESIDENTE puede
+                        .requestMatchers(HttpMethod.POST, "/api/paquetes/registrar")
+                        .hasRole("RESIDENTE")
+
+                        // 2) Validar código de llegada: solo GUARDIA puede
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/paquetes/validar-ingreso"
+                        )
+                        .hasRole("GUARDIA")
+
+                        // 3) Validar código de entrega: solo GUARDIA puede
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/paquetes/validar-entrega"
+                        )
+                        .hasRole("GUARDIA")
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

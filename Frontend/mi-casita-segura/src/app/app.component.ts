@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import SidebarComponent from './shared/Menu_Lateral/administrador-sidebar/sidebar.component';
 import { filter } from 'rxjs';
 import { ResidenteSidebarComponent } from './shared/Menu_Lateral/residente-sidebar/residente-sidebar.component';
+import { GuardiaSidebarComponent } from "./shared/Menu_Lateral/guardia-sidebar/guardia-sidebar.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-imports: [RouterOutlet, CommonModule, SidebarComponent, ResidenteSidebarComponent],
+imports: [RouterOutlet, CommonModule, SidebarComponent, ResidenteSidebarComponent, GuardiaSidebarComponent],
 templateUrl: './app.component.html',
 styleUrls: ['./app.component.css']
 

@@ -86,7 +86,7 @@ export const routes: Routes = [
 
   {
     path: 'excedente',
-    loadComponent: () => import('./excedente-agua/excedente-agua.component').then(m => m.default)
+    loadComponent: () => import('./pagos/excedente-agua/excedente-agua.component').then(m => m.default)
   },
 
 
