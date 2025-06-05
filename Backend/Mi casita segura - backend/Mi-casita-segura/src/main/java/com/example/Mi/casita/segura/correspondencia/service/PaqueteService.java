@@ -1,6 +1,7 @@
 package com.example.Mi.casita.segura.correspondencia.service;
 
 
+import com.example.Mi.casita.segura.Correo.Service.CorreoService;
 import com.example.Mi.casita.segura.correspondencia.dto.CodigoDTO;
 import com.example.Mi.casita.segura.correspondencia.dto.PaqueteRegistroDTO;
 import com.example.Mi.casita.segura.correspondencia.dto.PaqueteResponseDTO;
@@ -25,6 +26,7 @@ public class PaqueteService {
 
     private final PaqueteRepository paqueteRepo;
     private final UsuarioRepository usuarioRepo;
+    private final CorreoService correoService;
 
     public List<Paquete> obtenerPaquetesPorResidente(String cui) {
         // Asumiendo que tienes un método en el repositorio para filtrar por el CUI del usuario:
@@ -33,9 +35,10 @@ public class PaqueteService {
 
     /**
      * Registra un nuevo paquete para el residente dado su CUI y DTO de registro.
-     * @param cuiResidente  CUI del usuario autenticado (residente)
-     * @param dto           Datos editables para registrar paquete
-     * @return              El Paquete recién creado
+     *
+     * @param cuiResidente CUI del usuario autenticado (residente)
+     * @param dto          Datos editables para registrar paquete
+     * @return El Paquete recién creado
      */
     @Transactional
     public Paquete registrarPaquete(String cuiResidente, PaqueteRegistroDTO dto) {
@@ -65,10 +68,25 @@ public class PaqueteService {
 
         // 5) Relacionar con el residente que creó el paquete
         paquete.setCreadopor(residente);
-
         // 6) Guardar en BD y devolver
+        Paquete paqueteGuardado = paqueteRepo.save(paquete);
+
+        //Envío de correo
+        correoService.enviarRegistroPaquete(
+                residente.getCorreoElectronico(),
+                residente.getNombre(),
+                residente.getNumeroCasa(),
+                paquete.getEmpresaDeEntrega(),
+                paquete.getNumeroDeGuia(),
+                paquete.getTipoDePaquete(),
+                paquete.getObservacion(),
+                paquete.getFechaRegistro(),
+                paquete.getCodigo()
+        );
+
         return paqueteRepo.save(paquete);
     }
+
 
 
     /**
