@@ -58,7 +58,7 @@ export class AuthService {
       return {};
     }
   }
-  
+
    /** Si el token guardado ya expiró, lo elimina de inmediato */
   private limpiarTokenExpirado() {
     const token = this.getToken();
@@ -79,6 +79,23 @@ export class AuthService {
     } catch {
       // Si no se puede decodificar, también borra para evitar errores
       this.logout();
+    }
+  }
+
+  getCurrentUserData(): any {
+    const token = localStorage.getItem(this.tokenKey);
+    if (!token) {
+      return {};
+    }
+
+    try {
+      // El payload está en la segunda parte del JWT (separado por puntos)
+      const payloadBase64 = token.split('.')[1];
+      const decodedJson = atob(payloadBase64);
+      return JSON.parse(decodedJson);
+    } catch (e) {
+      console.error('Error al decodificar JWT:', e);
+      return {};
     }
   }
 

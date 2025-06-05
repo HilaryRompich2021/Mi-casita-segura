@@ -97,6 +97,7 @@ public class PaqueteService {
     @Transactional
     public Paquete validarCodigoLlegada(CodigoDTO dto) {
         Paquete paquete = paqueteRepo.findByCodigo(dto.getCodigo())
+
                 .orElseThrow(() -> new IllegalArgumentException("Código inválido"));
 
         if (paquete.getEstado() != Paquete.EstadoPaquete.REGISTRADO) {
@@ -108,7 +109,24 @@ public class PaqueteService {
 
         paquete.setFechaRecepcion(LocalDateTime.now());
         paquete.setEstado(Paquete.EstadoPaquete.PENDIENTE_A_RECOGER);
-        return paqueteRepo.save(paquete);
+
+        Paquete actualizado = paqueteRepo.save(paquete);
+        var residente = actualizado.getCreadopor();
+
+        correoService.enviarLlegadaAGarita(
+                residente.getCorreoElectronico(),
+                residente.getNombre(),
+                residente.getNumeroCasa(),
+                paquete.getEmpresaDeEntrega(),
+                paquete.getNumeroDeGuia(),
+                paquete.getTipoDePaquete(),
+                paquete.getObservacion(),
+                paquete.getFechaRecepcion(),
+                paquete.getCodigo()
+        );
+        return paqueteRepo.save(actualizado);
+
+
     }
 
     /**
@@ -117,17 +135,37 @@ public class PaqueteService {
      * cambia estado a ENTREGADO y registra fechaEntrega = ahora.
      */
     @Transactional
-    public Paquete validarCodigoEntrega(CodigoDTO dto) {
+    public Paquete validarCodigoEntrega(CodigoDTO dto, String nombreGuardia) {
         Paquete paquete = paqueteRepo.findByCodigo(dto.getCodigo())
                 .orElseThrow(() -> new IllegalArgumentException("Código inválido"));
 
         if (paquete.getEstado() != Paquete.EstadoPaquete.PENDIENTE_A_RECOGER) {
             throw new IllegalArgumentException("El paquete no está en estado PENDIENTE_A_RECOGER");
         }
+        // 1. Declaramos 'ahora' aquí:
+        LocalDateTime ahora = LocalDateTime.now();
 
         paquete.setFechaEntrega(LocalDateTime.now());
         paquete.setEstado(Paquete.EstadoPaquete.ENTREGADO);
-        return paqueteRepo.save(paquete);
+        Paquete entregado = paqueteRepo.save(paquete);
+
+        // 2. Obtenemos datos del residente y guardia (supongamos que el nombre del guardia se pasa o se recupera)
+        var residente = entregado.getCreadopor();
+        //String nombreGuardia = /* obtén aquí el nombre o ID del guardia que hizo la entrega */;
+
+        // 3. Enviamos correo al residente
+        correoService.enviarEntregaAlResidente(
+                residente.getCorreoElectronico(),
+                residente.getNombre(),
+                residente.getNumeroCasa(),
+                entregado.getEmpresaDeEntrega(),
+                entregado.getNumeroDeGuia(),
+                entregado.getTipoDePaquete(),
+                ahora,
+                nombreGuardia
+        );
+
+        return paqueteRepo.save(entregado);
     }
     public PaqueteResponseDTO toDto(Paquete p) {
         PaqueteResponseDTO dto = new PaqueteResponseDTO();

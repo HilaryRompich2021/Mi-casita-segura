@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -59,13 +59,29 @@ private baseUrl = 'http://localhost:8080/api/paquetes';
   }
 
   /** El guardia valida la entrega final */
-  validarEntrega(codigo: string): Observable<PaqueteResponse> {
+  validarEntrega(
+    codigo: string,
+    nombreGuardia: string
+  ): Observable<PaqueteResponse> {
+    // Construimos HttpParams con el query-param nombreGuardia
+    const params = new HttpParams().set('nombreGuardia', nombreGuardia);
+
+    return this.http.post<PaqueteResponse>(
+      `${this.baseUrl}/validar-entrega`,
+      { codigo },                            // body JSON
+      {
+        ...this._authHeaders(),
+        params: params                       // ?nombreGuardia=...
+      }
+    );
+  }
+/*  validarEntrega(codigo: string): Observable<PaqueteResponse> {
     return this.http.post<PaqueteResponse>(
       `${this.baseUrl}/validar-entrega`,
       { codigo },
       this._authHeaders()
     );
-  }
+  }*/
 
   /** Construye headers con el Bearer token, tal como tu AuthInterceptor espera */
   private _authHeaders(): { headers: HttpHeaders } {

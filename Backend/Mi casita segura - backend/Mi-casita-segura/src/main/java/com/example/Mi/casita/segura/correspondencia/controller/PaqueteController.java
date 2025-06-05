@@ -78,8 +78,8 @@ public class PaqueteController {
      * Guardia valida el código de entrega (código_entrega).
      */
     @PostMapping("/validar-entrega")
-    public ResponseEntity<?> validarEntrega(@Valid @RequestBody CodigoDTO dto) {
-        Paquete actualizado = paqueteService.validarCodigoEntrega(dto);
+    public ResponseEntity<?> validarEntrega(@Valid @RequestBody CodigoDTO dto, @RequestParam String nombreGuardia) {
+        Paquete actualizado = paqueteService.validarCodigoEntrega(dto, nombreGuardia);
         PaqueteResponseDTO respuesta = paqueteService.toDto(actualizado);
         return ResponseEntity.ok(respuesta);
     }

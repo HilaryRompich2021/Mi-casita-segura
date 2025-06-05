@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -114,4 +115,121 @@ public class CorreoService {
         }
     }
 
+    /* ========== NUEVO MÉTODO: notificación cuando el paquete llega a la garita ========== */
+    public void enviarLlegadaAGarita(
+            String correoDestino,
+            String nombreResidente,
+            Integer numeroCasa,
+            String empresaDeEntrega,
+            String numeroDeGuia,
+            String tipoDePaquete,
+            String observacion,
+            LocalDateTime fechaRecepcion,
+            String codigoEntrega
+    ) {
+        MimeMessage mensaje = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mensaje, false, "UTF-8");
+            helper.setTo(correoDestino);
+            helper.setSubject("Llegada del Paquete a la Garita – Listo para ser recogido");
+            // helper.setFrom("no-reply@mi-casita-segura.com"); // opcional
+
+            // Formateamos la hora de recepción como dd/MM/yyyy – hh:mm a
+            String fechaFormateada = fechaRecepcion.format(
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy – hh:mm a")
+            );
+
+            StringBuilder html = new StringBuilder();
+            html.append("<h3>Llegada del Paquete a la Garita</h3>")
+                    .append("<p>Tu paquete ha llegado a la garita – listo para ser recogido.</p>")
+                    .append("<p><strong>Para:</strong> ").append(nombreResidente).append("<br/>")
+                    .append("<strong>Casa:</strong> ").append(numeroCasa).append("</p>")
+                    .append("<h4>Detalles del Paquete Recibido:</h4>")
+                    .append("<ul>")
+                    .append("<li><strong>Empresa de Entrega:</strong> ").append(empresaDeEntrega).append("</li>")
+                    .append("<li><strong>Número de Guía / Tracking:</strong> ").append(numeroDeGuia).append("</li>")
+                    .append("<li><strong>Tipo de Paquete:</strong> ").append(tipoDePaquete).append("</li>")
+                    .append("<li><strong>Hora de Recepción en Garita:</strong> ").append(fechaFormateada).append("</li>")
+                    .append("<li><strong>Observaciones:</strong> ").append(observacion).append("</li>")
+                    .append("</ul>")
+                    .append("<p><strong>Código de Entrega del Paquete:</strong><br/>")
+                    .append("<span style='font-size:1.2em;color:#2a6ebb;font-weight:bold;'>")
+                    .append(codigoEntrega)
+                    .append("</span></p>")
+                    .append("<p>Para recoger tu paquete, presenta este código al guardia de seguridad en la garita. ")
+                    .append("Una vez validado, el paquete te será entregado.</p>")
+                    .append("<p><strong>Importante:</strong><br/>")
+                    .append("• Solo tú puedes recoger el paquete.<br/>")
+                    .append("• No compartas este código con terceros no autorizados.</p>")
+                    .append("<p>¡Gracias por ser parte de Mi Casita Segura!<br/>")
+                    .append("Atentamente,<br/>Administración – Mi Casita Segura</p>")
+                    .append("<hr/>")
+                    .append("<small>Nota: Este mensaje es personal y confidencial. No compartas tu información de acceso con terceros.</small>");
+
+            helper.setText(html.toString(), true);
+            mailSender.send(mensaje);
+
+        } catch (MessagingException ex) {
+            // Loguea el error, pero no interrumpe el flujo principal
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Envía un correo notificando que el paquete ya fue entregado al residente.
+     */
+    public void enviarEntregaAlResidente(
+            String correoDestino,
+            String nombreResidente,
+            Integer numeroCasa,
+            String empresaDeEntrega,
+            String numeroDeGuia,
+            String tipoDePaquete,
+            LocalDateTime fechaEntrega,
+            String nombreGuardia // o ID del guardia
+    ) {
+        MimeMessage mensaje = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mensaje, false, "UTF-8");
+            helper.setTo(correoDestino);
+            helper.setSubject("Paquete Entregado al Residente – Confirmación de Entrega");
+            // helper.setFrom("no-reply@mi-casita-segura.com"); // opcional
+
+            // Formateamos la hora de entrega como dd/MM/yyyy – hh:mm a
+            String fechaFormateada = fechaEntrega.format(
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy – hh:mm a")
+            );
+
+            StringBuilder html = new StringBuilder();
+            html.append("<h3>Paquete Entregado al Residente</h3>")
+                    .append("<p>Tu paquete ha sido entregado con éxito.</p>")
+                    .append("<p><strong>Para:</strong> ").append(nombreResidente).append("<br/>")
+                    .append("<strong>Casa / Apartamento:</strong> ").append(numeroCasa).append("</p>")
+                    .append("<h4>Detalles del Paquete Entregado:</h4>")
+                    .append("<ul>")
+                    .append("<li><strong>Empresa de Entrega:</strong> ").append(empresaDeEntrega).append("</li>")
+                    .append("<li><strong>Número de Guía / Tracking:</strong> ").append(numeroDeGuia).append("</li>")
+                    .append("<li><strong>Tipo de Paquete:</strong> ").append(tipoDePaquete).append("</li>")
+                    .append("<li><strong>Hora de Entrega:</strong> ").append(fechaFormateada).append("</li>")
+                    .append("<li><strong>Guardia que Entregó:</strong> ").append(nombreGuardia).append("</li>")
+                    .append("</ul>")
+                    .append("<p><strong>Confirmación:</strong><br/>")
+                    .append("El paquete fue entregado exitosamente tras validar el código de entrega proporcionado.</p>")
+                    .append("<p>Este paquete ha sido marcado como <strong>“Entregado”</strong> y cerrado en el sistema.<br/>")
+                    .append("Puedes ver el historial completo en tu perfil dentro de la aplicación.</p>")
+                    .append("<p>¡Gracias por ser parte de Mi Casita Segura!<br/>")
+                    .append("Atentamente,<br/>Administración – Mi Casita Segura</p>")
+                    .append("<hr/>")
+                    .append("<small>Nota: Este mensaje es personal y confidencial. No compartas tu información de acceso con terceros.</small>");
+
+            helper.setText(html.toString(), true);
+            mailSender.send(mensaje);
+
+        } catch (MessagingException ex) {
+            // Solo imprime en consola o registro de logs sin interrumpir el flujo
+            ex.printStackTrace();
+        }
+    }
 }
