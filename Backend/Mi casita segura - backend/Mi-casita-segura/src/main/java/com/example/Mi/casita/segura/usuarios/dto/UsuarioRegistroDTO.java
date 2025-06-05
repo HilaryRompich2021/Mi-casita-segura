@@ -47,8 +47,8 @@ public class UsuarioRegistroDTO {
     @Pattern(regexp = "\\d{8}", message = "El número de teléfono debe contener exactamente 8 dígitos")
     private String telefono;
 
-    @NotNull(message = "El número de casa no puede ser nulo")
-    @Min(value = 1, message = "El número de casa debe ser al menos 1")
+    //@NotNull(message = "El número de casa no puede ser nulo")
+    //@Min(value = 1, message = "El número de casa debe ser al menos 1")
     @Max(value = 300, message = "El número de casa no puede ser mayor a 300")
     private int numeroCasa;
 

@@ -3,7 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { AguaCargoDTO, PagosService } from '../services/pagos.service';
+import { AguaCargoDTO, PagosService } from '../../services/pagos.service';
 
 @Component({
   selector: 'app-excedente-agua',

@@ -11,6 +11,8 @@ import com.example.Mi.casita.segura.usuarios.dto.UsuarioListadoDTO;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioRegistroDTO;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
+import com.google.zxing.WriterException;
+import jakarta.mail.MessagingException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,6 +56,9 @@ public class UsuarioService {
             }
         }
 
+        // 3) Guardar la contraseña en texto plano en una variable local
+        String contrasenaPlano = dto.getContrasena();
+
         // 1. Crear y guardar el Usuario
         Usuario usuario = new Usuario();
         usuario.setCui(dto.getCui());
@@ -64,18 +70,9 @@ public class UsuarioService {
         usuario.setTelefono(dto.getTelefono());
         usuario.setFechaDeIngreso(LocalDate.now());
         usuario.setEstado(true);
-        // Si es ADMINISTRADOR o GUARDIA, siempre casa = 0
-        usuario.setNumeroCasa(
-                (dto.getRol() == Usuario.Rol.ADMINISTRADOR || dto.getRol() == Usuario.Rol.GUARDIA)
-                        ? 0
-                        : dto.getNumeroCasa()
-        );
 
-        if (dto.getRol() == Usuario.Rol.ADMINISTRADOR || dto.getRol() == Usuario.Rol.GUARDIA) {
-            usuario.setNumeroCasa(0); //
-        } else {
-            usuario.setNumeroCasa(dto.getNumeroCasa());
-        }
+        usuario.setNumeroCasa(dto.getNumeroCasa());
+
 
 //guardar
         usuarioRepository.save(usuario);
@@ -92,6 +89,29 @@ public class UsuarioService {
 
         // Enviar notificación
        // notificacionService.enviarBienvenida(usuario, qr.getCodigoQR());
+
+        // 5) Generar imagen del QR
+        BufferedImage qrImage;
+        try {
+            qrImage = qrService.generarQR(qr.getCodigoQR());
+        } catch (WriterException e) {
+            // Si falla la generación del QR, lanzamos RuntimeException para revertir la transacción
+            throw new RuntimeException("Error generando imagen del QR: " + e.getMessage(), e);
+        }
+
+        // 6) Enviar correo de bienvenida con credenciales y QR
+        try {
+            correoService.enviarBienvenida(
+                    usuario.getCorreoElectronico(),
+                    usuario.getNombre(),
+                    usuario.getUsuario(),
+                    contrasenaPlano,
+                    qrImage
+            );
+        } catch (MessagingException | IOException e) {
+            // Si falla el envío del correo, revertimos la transacción lanzando RuntimeException
+            throw new RuntimeException("Error enviando correo de bienvenida: " + e.getMessage(), e);
+        }
 
         return dto;
     }

@@ -11,9 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -31,6 +33,7 @@ public class UsuarioController {
                 .status(HttpStatus.CREATED)
                 .body(respuesta);
     }
+
 
     @DeleteMapping("/{cui}")
     public ResponseEntity<String> eliminarUsuario(@PathVariable String cui) {
