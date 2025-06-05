@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -232,4 +233,127 @@ public class CorreoService {
             ex.printStackTrace();
         }
     }
-}
+
+
+    /* ======================================== RESERVA NOTIFICACIÓN ======================================== */
+
+
+    /**
+     * Envía un correo al residente indicando que su reserva ha sido confirmada.
+     */
+    public void enviarConfirmacionReserva(
+            String correoDestino,
+            String nombreResidente,
+            Integer numeroCasa,
+            String areaComun,
+            String fechaReserva,    // formato "dd/MM/yyyy"
+            String horaInicio,      // formato "HH:mm"
+            String horaFin          // formato "HH:mm"
+    ) {
+        MimeMessage mensaje = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mensaje, false, "UTF-8");
+            helper.setTo(correoDestino);
+            helper.setSubject("¡Reserva Confirmada! – Tu área común ha sido reservada con éxito");
+            // helper.setFrom("no-reply@mi-casita-segura.com"); // opcional
+
+            StringBuilder html = new StringBuilder();
+            html.append("<h3>¡Reserva Confirmada!</h3>")
+                    .append("<p>Tu área común ha sido reservada con éxito.</p>")
+                    .append("<h4>Detalles de tu Reserva:</h4>")
+                    .append("<ul>")
+                    .append("<li><strong>Área Reservada:</strong> ").append(areaComun).append("</li>")
+                    .append("<li><strong>Fecha de la Reserva:</strong> ").append(fechaReserva).append("</li>")
+                    .append("<li><strong>Horario Reservado:</strong> ")
+                    .append(horaInicio).append(" – ").append(horaFin)
+                    .append("</li>")
+                    .append("</ul>")
+                    .append("<p>Tu reserva ha sido registrada correctamente y confirmada por el sistema.</p>")
+                    .append("<p>Por favor, respeta el horario reservado y deja el área en buen estado al finalizar su uso.</p>")
+                    .append("<hr/>")
+                    .append("<p>¡Gracias por ser parte de Mi Casita Segura!<br/>")
+                    .append("Atentamente,<br/>Administración – Mi Casita Segura</p>")
+                    .append("<small>Nota: Este mensaje es personal y confidencial. No compartas tu información de acceso con terceros.</small>");
+
+            helper.setText(html.toString(), true);
+            mailSender.send(mensaje);
+
+        } catch (MessagingException ex) {
+            // Solo registramos el error en consola o logger
+            ex.printStackTrace();
+        }
+
+    }
+
+        /**
+         * Envía un recordatorio de pago cuando el residente tiene al menos 2
+         * pagos pendientes.
+         *
+         * Asunto: "Recordatorio de Pago – [Cuota o servicio]"
+         *
+         * Detalle del Pago Pendiente:
+         * • Concepto: [Cuota o servicio a recordar]
+         * • Periodo: [Mes y Año – Ej. Marzo 2025]
+         * • Monto: Q [Cantidad exacta]
+         * • Fecha límite de pago: [dd/MM/yyyy]
+         * • Método de pago: [Tarjeta]
+         *
+         * @param correoDestino   El email del residente
+         *      * @param nombreResidente El nombre completo del residente
+         *      * @param numeroCasa      El número de casa o unidad del residente
+         *      * @param concepto        El concepto del pago (por ejemplo: "Cuota mensual de mantenimiento")
+         *      * @param mesAnio         El periodo formateado como "Mes Año" (por ejemplo: "Marzo 2025")
+         *      * @param monto           El monto exacto en Q (por ejemplo: new BigDecimal("550.00"))
+         *      * @param fechaLimite     Fecha límite de pago en formato "dd/MM/yyyy" (por ejemplo: "21/03/2025")
+         *      * @param metodoPago      El método de pago sugerido (por ejemplo: "Tarjeta")
+         *      */
+        public void enviarRecordatorioPago(
+                String correoDestino,
+                String nombreResidente,
+                Integer numeroCasa,
+                String concepto,
+                String mesAnio,
+                BigDecimal monto,
+                String fechaLimite,
+                String metodoPago
+    ) {
+            try {
+                MimeMessage mensaje = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
+
+                helper.setTo(correoDestino);
+                helper.setSubject("Recordatorio de Pago – " + concepto);
+
+                String contenido = """
+                <h3>Estimado/a %s,</h3>
+                <p>Casa / Apartamento: <strong>%d</strong></p>
+                <p><strong>Detalle del Pago Pendiente:</strong></p>
+                <ul>
+                  <li><strong>Concepto:</strong> %s</li>
+                  <li><strong>Periodo:</strong> %s</li>
+                  <li><strong>Monto:</strong> Q %.2f</li>
+                  <li><strong>Fecha límite de pago:</strong> %s</li>
+                  <li><strong>Método de pago:</strong> %s</li>
+                </ul>
+                <p><strong style='color:red;'>IMPORTANTE:</strong> Si no realizas el pago antes de la fecha límite, podrías ser sujeto a suspensión del servicio.</p>
+                <p>¡Gracias por ser parte de Mi Casita Segura!<br/>Atentamente,<br/>Administración - Mi Casita Segura</p>
+                """.formatted(
+                        nombreResidente,
+                        numeroCasa,
+                        concepto,
+                        mesAnio,
+                        monto.doubleValue(),
+                        fechaLimite,
+                        metodoPago
+                );
+
+                helper.setText(contenido, true);
+                mailSender.send(mensaje);
+
+            } catch (Exception e) {
+                System.err.println("Error enviando Recordatorio de Pago a " + correoDestino + ": " + e.getMessage());
+            }
+        }
+    }
+

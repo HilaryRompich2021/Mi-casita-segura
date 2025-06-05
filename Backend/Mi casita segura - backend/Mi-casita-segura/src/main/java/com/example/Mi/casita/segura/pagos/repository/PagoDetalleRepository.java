@@ -19,6 +19,12 @@ public interface PagoDetalleRepository extends JpaRepository <Pago_Detalle, Long
     // Buscar detalles de pago por tipo de servicio (ej: AGUA, CUOTA)
     List<Pago_Detalle> findByServicioPagado(String servicioPagado);
 
+    List<Pago_Detalle>findByPago_CreadoPor_CuiAndEstadoPago(
+            String cui,
+            Pago_Detalle.EstadoPago estadoPago
+    );
+
+
     // Puedes agregar más métodos según necesites
 
     Optional<Pago_Detalle> findFirstByReserva_IdAndServicioPagadoAndEstadoPago(

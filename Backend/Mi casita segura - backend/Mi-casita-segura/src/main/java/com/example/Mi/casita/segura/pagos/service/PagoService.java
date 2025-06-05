@@ -1,5 +1,6 @@
 package com.example.Mi.casita.segura.pagos.service;
 
+import com.example.Mi.casita.segura.Correo.Service.CorreoService;
 import com.example.Mi.casita.segura.pagos.dto.*;
 import com.example.Mi.casita.segura.pagos.model.Pago_Detalle;
 import com.example.Mi.casita.segura.pagos.model.Pagos;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +35,7 @@ public class PagoService {
     private final ReservaRepository reservaRepo;
     private final ReinstalacionRepository reinstalacionRepo;
     private final PagoDetalleRepository pagoDetalleRepo;
+    private final CorreoService correoService;
 
     public Pagos registrarPago(PagoRequestDTO dto) {
         Usuario usuario = usuarioRepo.findById(dto.getCreadoPor())
@@ -163,9 +166,36 @@ public class PagoService {
                 Reserva reserva = reservaRepo.findById(detDTO.getReservaId())
                         .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada para actualización de estado"));
                 reserva.setEstado(Reserva.EstadoReserva.RESERVADO);
-                reservaRepo.save(reserva);
+                Reserva reservaActualizada = reservaRepo.save(reserva);
+
+                /// Envío de notificación ////
+                String fechaFormateada = reservaActualizada.getFecha()
+                        .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                // hotelar getHoraInicio() devuelve LocalTime; formateamos como "HH:mm"
+                String horaInicioStr = reservaActualizada.getHoraInicio()
+                        .format(DateTimeFormatter.ofPattern("HH:mm"));
+                String horaFinStr = reservaActualizada.getHoraFin()
+                        .format(DateTimeFormatter.ofPattern("HH:mm"));
+
+                // Obtenemos datos del usuario (residente):
+                Usuario residente = reservaActualizada.getResidente();
+                String correoResidente = residente.getCorreoElectronico();
+                String nombreResidente = residente.getNombre();
+                Integer numeroCasa = residente.getNumeroCasa();
+
+                // Invocamos al CorreoService:
+                correoService.enviarConfirmacionReserva(
+                        correoResidente,
+                        nombreResidente,
+                        numeroCasa,
+                        reservaActualizada.getAreaComun(),
+                        fechaFormateada,
+                        horaInicioStr,
+                        horaFinStr
+                );
             }
         }
+
 
         return pagoGuardado;
     }
