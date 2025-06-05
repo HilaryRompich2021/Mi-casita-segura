@@ -3,6 +3,7 @@ package com.example.Mi.casita.segura.correspondencia.service;
 
 import com.example.Mi.casita.segura.correspondencia.dto.CodigoDTO;
 import com.example.Mi.casita.segura.correspondencia.dto.PaqueteRegistroDTO;
+import com.example.Mi.casita.segura.correspondencia.dto.PaqueteResponseDTO;
 import com.example.Mi.casita.segura.correspondencia.model.Paquete;
 import com.example.Mi.casita.segura.correspondencia.repository.PaqueteRepository;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +25,11 @@ public class PaqueteService {
 
     private final PaqueteRepository paqueteRepo;
     private final UsuarioRepository usuarioRepo;
+
+    public List<Paquete> obtenerPaquetesPorResidente(String cui) {
+        // Asumiendo que tienes un método en el repositorio para filtrar por el CUI del usuario:
+        return paqueteRepo.findByCreadopor_CuiOrderByFechaRegistroDesc(cui);
+    }
 
     /**
      * Registra un nuevo paquete para el residente dado su CUI y DTO de registro.
@@ -104,6 +111,27 @@ public class PaqueteService {
         paquete.setEstado(Paquete.EstadoPaquete.ENTREGADO);
         return paqueteRepo.save(paquete);
     }
+    public PaqueteResponseDTO toDto(Paquete p) {
+        PaqueteResponseDTO dto = new PaqueteResponseDTO();
+        dto.setCodigo(p.getCodigo());
+        dto.setEmpresaDeEntrega(p.getEmpresaDeEntrega());
+        dto.setNumeroDeGuia(p.getNumeroDeGuia());
+        dto.setTipoDePaquete(p.getTipoDePaquete());
+        dto.setObservacion(p.getObservacion());
+        dto.setFechaRegistro(p.getFechaRegistro());
+        dto.setFechaExpiracion(p.getFechaExpiracion());
+        dto.setFechaRecepcion(p.getFechaRecepcion());
+        dto.setFechaEntrega(p.getFechaEntrega());
+        dto.setEstado(p.getEstado().name());
+
+        Usuario u = p.getCreadopor();
+        dto.setCreadoPorCui(u.getCui());
+        dto.setCreadoPorUsuario(u.getUsuario());
+        dto.setCreadoPorNombre(u.getNombre());
+        dto.setCreadoPorNumeroCasa(u.getNumeroCasa());
+        return dto;
+    }
+
     /*@Transactional
     public Paquete validarCodigoEntrega(CodigoDTO dto) {
         Optional<Paquete> opt = paqueteRepo.findByCodigoEntrega(dto.getCodigo());

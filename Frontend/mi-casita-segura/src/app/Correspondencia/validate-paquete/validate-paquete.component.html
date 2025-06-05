@@ -1,0 +1,59 @@
+<div class="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg mt-8">
+  <h2 class="text-xl font-semibold mb-4 text-center">Validar Paquete (Guardia)</h2>
+
+  <form [formGroup]="form" class="mb-6">
+    <div class="mb-4">
+      <label for="codigo" class="block text-sm font-medium">Código de Paquete</label>
+      <input
+        id="codigo"
+        type="text"
+        formControlName="codigo"
+        placeholder="Ingrese el código UUID"
+        class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      />
+      <div *ngIf="form.get('codigo')?.touched && form.get('codigo')?.invalid"
+           class="text-red-600 text-sm mt-1">
+        <small>El código es obligatorio.</small>
+      </div>
+    </div>
+
+    <div class="flex justify-between space-x-2">
+      <button
+        type="button"
+        (click)="validarIngreso()"
+        [disabled]="form.invalid || isLoadingIngreso"
+        class="flex-1 py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition disabled:opacity-50"
+      >
+        {{ isLoadingIngreso ? 'Validando ingreso...' : 'Validar Ingreso' }}
+      </button>
+      <button
+        type="button"
+        (click)="validarEntrega()"
+        [disabled]="form.invalid || isLoadingEntrega"
+        class="flex-1 py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition disabled:opacity-50"
+      >
+        {{ isLoadingEntrega ? 'Validando entrega...' : 'Validar Entrega' }}
+      </button>
+    </div>
+  </form>
+
+  <!-- Mostrar detalles del paquete si ya se validó algo -->
+  <div *ngIf="paqueteActual" class="bg-gray-50 p-4 rounded-md border">
+    <h3 class="font-medium mb-2">Detalles del Paquete</h3>
+    <ul class="text-sm space-y-1">
+      <li><strong>Código:</strong> {{ paqueteActual.codigo }}</li>
+      <li><strong>Empresa:</strong> {{ paqueteActual.empresaDeEntrega }}</li>
+      <li><strong>Número de Guía:</strong> {{ paqueteActual.numeroDeGuia }}</li>
+      <li><strong>Tipo:</strong> {{ paqueteActual.tipoDePaquete }}</li>
+      <li><strong>Observación:</strong> {{ paqueteActual.observacion }}</li>
+      <li><strong>Estado:</strong> {{ paqueteActual.estado }}</li>
+      <li><strong>Fecha Registro:</strong> {{ paqueteActual.fechaRegistro | date:'short' }}</li>
+      <li *ngIf="paqueteActual.fechaRecepcion">
+        <strong>Fecha Recepción:</strong> {{ paqueteActual.fechaRecepcion | date:'short' }}
+      </li>
+      <li *ngIf="paqueteActual.fechaEntrega">
+        <strong>Fecha Entrega:</strong> {{ paqueteActual.fechaEntrega | date:'short' }}
+      </li>
+    </ul>
+  </div>
+</div>

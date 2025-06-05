@@ -7,6 +7,7 @@ import com.example.Mi.casita.segura.pagos.model.Pagos;
 import com.example.Mi.casita.segura.reservas.model.Reserva;
 import com.example.Mi.casita.segura.soporte.model.TicketSoporte;
 import com.example.Mi.casita.segura.visitantes.model.Visitante;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.*;
@@ -67,6 +68,7 @@ public class Usuario {
 
     // Relación con paquetes ingresados por este usuario
     @OneToMany(mappedBy = "creadopor", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Paquete> paquetes;
 
     // Relación con notificaciones generadas

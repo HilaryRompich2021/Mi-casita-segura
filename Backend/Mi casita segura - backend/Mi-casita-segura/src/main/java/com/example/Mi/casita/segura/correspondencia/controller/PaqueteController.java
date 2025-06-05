@@ -3,6 +3,7 @@ package com.example.Mi.casita.segura.correspondencia.controller;
 import com.example.Mi.casita.segura.auth.service.UsuarioDetailsAdapter;
 import com.example.Mi.casita.segura.correspondencia.dto.CodigoDTO;
 import com.example.Mi.casita.segura.correspondencia.dto.PaqueteRegistroDTO;
+import com.example.Mi.casita.segura.correspondencia.dto.PaqueteResponseDTO;
 import com.example.Mi.casita.segura.correspondencia.model.Paquete;
 import com.example.Mi.casita.segura.correspondencia.service.PaqueteService;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
@@ -14,14 +15,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import io.jsonwebtoken.Jwt;
 
-
-
+import java.util.List;
 
 
 @RestController
@@ -60,7 +57,11 @@ public class PaqueteController {
 
         String cui = residente.getCui();
         var creado = paqueteService.registrarPaquete(cui, dto);
-        return ResponseEntity.ok(creado);
+
+        // 6. Convertimos la entidad a DTO para evitar ciclos de serialización
+        PaqueteResponseDTO respuesta = paqueteService.toDto(creado);
+
+        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -69,7 +70,8 @@ public class PaqueteController {
     @PostMapping("/validar-ingreso")
     public ResponseEntity<?> validarIngreso(@Valid @RequestBody CodigoDTO dto) {
         Paquete actualizado = paqueteService.validarCodigoLlegada(dto);
-        return ResponseEntity.ok(actualizado);
+        PaqueteResponseDTO respuesta = paqueteService.toDto(actualizado);
+        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -78,6 +80,30 @@ public class PaqueteController {
     @PostMapping("/validar-entrega")
     public ResponseEntity<?> validarEntrega(@Valid @RequestBody CodigoDTO dto) {
         Paquete actualizado = paqueteService.validarCodigoEntrega(dto);
-        return ResponseEntity.ok(actualizado);
+        PaqueteResponseDTO respuesta = paqueteService.toDto(actualizado);
+        return ResponseEntity.ok(respuesta);
     }
+
+    // PaqueteController.java (añade al final)
+    @GetMapping("/mis-paquetes")
+    public ResponseEntity<?> listarMisPaquetes(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("No autorizado");
+        }
+        String username = authentication.getName();
+        Usuario residente = usuarioRepo.findByUsuario(username)
+                .orElseThrow(() -> new IllegalArgumentException("Residente no encontrado: " + username));
+        String cui = residente.getCui();
+
+        // Llama al servicio para traer todos los paquetes de ese CUI
+        List<Paquete> paquetes = paqueteService.obtenerPaquetesPorResidente(cui);
+
+        // Mapéalos a DTO
+        List<PaqueteResponseDTO> listaDto = paquetes.stream()
+                .map(p -> paqueteService.toDto(p))
+                .toList();
+
+        return ResponseEntity.ok(listaDto);
+    }
+
 }

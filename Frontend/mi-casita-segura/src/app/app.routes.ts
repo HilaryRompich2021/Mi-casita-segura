@@ -3,6 +3,7 @@ import { HomeComponent } from './shared/Pages - Bienvenida/Bienvenida_Administra
 import { AdminGuard } from './guards/admin.guard';
 import { ResidenteGuard } from './guards/residente.guard';
 import { AdminOResidenteGuard } from './guards/admin-o-residente.guard';
+import RegisterPaqueteComponent from './Correspondencia/register-paquete/register-paquete.component';
 
 
 export const routes: Routes = [
@@ -96,8 +97,13 @@ export const routes: Routes = [
   },
 
   {
-    path: 'correspondencia',
-    loadComponent: () => import('./correspondencia/correspondencia.component').then(m => m.default)
+    path: 'paquete/registrar',
+    loadComponent: () => import('./Correspondencia/register-paquete/register-paquete.component').then(m => m.default)
+  },
+
+  {
+    path: 'paquete/validar',
+    loadComponent: () => import('./Correspondencia/validate-paquete/validate-paquete.component').then(m => m.default)
   },
 
   {

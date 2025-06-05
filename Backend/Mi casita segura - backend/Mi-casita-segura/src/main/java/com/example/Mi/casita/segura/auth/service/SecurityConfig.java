@@ -72,7 +72,7 @@ public class SecurityConfig {
                         //.hasAnyRole("RESIDENTE", "ADMINISTRADOR")
 
                         // 1) Registro de paquetes: solo RESIDENTE puede
-                        .requestMatchers(HttpMethod.POST, "/api/paquetes/registrar")
+                        .requestMatchers(HttpMethod.POST, "/api/paquetes/registrar", "/api/paquetes/mis-paquetes")
                         .hasRole("RESIDENTE")
 
                         // 2) Validar código de llegada: solo GUARDIA puede
