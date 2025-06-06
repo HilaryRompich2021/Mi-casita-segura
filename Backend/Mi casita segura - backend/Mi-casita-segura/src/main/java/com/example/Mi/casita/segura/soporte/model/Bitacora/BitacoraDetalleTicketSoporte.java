@@ -1,6 +1,5 @@
 package com.example.Mi.casita.segura.soporte.model.Bitacora;
 
-import com.example.Mi.casita.segura.pagos.model.Bitacora.BitacoraPagoDetalle;
 import jakarta.persistence.*;
 import lombok.Data;
 

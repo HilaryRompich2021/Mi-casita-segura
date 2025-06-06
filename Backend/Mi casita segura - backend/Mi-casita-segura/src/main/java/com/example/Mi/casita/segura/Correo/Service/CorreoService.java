@@ -355,5 +355,66 @@ public class CorreoService {
                 System.err.println("Error enviando Recordatorio de Pago a " + correoDestino + ": " + e.getMessage());
             }
         }
+
+    /**
+     * Envía el correo notificando el registro de un visitante, con el QR incrustado.
+     *
+     * @param correoDestino   - Email del residente que registró al visitante
+     * @param nombreVisitante - Nombre completo del visitante
+     * @param numeroCasa      - Número de casa / unidad donde se espera al visitante
+     * @param fechaVisita     - Fecha de la visita en formato "dd/MM/yyyy"
+     * @param nota            - Nota opcional introducida al registrar
+     * @param qrImage         - BufferedImage del QR (ya generado a partir del código del QR)
+     */
+    public void enviarRegistroVisitante(
+            String    correoDestino,
+            String    nombreVisitante,
+            Integer   numeroCasa,
+            String    fechaVisita,
+            String    nota,
+            BufferedImage qrImage
+    ) {
+        MimeMessage mensaje = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
+            helper.setTo(correoDestino);
+            helper.setSubject("Tu visitante ha sido registrado – Aquí tienes el código QR de ingreso");
+
+            // Armamos el HTML con la estructura solicitada
+            StringBuilder html = new StringBuilder();
+            html.append("<h3>Tu visitante ha sido registrado – Aquí tienes el código QR de ingreso</h3>")
+                    .append("<p><strong>Detalles del Visitante Registrado:</strong></p>")
+                    .append("<ul>")
+                    .append("<li><strong>Nombre del Visitante:</strong> ").append(nombreVisitante).append("</li>")
+                    .append("<li><strong>Número de casa:</strong> ").append(numeroCasa).append("</li>")
+                    .append("<li><strong>Fecha de Visita:</strong> ").append(fechaVisita).append("</li>")
+                    .append("<li><strong>Nota:</strong> ").append(nota == null ? "—" : nota).append("</li>")
+                    .append("</ul>")
+                    .append("<p><strong>Código QR de Ingreso del Visitante:</strong></p>")
+                    // En la línea siguiente, colocamos el inline cid:"qrVisitor"
+                    .append("<img src='cid:qrVisitor' alt='Código QR de Ingreso' />")
+                    .append("<p>Este código debe ser presentado por el visitante en la entrada para validar su acceso al residencial.</p>")
+                    .append("<hr/>")
+                    .append("<p>¡Gracias por usar Mi Casita Segura!<br/>Administración – Mi Casita Segura</p>")
+                    .append("<small>Nota: Este mensaje es personal y confidencial. No compartas tu información con terceros.</small>");
+
+            helper.setText(html.toString(), true);
+
+            // Convertir el BufferedImage del QR a bytes para adjuntarlo in-line
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(qrImage, "png", baos);
+            ByteArrayResource qrResource = new ByteArrayResource(baos.toByteArray());
+
+            helper.addInline("qrVisitor", qrResource, "image/png");
+
+            mailSender.send(mensaje);
+
+        } catch (MessagingException | IOException ex) {
+            // No lanzamos excepción para que no rompa el flujo principal
+            ex.printStackTrace();
+        }
+    }
+
     }
 

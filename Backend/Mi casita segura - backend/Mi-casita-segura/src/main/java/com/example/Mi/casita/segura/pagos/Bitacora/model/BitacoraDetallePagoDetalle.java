@@ -1,11 +1,20 @@
-package com.example.Mi.casita.segura.pagos.model.Bitacora;
+package com.example.Mi.casita.segura.pagos.Bitacora.model;
 
-import com.example.Mi.casita.segura.acceso.model.Bitacora.BitacoraRegistroIngreso;
+
+//import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+//import org.hibernate.annotations.TypeDef;
+//import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.hibernate.type.SqlTypes;
+//import org.hibernate.annotations.Type;
+
 
 @Data
 @Entity
+//@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class BitacoraDetallePagoDetalle {
 
     @Id
@@ -19,9 +28,11 @@ public class BitacoraDetallePagoDetalle {
     @Column(nullable = false, length = 100)
     private String usuario;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = true)
     private String datosAnteriores;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = true)
     private String datosNuevos;
 }

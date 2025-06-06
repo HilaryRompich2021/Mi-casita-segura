@@ -1,6 +1,8 @@
 package com.example.Mi.casita.segura.pagos.service;
 
 import com.example.Mi.casita.segura.Correo.Service.CorreoService;
+import com.example.Mi.casita.segura.pagos.Bitacora.CapturaDatos.JsonUtil;
+import com.example.Mi.casita.segura.pagos.Bitacora.service.PagoDetalleBitacoraService;
 import com.example.Mi.casita.segura.pagos.dto.*;
 import com.example.Mi.casita.segura.pagos.model.Pago_Detalle;
 import com.example.Mi.casita.segura.pagos.model.Pagos;
@@ -41,6 +43,9 @@ public class PagoService {
     private final ReinstalacionRepository reinstalacionRepo;
     private final PagoDetalleRepository pagoDetalleRepo;
     private final CorreoService correoService;
+    private final PagoDetalleBitacoraService detalleBitacoraService;
+    private final JsonUtil jsonUtil; // Para serializar objetos a JSON si hace falta
+
 
     @Transactional
     public Pagos registrarPago(PagoRequestDTO dto) {
@@ -134,6 +139,13 @@ public class PagoService {
         // 8) Guardar el pago (cascade guardará también los detalles)
         Pagos pagoGuardado = pagosRepo.save(pago);
 
+        //BITACORA_CREACION REGISTRO
+        String usuarioLog = usuario.getCui(); // o el nombre de usuario real
+        for (Pago_Detalle cadaDetalle : detalles) {
+            // Llamada al servicio de bitácora para CREAR ese detalle:
+            detalleBitacoraService.crearConBitacora(cadaDetalle, usuarioLog);
+        }
+
 
 
         // 9) ——— MARCAR COMO “COMPLETADOS” LOS DETALLES DE CUOTA PENDIENTES ANTERIORES ———
@@ -141,10 +153,24 @@ public class PagoService {
         List<Pago_Detalle> detallesPendientesCuota = pagoDetalleRepo
                 .findDetallesDeCuotasPendientesPorUsuario(usuario.getCui());
 
-        for (Pago_Detalle detPend : detallesPendientesCuota) {
+
+                for (Pago_Detalle detPend : detallesPendientesCuota) {
+                    Pago_Detalle cambios = new Pago_Detalle();
+                    cambios.setConcepto(detPend.getConcepto());
+                    cambios.setDescripcion(detPend.getDescripcion());
+                    cambios.setMonto(detPend.getMonto());
+                    cambios.setServicioPagado(detPend.getServicioPagado());
+                    cambios.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+                    cambios.setPago(detPend.getPago());
+                    cambios.setReserva(detPend.getReserva());
+                    cambios.setReinstalacion(detPend.getReinstalacion());
+                    // Nota: el objeto “cambios” debe contener todos los campos (o al menos los que cambian),
+                    // luego se copiarán en el método actualizarConBitacora.
+                    detalleBitacoraService.actualizarConBitacora(detPend.getId(), cambios, usuarioLog);
+
             // 9.1) Cambiar el estado del detalle a COMPLETADO
-            detPend.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
-            pagoDetalleRepo.save(detPend);
+            /*detPend.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+            pagoDetalleRepo.save(detPend);*/
 
             // 9.2) Verificar si el pago padre (detPend.getPago()) aún tiene otros detalles pendientes
             Pagos pagoPadre = detPend.getPago();
@@ -166,8 +192,21 @@ public class PagoService {
 
                 if (optDetallePendiente.isPresent()) {
                     Pago_Detalle detalleReservaPend = optDetallePendiente.get();
-                    detalleReservaPend.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
-                    pagoDetalleRepo.save(detalleReservaPend);
+
+                    Pago_Detalle cambios = new Pago_Detalle();
+                    cambios.setConcepto(detalleReservaPend.getConcepto());
+                    cambios.setDescripcion(detalleReservaPend.getDescripcion());
+                    cambios.setMonto(detalleReservaPend.getMonto());
+                    cambios.setServicioPagado(detalleReservaPend.getServicioPagado());
+                    cambios.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+                    cambios.setPago(detalleReservaPend.getPago());
+                    cambios.setReserva(detalleReservaPend.getReserva());
+                    cambios.setReinstalacion(detalleReservaPend.getReinstalacion());
+                    detalleBitacoraService.actualizarConBitacora(detalleReservaPend.getId(), cambios, usuarioLog);
+
+
+                   /* detalleReservaPend.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+                    pagoDetalleRepo.save(detalleReservaPend);*/
 
                     Pagos pagoPadreReserva = detalleReservaPend.getPago();
                     boolean quedanPendientesParaReserva = pagoDetalleRepo
@@ -273,7 +312,10 @@ public class PagoService {
 
         Pagos pagoGuardado = pagosRepo.save(pago);
         detalleAgua.setPago(pagoGuardado);
-        pagoDetalleRepo.save(detalleAgua);
+
+        Pago_Detalle guardadoAgua = pagoDetalleRepo.save(detalleAgua);
+        detalleBitacoraService.crearConBitacora(guardadoAgua, residente.getCui());
+        //pagoDetalleRepo.save(detalleAgua);
 
         return pagoGuardado;
     }

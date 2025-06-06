@@ -1,5 +1,6 @@
 package com.example.Mi.casita.segura.visitantes.service;
 
+import com.example.Mi.casita.segura.Correo.Service.CorreoService;
 import com.example.Mi.casita.segura.acceso.model.Acceso_QR;
 import com.example.Mi.casita.segura.acceso.repository.AccesoQRRepository;
 import com.example.Mi.casita.segura.notificaciones.service.NotificacionService;
@@ -9,13 +10,19 @@ import com.example.Mi.casita.segura.visitantes.dto.VisitanteListadoDTO;
 import com.example.Mi.casita.segura.visitantes.dto.VisitanteRegistroDTO;
 import com.example.Mi.casita.segura.visitantes.model.Visitante;
 import com.example.Mi.casita.segura.visitantes.repository.VisitanteRepository;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,6 +34,7 @@ public class VisitanteService {
     private final VisitanteRepository visitanteRepository;
     private final UsuarioRepository usuarioRepository;
     private final AccesoQRRepository accesoQRRepository;
+    private final CorreoService correoService;
     private final NotificacionService notificacionService;
 
     public Visitante registrarVisitante(VisitanteRegistroDTO dto) {
@@ -64,12 +72,43 @@ public class VisitanteService {
         qr.setVisitante(visitante);
         accesoQRRepository.save(qr);
 
+// ---------------------- Llamada al CorreoService ----------------------
+        // 1) Generar BufferedImage a partir de qr.getCodigoQR()
+        //    Aquí debes implementar tu método de generación de imagen QR. Ejemplo con ZXing:
+        BufferedImage qrImage = generarQrImage(qr.getCodigoQR());
 
-        // Notificar
-        // notificacionService.enviarNotificacionVisitante(visitante, qr.getCodigoQR());
+        // 2) Formatear la fecha de visita como "dd/MM/yyyy"
+        String fechaFormateada = visitante.getFechaDeIngreso()
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        // 3) Invocar el envío de correo
+        correoService.enviarRegistroVisitante(
+                creador.getCorreoElectronico(),    // enviamos al residente que registró
+                visitante.getNombreVisitante(),     // nombre del visitante
+                visitante.getNumeroCasa(),          // número de casa
+                fechaFormateada,                    // fecha de la visita
+                visitante.getNota(),                // nota (puede ser null)
+                qrImage                              // la imagen del QR
+        );
+        // -----------------------------------------------------------------------
 
         return visitante;
     }
+
+    private BufferedImage generarQrImage(String textoQr) {
+        try {
+            // Crea la matriz de bits para un QR_CODE de 250×250 px
+            BitMatrix bitMatrix = new MultiFormatWriter()
+                    .encode(textoQr, BarcodeFormat.QR_CODE, 250, 250);
+            // Convierte esa matriz en BufferedImage
+            return MatrixToImageWriter.toBufferedImage(bitMatrix);
+        } catch (Exception e) {
+            // Si algo falla, lanza RuntimeException para que la transacción haga rollback
+            throw new RuntimeException("Error generando QR: " + e.getMessage(), e);
+        }
+    }
+
+
 
     public List<VisitanteListadoDTO> obtenerTodosVisitantes() {
         return visitanteRepository.findAll().stream()

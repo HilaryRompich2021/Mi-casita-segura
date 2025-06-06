@@ -89,8 +89,10 @@ public class generarCuotasMensuales {
      *    usando CorreoService.enviarRecordatorioPago(...).
      */
 
-    //@Scheduled(cron = "0 0 1 * * ?") // Todos los días a la 01:00 AM
-    @Scheduled(cron = "0 */10 * * * ?")
+    @Scheduled(cron = "0 0 1 * * ?") // Todos los días a la 01:00 AM
+    //@Scheduled(cron = "0 */10 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * * ")
+    //@Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void enviarRecordatorioSiTieneDosCuotas() {
         List<Usuario> residentes = usuarioRepo.findByRol(Usuario.Rol.RESIDENTE);
