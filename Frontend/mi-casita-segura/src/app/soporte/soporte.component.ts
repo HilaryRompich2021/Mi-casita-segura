@@ -4,9 +4,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CreateTicketRequest, TicketService, TicketSoporteDTO, UpdateEstadoRequest } from '../services/ticket.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
 
 
 @Component({
+  standalone: true,
   selector: 'app-soporte',
   imports: [
     CommonModule,
@@ -14,20 +16,28 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule      
   ],
   templateUrl: './soporte.component.html',
-  styleUrl: './soporte.component.css'
+  styleUrls: ['./soporte.component.css']
 })
 export default class SoporteComponent implements OnInit {
   tickets: TicketSoporteDTO[] = [];
   formCrear!: FormGroup;
   formActualizar!: FormGroup;
 
-  // ej. el usuario actualmente logueado (simulamos un ADMINISTRADOR con cui=1)
-  usuarioActualCui = '1';  
-  usuarioActualRol = 'ADMINISTRADOR'; // Aquí podría venir de un servicio de autenticación real
+  usuarioActualCui = '';  
+  usuarioActualRol = ''; 
 
-  constructor(private fb: FormBuilder, private ticketService: TicketService) { }
+  constructor(
+    private fb: FormBuilder,
+    private ticketService: TicketService,
+    private auth: AuthService 
+  ) { }
 
   ngOnInit(): void {
+
+    const user = this.auth.getCurrentUserData();
+    this.usuarioActualRol = user.roles?.[0] ?? '';    // asume roles = ['RESIDENTE','ADMINISTRADOR',…]
+    this.usuarioActualCui = user.cui ?? '';
+
     this.formCrear = this.fb.group({
       tipoError: ['', Validators.required],
       descripcion: ['', Validators.required],
