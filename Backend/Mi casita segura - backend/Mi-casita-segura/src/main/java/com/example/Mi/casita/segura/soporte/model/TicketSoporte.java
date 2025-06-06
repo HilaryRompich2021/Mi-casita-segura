@@ -32,20 +32,13 @@ public class TicketSoporte {
 
     // Fecha y hora de creación del ticket
     @Column(nullable = false)
-    private LocalDate fechacreacion;
+    private LocalDate fechaCreacion;
 
     @Column(nullable = false)
     private LocalDateTime fechaActualizacion; //
 
-    //usuario que genera el ticket
     @ManyToOne
     @JoinColumn(name = "usuario_cui", referencedColumnName = "cui")
     private Usuario usuario;
 
-    /*// Método auxiliar si deseas actualizar la fecha automáticamente
-    @PreUpdate
-    public void actualizarFecha() {
-        this.fechaActualizacion = LocalDateTime.now();
-
-*/
-    }
+}
