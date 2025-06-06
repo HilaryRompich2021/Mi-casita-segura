@@ -1,1 +1,67 @@
-<p>soporte works!</p>
+<!-- src/app/soporte/soporte.component.html -->
+
+<div class="max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-lg">
+  <h2 class="text-2xl font-bold mb-4 text-center">Gestión de Tickets</h2>
+
+  <!-- Formulario para crear ticket -->
+  <form [formGroup]="formCrear" (ngSubmit)="crearTicket()" class="space-y-4 mb-8">
+    <h3 class="text-xl font-semibold">Crear nuevo ticket</h3>
+    <div>
+      <label class="block font-medium">Tipo de Error:</label>
+      <input type="text" formControlName="tipoError" class="w-full border rounded p-2" placeholder="APP, SEGURIDAD, OTRO" />
+      <div *ngIf="formCrear.get('tipoError')?.invalid && formCrear.get('tipoError')?.touched" class="text-red-500 text-sm">Requerido.</div>
+    </div>
+    <div>
+      <label class="block font-medium">Descripción:</label>
+      <textarea formControlName="descripcion" class="w-full border rounded p-2" rows="3" placeholder="Detalle del problema"></textarea>
+      <div *ngIf="formCrear.get('descripcion')?.invalid && formCrear.get('descripcion')?.touched" class="text-red-500 text-sm">Requerido.</div>
+    </div>
+    <button type="submit" [disabled]="formCrear.invalid" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Crear Ticket</button>
+  </form>
+
+  <!-- Formulario para actualizar estado (EN_PROCESO o COMPLETADO) -->
+  <form [formGroup]="formActualizar" class="space-y-4 mb-8">
+    <h3 class="text-xl font-semibold">Actualizar Estado de Ticket</h3>
+    <div>
+      <label class="block font-medium">ID Ticket:</label>
+      <input type="number" formControlName="ticketId" class="w-full border rounded p-2" placeholder="Ingrese ID" />
+      <div *ngIf="formActualizar.get('ticketId')?.invalid && formActualizar.get('ticketId')?.touched" class="text-red-500 text-sm">Requerido.</div>
+    </div>
+    <div>
+      <label class="block font-medium">Detalle:</label>
+      <textarea formControlName="detalle" class="w-full border rounded p-2" rows="2" placeholder="Descripción adicional"></textarea>
+      <div *ngIf="formActualizar.get('detalle')?.invalid && formActualizar.get('detalle')?.touched" class="text-red-500 text-sm">Requerido.</div>
+    </div>
+    <div class="flex space-x-4">
+      <button type="button" (click)="ponerEnProceso()" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Poner en Proceso</button>
+      <button type="button" (click)="completarTicket()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Completar Ticket</button>
+    </div>
+  </form>
+
+  <!-- Tabla lista de tickets -->
+  <div>
+    <h3 class="text-xl font-semibold mb-2">Tickets Existentes</h3>
+    <table class="min-w-full bg-white border">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="px-4 py-2 border">ID</th>
+          <th class="px-4 py-2 border">Tipo Error</th>
+          <th class="px-4 py-2 border">Estado</th>
+          <th class="px-4 py-2 border">Descripción</th>
+          <th class="px-4 py-2 border">Fecha Creación</th>
+          <th class="px-4 py-2 border">Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of tickets">
+          <td class="px-4 py-2 border">{{ t.id }}</td>
+          <td class="px-4 py-2 border">{{ t.tipoError }}</td>
+          <td class="px-4 py-2 border">{{ t.estado }}</td>
+          <td class="px-4 py-2 border whitespace-pre-wrap">{{ t.descripcion }}</td>
+          <td class="px-4 py-2 border">{{ t.fechaCreacion | date:'short' }}</td>
+          <td class="px-4 py-2 border">{{ t.usuarioNombre }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

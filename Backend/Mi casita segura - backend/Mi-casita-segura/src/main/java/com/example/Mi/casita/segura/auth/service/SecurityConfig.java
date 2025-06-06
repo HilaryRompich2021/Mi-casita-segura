@@ -71,6 +71,20 @@ public class SecurityConfig {
                         .permitAll()
                         //.hasAnyRole("RESIDENTE", "ADMINISTRADOR")
 
+                        //TICKETS
+                        //Solo ADMINISTRADOR puede poner en proceso o completar:
+                        .requestMatchers(HttpMethod.PUT, "/api/tickets/en-proceso", "/api/tickets/completar")
+                        .hasRole("ADMINISTRADOR")
+
+                        //POST /api/tickets lo pueden hacer RESIDENTE, GUARDIA o ADMINISTRADOR:
+                        .requestMatchers(HttpMethod.POST, "/api/tickets")
+                        .hasAnyRole("RESIDENTE", "GUARDIA", "ADMINISTRADOR")
+
+                        //GET /api/tickets y GET /api/tickets/{id} para cualquier usuario autenticado:
+                        .requestMatchers(HttpMethod.GET, "/api/tickets", "/api/tickets/*")
+                        .authenticated()
+
+                        //PAQUETES
                         // 1) Registro de paquetes: solo RESIDENTE puede
                         .requestMatchers(HttpMethod.POST, "/api/paquetes/registrar", "/api/paquetes/mis-paquetes")
                         .hasRole("RESIDENTE")

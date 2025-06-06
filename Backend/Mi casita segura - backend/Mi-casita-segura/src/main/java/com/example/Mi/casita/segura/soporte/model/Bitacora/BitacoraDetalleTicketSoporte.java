@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "bitacora_detalle_ticket_soporte")
 public class BitacoraDetalleTicketSoporte {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
