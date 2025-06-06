@@ -2,6 +2,8 @@ package com.example.Mi.casita.segura.pagos.repository;
 
 import com.example.Mi.casita.segura.pagos.model.Pago_Detalle;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,6 +25,25 @@ public interface PagoDetalleRepository extends JpaRepository <Pago_Detalle, Long
             String cui,
             Pago_Detalle.EstadoPago estadoPago
     );
+
+    /**
+     * Devuelve todos los detalles de pago de tipo CUOTA PENDIENTE
+     * correspondientes a un residente (identificado por su CUI).
+     */
+    @Query("""
+      SELECT pd 
+        FROM Pago_Detalle pd
+       WHERE pd.pago.creadoPor.cui = :cui
+         AND pd.servicioPagado = com.example.Mi.casita.segura.pagos.model.Pago_Detalle.ServicioPagado.CUOTA
+         AND pd.estadoPago   = com.example.Mi.casita.segura.pagos.model.Pago_Detalle.EstadoPago.PENDIENTE
+    """)
+    List<Pago_Detalle> findDetallesDeCuotasPendientesPorUsuario(@Param("cui") String cui);
+
+    /**
+     * Verifica si existe al menos un detalle pendiente (cualquier servicio) para un pago específico.
+     * Esto lo necesitaremos para saber, tras cerrar un detalle, si quedan otros pendientes.
+     */
+    boolean existsByPago_IdAndEstadoPago(Long pagoId, Pago_Detalle.EstadoPago estadoPago);
 
 
     // Puedes agregar más métodos según necesites

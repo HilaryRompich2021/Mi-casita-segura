@@ -30,21 +30,33 @@ public class generarCuotasMensuales {
     //@Scheduled(cron = "0 0 0 20 * ?") // Cada 20 del mes
     //@Scheduled(cron = "0 * * * * ?")
     @Scheduled(cron = "0 */10 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * * ")
     public void generarCuotasMensuales() {
         List<Usuario> residentes = usuarioRepo.findByRol(Usuario.Rol.RESIDENTE);
+
+        LocalDate hoy = LocalDate.now();
+        LocalDate inicioMes = hoy.withDayOfMonth(1);
+        LocalDate finMes    = hoy.withDayOfMonth(hoy.lengthOfMonth());
 
         //  LOG para verificar que el método se está ejecutando
         System.out.println("⏳ Ejecutando generación automática de cuota para: " + LocalDate.now());
 
 
         for (Usuario residente : residentes) {
-            LocalDate hoy = LocalDate.now();
+           // LocalDate hoy = LocalDate.now();
 
-            //Simular más pagos pendientes para la reinstalación
+            /*//Simular más pagos pendientes para la reinstalación
             boolean yaTiene = pagosRepo.existsByCreadoPorAndMesAndAnio(
-                    residente.getCui(), hoy.getMonthValue(), hoy.getYear());
+                    residente.getCui(), hoy.getMonthValue(), hoy.getYear());*/
+            boolean yaTiene = pagosRepo.existsByCreadoPorAndFechaPagoBetweenAndEstado(
+                    residente.getCui(),
+                    inicioMes,
+                    finMes
+            );
+
+
 //el if para simular
-            if (!yaTiene) {
+           // if (!yaTiene) {
                 Pagos cuota = new Pagos();
                 cuota.setMontoTotal(new BigDecimal("550.00"));
                 cuota.setFechaPago(hoy); // fecha de emisión
@@ -67,8 +79,8 @@ public class generarCuotasMensuales {
                 // ✅ LOG para cada residente que reciba cuota
                 System.out.println("➡️ Cuota creada para: " + residente.getNombre() + " (CUI: " + residente.getCui() + ")");
 
-          }
-       }
+           // }
+        }
     }
 
     /**
@@ -78,7 +90,7 @@ public class generarCuotasMensuales {
      */
 
     //@Scheduled(cron = "0 0 1 * * ?") // Todos los días a la 01:00 AM
-    @Scheduled(cron = "0 */2 * * * ?")
+    @Scheduled(cron = "0 */10 * * * ?")
     @Transactional
     public void enviarRecordatorioSiTieneDosCuotas() {
         List<Usuario> residentes = usuarioRepo.findByRol(Usuario.Rol.RESIDENTE);

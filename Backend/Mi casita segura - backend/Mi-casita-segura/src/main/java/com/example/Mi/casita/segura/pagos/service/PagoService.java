@@ -16,6 +16,9 @@ import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -30,6 +33,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PagoService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PagoService.class);
+
     private final PagosRepository pagosRepo;
     private final UsuarioRepository usuarioRepo;
     private final ReservaRepository reservaRepo;
@@ -37,79 +42,77 @@ public class PagoService {
     private final PagoDetalleRepository pagoDetalleRepo;
     private final CorreoService correoService;
 
+    @Transactional
     public Pagos registrarPago(PagoRequestDTO dto) {
+        // 1) Recuperar usuario creador
         Usuario usuario = usuarioRepo.findById(dto.getCreadoPor())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario creador no encontrado"));
 
-        List<Pagos> cuotasPendientes = pagosRepo.findByCreadoPor_CuiAndEstado(dto.getCreadoPor(), Pagos.EstadoDelPago.PENDIENTE);
-        int cuotasPendientesPrevias = cuotasPendientes.size();
+        // 2) Contar únicamente las CUOTAS pendientes (servicio = CUOTA) para este usuario
+        int cuotasPendientesPrevias = pagosRepo.contarCuotasPendientesPorUsuario(dto.getCreadoPor());
 
+        // 3) Construir el objeto Pagos
         Pagos pago = new Pagos();
-        pago.setMontoTotal(dto.getMontoTotal());
+        pago.setMontoTotal(dto.getMontoTotal());       // Luego se ajustará si hay reinstalación
         pago.setFechaPago(LocalDate.now());
         pago.setMetodoPago(dto.getMetodoPago());
-        pago.setEstado(dto.getEstado());
+        pago.setEstado(dto.getEstado());               // normalmente "COMPLETADO"
         pago.setCreadoPor(usuario);
 
+        // 4) Validar datos de tarjeta (si aplica)
         validarTarjeta(dto);
 
-
-        // Crear y asociar detalles
+        // 5) Crear la lista de detalles de este pago
         List<Pago_Detalle> detalles = new ArrayList<>();
         BigDecimal montoTotal = BigDecimal.ZERO;
-        //int cuotasPendientesPagadas = 0;
 
         for (PagoDetalleDTO detDTO : dto.getDetalles()) {
-
             Pago_Detalle detalle = new Pago_Detalle();
             detalle.setConcepto(detDTO.getConcepto());
             detalle.setDescripcion(detDTO.getDescripcion());
-            detalle.setMonto(detDTO.getMonto());
             detalle.setServicioPagado(detDTO.getServicioPagado());
             detalle.setEstadoPago(detDTO.getEstadoPago());
+            detalle.setPago(pago);  // asociarlo al pago aún no guardado
 
-            detalle.setPago(pago);
-
-            System.out.println("ReservaId recibido: " + detDTO.getReservaId());
-
+            // 5.1) Si trae reservaId, asignar la reserva
             if (detDTO.getReservaId() != null) {
                 Reserva reserva = reservaRepo.findById(detDTO.getReservaId())
                         .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
                 detalle.setReserva(reserva);
             }
 
+            // 5.2) Si trae reinstalacionId, asignar la reinstalación
             if (detDTO.getReinstalacionId() != null) {
                 ReinstalacionServicio reinstalacion = reinstalacionRepo.findById(detDTO.getReinstalacionId())
                         .orElseThrow(() -> new IllegalArgumentException("Reinstalación no encontrada"));
                 detalle.setReinstalacion(reinstalacion);
             }
 
+            // 5.3) Si es AGUA, calcular excedente y monto
             if (detDTO.getServicioPagado() == Pago_Detalle.ServicioPagado.AGUA) {
                 double usados = detDTO.getMetrosCubicosUsados() != null ? detDTO.getMetrosCubicosUsados() : 0.0;
                 double excedente = usados > 4.0 ? usados - 4.0 : 0.0;
                 BigDecimal montoExceso = BigDecimal.valueOf(excedente * 23.50);
                 BigDecimal cuotaBase = new BigDecimal("550.00");
-
-                // Si hay excedente, sumar ambos
                 detalle.setMonto(cuotaBase.add(montoExceso));
-                detalle.setDescripcion("Consumo de agua mensual: " + usados + " m³, Excedente: " + excedente + " m³");
+                detalle.setDescripcion("Consumo de agua: " + usados + " m³, Excedente: " + excedente + " m³");
             } else {
-                detalle.setMonto(detDTO.getMonto()); // para los otros servicios
+                // Para CUOTA, RESERVA, REINSTALACION… usar el monto directo
+                detalle.setMonto(detDTO.getMonto());
             }
+
             montoTotal = montoTotal.add(detalle.getMonto());
             detalles.add(detalle);
         }
 
-        //  Agregar cargo por reinstalación si cancela 2 o más cuotas pendientes
+        // 6) Si hay ≥ 2 CUOTAS pendientes previas, agregar cargo de reinstalación
         if (cuotasPendientesPrevias >= 2) {
             ReinstalacionServicio reinstalacion = new ReinstalacionServicio();
             reinstalacion.setUsuario(usuario);
             reinstalacion.setFecha_solicitud(LocalDate.now());
             reinstalacion.setEstado("PENDIENTE");
             reinstalacion.setMonto(new BigDecimal("89.00"));
-
             reinstalacion = reinstalacionRepo.save(reinstalacion);
-
 
             Pago_Detalle cargoReinstalacion = new Pago_Detalle();
             cargoReinstalacion.setConcepto("Reinstalación de servicio");
@@ -122,77 +125,94 @@ public class PagoService {
 
             montoTotal = montoTotal.add(cargoReinstalacion.getMonto());
             detalles.add(cargoReinstalacion);
-
-
-            // Actualizar monto total
-            //pago.setMontoTotal(pago.getMontoTotal().add(new BigDecimal("89.00")));
         }
+
+        // 7) Fijar monto total ajustado y asignar detalles al pago
         pago.setMontoTotal(montoTotal);
         pago.setDetalles(detalles);
 
-        //return pagosRepo.save(pago);
+        // 8) Guardar el pago (cascade guardará también los detalles)
         Pagos pagoGuardado = pagosRepo.save(pago);
 
-        // Actualizar todas las cuotas pendientes a COMPLETADO
-        for (Pagos cuota : cuotasPendientes) {
-            cuota.setEstado(Pagos.EstadoDelPago.COMPLETADO);
-            pagosRepo.save(cuota); // Puedes optimizar con saveAll si prefieres
 
+
+        // 9) ——— MARCAR COMO “COMPLETADOS” LOS DETALLES DE CUOTA PENDIENTES ANTERIORES ———
+        // Recuperar todos los detalles PENDIENTES de tipo CUOTA para este usuario
+        List<Pago_Detalle> detallesPendientesCuota = pagoDetalleRepo
+                .findDetallesDeCuotasPendientesPorUsuario(usuario.getCui());
+
+        for (Pago_Detalle detPend : detallesPendientesCuota) {
+            // 9.1) Cambiar el estado del detalle a COMPLETADO
+            detPend.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+            pagoDetalleRepo.save(detPend);
+
+            // 9.2) Verificar si el pago padre (detPend.getPago()) aún tiene otros detalles pendientes
+            Pagos pagoPadre = detPend.getPago();
+            boolean quedanPendientes = pagoDetalleRepo
+                    .existsByPago_IdAndEstadoPago(pagoPadre.getId(), Pago_Detalle.EstadoPago.PENDIENTE);
+
+            // 9.3) Si el pago padre ya no tiene detalles pendientes, marcarlo también como COMPLETADO
+            if (!quedanPendientes && pagoPadre.getEstado() == Pagos.EstadoDelPago.PENDIENTE) {
+                pagoPadre.setEstado(Pagos.EstadoDelPago.COMPLETADO);
+                pagosRepo.save(pagoPadre);
+            }
         }
 
+        // 10) ——— MARCAR COMO “COMPLETADOS” LOS DETALLES DE RESERVA PENDIENTES ———
         for (PagoDetalleDTO detDTO : dto.getDetalles()) {
             if (detDTO.getReservaId() != null) {
-                // Buscamos el Pago_Detalle pendiente para esa reserva:
-                Optional<Pago_Detalle> optDetallePendiente =
-                        pagoDetalleRepo.findFirstByReserva_IdAndEstadoPago(
-                                detDTO.getReservaId(),
-                                Pago_Detalle.EstadoPago.PENDIENTE
-                        );
+                Optional<Pago_Detalle> optDetallePendiente = pagoDetalleRepo
+                        .findFirstByReserva_IdAndEstadoPago(detDTO.getReservaId(), Pago_Detalle.EstadoPago.PENDIENTE);
 
-                // Desempaquetamos el Optional. Si no existe, detallePendiente será null.
-                Pago_Detalle detallePendiente = optDetallePendiente.orElse(null);
+                if (optDetallePendiente.isPresent()) {
+                    Pago_Detalle detalleReservaPend = optDetallePendiente.get();
+                    detalleReservaPend.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+                    pagoDetalleRepo.save(detalleReservaPend);
 
-                if (detallePendiente != null) {
-                    detallePendiente.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
-                    pagoDetalleRepo.save(detallePendiente);
+                    Pagos pagoPadreReserva = detalleReservaPend.getPago();
+                    boolean quedanPendientesParaReserva = pagoDetalleRepo
+                            .existsByPago_IdAndEstadoPago(pagoPadreReserva.getId(), Pago_Detalle.EstadoPago.PENDIENTE);
+
+                    if (!quedanPendientesParaReserva && pagoPadreReserva.getEstado() == Pagos.EstadoDelPago.PENDIENTE) {
+                        pagoPadreReserva.setEstado(Pagos.EstadoDelPago.COMPLETADO);
+                        pagosRepo.save(pagoPadreReserva);
+                    }
                 }
             }
         }
 
-
-        // Confirmar las reservas si el pago fue exitoso
+        // 11) Finalmente, confirmar la reserva en la tabla “Reserva” y enviar correo
         for (PagoDetalleDTO detDTO : dto.getDetalles()) {
             if (detDTO.getReservaId() != null) {
                 Reserva reserva = reservaRepo.findById(detDTO.getReservaId())
-                        .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada para actualización de estado"));
+                        .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada para actualizar"));
+
                 reserva.setEstado(Reserva.EstadoReserva.RESERVADO);
                 Reserva reservaActualizada = reservaRepo.save(reserva);
 
-                /// Envío de notificación ////
+                // Preparar datos para el correo
                 String fechaFormateada = reservaActualizada.getFecha()
                         .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                // hotelar getHoraInicio() devuelve LocalTime; formateamos como "HH:mm"
                 String horaInicioStr = reservaActualizada.getHoraInicio()
                         .format(DateTimeFormatter.ofPattern("HH:mm"));
                 String horaFinStr = reservaActualizada.getHoraFin()
                         .format(DateTimeFormatter.ofPattern("HH:mm"));
 
-                // Obtenemos datos del usuario (residente):
-                Usuario residente = reservaActualizada.getResidente();
-                String correoResidente = residente.getCorreoElectronico();
-                String nombreResidente = residente.getNombre();
-                Integer numeroCasa = residente.getNumeroCasa();
-
-                // Invocamos al CorreoService:
-                correoService.enviarConfirmacionReserva(
-                        correoResidente,
-                        nombreResidente,
-                        numeroCasa,
-                        reservaActualizada.getAreaComun(),
-                        fechaFormateada,
-                        horaInicioStr,
-                        horaFinStr
-                );
+                // Intentar enviar correo, pero capturar excepción para que el pago no falle
+                try {
+                    correoService.enviarConfirmacionReserva(
+                            usuario.getCorreoElectronico(),
+                            usuario.getNombre(),
+                            usuario.getNumeroCasa(),
+                            reservaActualizada.getAreaComun(),
+                            fechaFormateada,
+                            horaInicioStr,
+                            horaFinStr
+                    );
+                } catch (MailSendException ex) {
+                    logger.error("Error enviando correo de confirmación de reserva para el usuario {}: {}",
+                            usuario.getCui(), ex.getMessage());
+                }
             }
         }
 

@@ -36,22 +36,39 @@ public interface PagosRepository extends JpaRepository<Pagos, Long> {
 
 
     //verificar que no exista una cuota en el mes y año actual para el usuario
-
-
-    @Query("SELECT COUNT(p) > 0 FROM Pagos p WHERE p.creadoPor.cui = :cui " +
-            "AND MONTH(p.fechaPago) = :mes AND YEAR(p.fechaPago) = :anio " +
-            "AND p.estado = 'PENDIENTE'")
-    boolean existsByCreadoPorAndMesAndAnio(
-            @Param("cui") String cui,
-            @Param("mes") int mes,
-            @Param("anio") int anio
+    @Query("""
+      SELECT (COUNT(p) > 0)
+        FROM Pagos p
+       WHERE p.creadoPor.cui = :cui
+         AND p.fechaPago BETWEEN :inicioMes AND :finMes
+         AND p.estado = com.example.Mi.casita.segura.pagos.model.Pagos.EstadoDelPago.PENDIENTE
+    """)
+    boolean existsByCreadoPorAndFechaPagoBetweenAndEstado(
+            @Param("cui")       String    cui,
+            @Param("inicioMes") LocalDate inicioMes,
+            @Param("finMes")    LocalDate finMes
     );
 
+  /*  @Query("""
+      SELECT (COUNT(p) > 0)
+        FROM Pagos p
+       WHERE p.creadoPor.cui = :cui
+         AND FUNCTION('EXTRACT', 'MONTH', p.fechaPago) = :mes
+         AND FUNCTION('EXTRACT', 'YEAR',  p.fechaPago) = :anio
+         AND p.estado = com.example.Mi.casita.segura.pagos.model.Pagos.EstadoDelPago.PENDIENTE
+    """)
+    boolean existsByCreadoPorAndMesAndAnio(
+            @Param("cui")  String cui,
+            @Param("mes")  int    mes,
+            @Param("anio") int    anio
+    );*/
+
     @Query("""
-    SELECT COUNT(pd) FROM Pago_Detalle pd
-    WHERE pd.pago.creadoPor.cui = :cui
-    AND pd.servicioPagado = 'CUOTA'
-    AND pd.estadoPago = 'PENDIENTE'
+  SELECT COUNT(pd) 
+    FROM Pago_Detalle pd
+   WHERE pd.pago.creadoPor.cui = :cui
+     AND pd.servicioPagado = com.example.Mi.casita.segura.pagos.model.Pago_Detalle.ServicioPagado.CUOTA
+     AND pd.estadoPago   = com.example.Mi.casita.segura.pagos.model.Pago_Detalle.EstadoPago.PENDIENTE
 """)
     int contarCuotasPendientesPorUsuario(@Param("cui") String cui);
 
