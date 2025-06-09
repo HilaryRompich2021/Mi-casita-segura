@@ -57,6 +57,9 @@ public interface PagoDetalleRepository extends JpaRepository <Pago_Detalle, Long
     Optional<Pago_Detalle> findFirstByReserva_IdAndEstadoPago(Long reservaId,
                                                               Pago_Detalle.EstadoPago estadoPago);
 
+    //Eliminar usuario completo
+    //void deleteByCreadoPorCui(String cui);
+
 }
 
 

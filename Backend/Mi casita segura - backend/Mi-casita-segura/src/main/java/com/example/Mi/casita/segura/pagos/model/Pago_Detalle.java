@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 
@@ -37,6 +39,7 @@ public class Pago_Detalle {
     @JoinColumn(name = "pago_id")
     //@JsonIgnore
     @JsonBackReference
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Pagos pago;
 
     //  Relación opcional hacia Reserva (puede ser null)

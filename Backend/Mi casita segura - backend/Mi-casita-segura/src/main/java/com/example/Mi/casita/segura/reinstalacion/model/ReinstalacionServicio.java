@@ -36,4 +36,5 @@ public class ReinstalacionServicio {
     private Usuario usuario;
 
 
+
 }

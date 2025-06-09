@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketSoporteRepository extends JpaRepository<TicketSoporte, Long> {
 
+    void deleteByUsuario_Cui(String cui);
+
+
 }

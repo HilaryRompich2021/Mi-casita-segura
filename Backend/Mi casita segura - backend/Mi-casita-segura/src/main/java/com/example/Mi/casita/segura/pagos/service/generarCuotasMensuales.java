@@ -28,7 +28,8 @@ public class generarCuotasMensuales {
 
 
     //@Scheduled(cron = "0 0 0 20 * ?") // Cada 20 del mes
-    //@Scheduled(cron = "0 * * * * ?")
+   // @Scheduled(cron = "0 * * * * ?")
+   // @Scheduled(cron = " * * * * ")
     @Scheduled(cron = "0 */10 * * * ?")
     //@Scheduled(cron = "0 */5 * * * * ")
     public void generarCuotasMensuales() {
@@ -89,9 +90,9 @@ public class generarCuotasMensuales {
      *    usando CorreoService.enviarRecordatorioPago(...).
      */
 
-    @Scheduled(cron = "0 0 1 * * ?") // Todos los días a la 01:00 AM
+    //@Scheduled(cron = "0 0 1 * * ?") // Todos los días a la 01:00 AM
     //@Scheduled(cron = "0 */10 * * * ?")
-    //@Scheduled(cron = "0 */5 * * * * ")
+    @Scheduled(cron = "0 */5 * * * * ")
     //@Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void enviarRecordatorioSiTieneDosCuotas() {
@@ -145,7 +146,7 @@ public class generarCuotasMensuales {
         }
     }
 
-    @Transactional
+  /*  @Transactional
     public void aplicarCorteASuspendidos() {
         List<Usuario> residentes = usuarioRepo.findByRol(Usuario.Rol.RESIDENTE);
         for (Usuario residente : residentes) {
@@ -155,5 +156,5 @@ public class generarCuotasMensuales {
                 System.out.println("Servicio cortado a: " + residente.getNombre());
             }
         }
-    }
+    }*/
 }

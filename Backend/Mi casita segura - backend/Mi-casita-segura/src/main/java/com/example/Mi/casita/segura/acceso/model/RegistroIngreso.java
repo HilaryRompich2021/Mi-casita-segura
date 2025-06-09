@@ -40,5 +40,9 @@ public class RegistroIngreso {
         SISTEMA, PAGO, RESERVA, SEGURIDAD
     }
 
+    @ManyToOne
+    @JoinColumn(name="usuario_cui")
+    private Usuario usuario;
+
 
 }

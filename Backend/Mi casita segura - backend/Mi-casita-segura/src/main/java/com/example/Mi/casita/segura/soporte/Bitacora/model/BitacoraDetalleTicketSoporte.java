@@ -1,4 +1,4 @@
-package com.example.Mi.casita.segura.soporte.model.Bitacora;
+package com.example.Mi.casita.segura.soporte.Bitacora.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

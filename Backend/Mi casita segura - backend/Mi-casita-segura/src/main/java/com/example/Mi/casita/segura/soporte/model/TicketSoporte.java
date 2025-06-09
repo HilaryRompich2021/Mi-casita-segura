@@ -1,6 +1,7 @@
 package com.example.Mi.casita.segura.soporte.model;
 
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TicketSoporte {
 
     @Id

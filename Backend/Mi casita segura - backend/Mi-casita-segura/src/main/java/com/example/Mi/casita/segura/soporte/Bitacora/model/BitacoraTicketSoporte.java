@@ -1,6 +1,5 @@
-package com.example.Mi.casita.segura.soporte.model.Bitacora;
+package com.example.Mi.casita.segura.soporte.Bitacora.model;
 
-import com.example.Mi.casita.segura.pagos.model.Pago_Detalle;
 import com.example.Mi.casita.segura.soporte.model.TicketSoporte;
 import jakarta.persistence.*;
 import lombok.Data;

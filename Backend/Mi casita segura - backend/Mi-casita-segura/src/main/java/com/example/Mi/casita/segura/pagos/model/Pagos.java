@@ -38,13 +38,19 @@ public class Pagos {
     private String metodoPago;
 
     // Usuario que realizó el pago
+
     @ManyToOne
     @JoinColumn(name = "creado_por", referencedColumnName = "cui")
     private Usuario creadoPor;
 
     // Detalle de conceptos individuales dentro del pago
+    @OneToMany(
+            mappedBy = "pago",
+            cascade = CascadeType.ALL,      // aplica todas las operaciones (incl. REMOVE)
+            orphanRemoval = true            // elimina detalles “huérfanos”
+    )
     @JsonManagedReference
-    @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL)
+    //@OneToMany(mappedBy = "pago", cascade = CascadeType.ALL)
     private List<Pago_Detalle> detalles;
 
     public enum EstadoDelPago {
