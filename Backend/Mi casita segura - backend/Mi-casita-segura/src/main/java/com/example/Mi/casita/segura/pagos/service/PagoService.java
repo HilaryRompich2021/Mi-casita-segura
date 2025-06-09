@@ -11,7 +11,7 @@ import com.example.Mi.casita.segura.pagos.repository.PagosRepository;
 import com.example.Mi.casita.segura.reinstalacion.model.ReinstalacionServicio;
 import com.example.Mi.casita.segura.reservas.model.Reserva;
 import com.example.Mi.casita.segura.reservas.repository.ReservaRepository;
-import com.example.Mi.casita.segura.soporte.repository.ReinstalacionRepository;
+import com.example.Mi.casita.segura.reinstalacion.repository.ReinstalacionRepository;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
 

@@ -73,5 +73,8 @@ public interface PagosRepository extends JpaRepository<Pagos, Long> {
     int contarCuotasPendientesPorUsuario(@Param("cui") String cui);
 
     List<Pagos> findByCreadoPorCui(String cui);
+    //Elimnar usuario completo
+    void deleteByCreadoPor_Cui(String cui);
+
 }
 

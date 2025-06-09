@@ -23,4 +23,7 @@ public interface AccesoQRRepository extends JpaRepository<Acceso_QR, Long> {
     boolean existsByVisitanteIdAndEstado(Long visitanteId, String estado);
 
     Optional<Acceso_QR> findFirstByAsociadoOrderByFechaGeneracionDesc(Usuario asociado);
+
+    void deleteByAsociado_Cui(String cui);
+
 }

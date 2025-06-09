@@ -1,7 +1,6 @@
-package com.example.Mi.casita.segura.soporte.repository;
+package com.example.Mi.casita.segura.reinstalacion.repository;
 
 import com.example.Mi.casita.segura.reinstalacion.model.ReinstalacionServicio;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +14,7 @@ public interface ReinstalacionRepository extends JpaRepository<ReinstalacionServ
 
     // Buscar por estado (ej. SOLICITADO, COMPLETADO)
     List<ReinstalacionServicio> findByEstado(String estado);
+
+    void deleteByUsuario_Cui(String cui);
+
 }

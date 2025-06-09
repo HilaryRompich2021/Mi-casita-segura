@@ -12,4 +12,6 @@ public interface VisitanteRepository extends JpaRepository<Visitante, Long> {
 
     List<Visitante> findByCreadoPor_Cui(String creadorCui);
 
+    void deleteByCreadoPorCui(String cui);
+
 }

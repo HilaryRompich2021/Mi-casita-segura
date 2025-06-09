@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         //Permiso sin autorizacion a /ws/**
@@ -58,6 +59,7 @@ public class SecurityConfig {
                                 "/api/usuarios",
                                 "/api/usuarios/**",
                                 "/api/usuarios/{cui}",
+                                "/api/usuarios",
                                 "/api/visitantes/registro",
                                 "/api/visitantes",
                                 "/api/pagos/registrarPago",

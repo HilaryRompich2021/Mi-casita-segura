@@ -29,4 +29,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     // Nuevo: traer todas las reservas con estado = RESERVADO,
     // ordenadas por fecha (asc) y horaInicio (asc)
     List<Reserva> findByEstadoOrderByFechaAscHoraInicioAsc(Reserva.EstadoReserva estado);
+
+    //Eliminar usuario
+    void deleteByResidente_Cui(String cui);
+
 }
+
+

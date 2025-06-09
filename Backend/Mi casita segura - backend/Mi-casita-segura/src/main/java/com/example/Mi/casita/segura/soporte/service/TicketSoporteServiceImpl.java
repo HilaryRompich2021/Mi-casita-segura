@@ -1,15 +1,19 @@
 // src/main/java/com/example/Mi/casita/segura/soporte/service/TicketSoporteServiceImpl.java
 package com.example.Mi.casita.segura.soporte.service;
 
+import com.example.Mi.casita.segura.soporte.Bitacora.model.BitacoraDetalleTicketSoporte;
+import com.example.Mi.casita.segura.soporte.Bitacora.model.BitacoraTicketSoporte;
+import com.example.Mi.casita.segura.soporte.Bitacora.repository.BitacoraDetalleTicketSoporteRepository;
+import com.example.Mi.casita.segura.soporte.Bitacora.repository.BitacoraTicketSoporteRepository;
 import com.example.Mi.casita.segura.soporte.dto.CreateTicketRequestDTO;
 import com.example.Mi.casita.segura.soporte.dto.TicketSoporteDTO;
 import com.example.Mi.casita.segura.soporte.dto.UpdateEstadoRequestDTO;
 import com.example.Mi.casita.segura.soporte.model.TicketSoporte;
-import com.example.Mi.casita.segura.soporte.model.Bitacora.BitacoraTicketSoporte;
-import com.example.Mi.casita.segura.soporte.model.Bitacora.BitacoraDetalleTicketSoporte;
+//import com.example.Mi.casita.segura.soporte.model.Bitacora.BitacoraTicketSoporte;
+//import com.example.Mi.casita.segura.soporte.model.Bitacora.BitacoraDetalleTicketSoporte;
 import com.example.Mi.casita.segura.soporte.repository.TicketSoporteRepository;
-import com.example.Mi.casita.segura.soporte.repository.BitacoraTicketSoporteRepository;
-import com.example.Mi.casita.segura.soporte.repository.BitacoraDetalleTicketSoporteRepository;
+//import com.example.Mi.casita.segura.soporte.repository.BitacoraTicketSoporteRepository;
+//import com.example.Mi.casita.segura.soporte.repository.BitacoraDetalleTicketSoporteRepository;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,7 +68,7 @@ public class TicketSoporteServiceImpl implements TicketSoporteService {
         // 4. Detalle de bitácora (puedes usar usuario.getNombre() o usuario.getCui())
         BitacoraDetalleTicketSoporte detalle = new BitacoraDetalleTicketSoporte();
         detalle.setBitacoraTicketSoporte(bitEnc);
-        detalle.setUsuario(usuario.getNombre()); // o usuario.getCui() si prefieres guardar el CUI
+        detalle.setUsuario(usuario.getNombre()); // o usuario.getCui()
         detalle.setDatosAnteriores(null);
         try {
             String jsonNuevos = objectMapper.writeValueAsString(ticket);

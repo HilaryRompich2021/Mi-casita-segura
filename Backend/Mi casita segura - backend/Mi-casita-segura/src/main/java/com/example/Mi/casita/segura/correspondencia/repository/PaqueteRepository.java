@@ -13,5 +13,9 @@ public interface PaqueteRepository extends JpaRepository<Paquete, String> {
     Optional<Paquete> findByCodigo(String codigo);
     List<Paquete> findByCreadopor_CuiOrderByFechaRegistroDesc(String cui);
    // Optional<Paquete> findByCodigoEntrega(String codigoEntrega);
+
+    void deleteByCreadopor_Cui(String cui);
+
+
 }
 

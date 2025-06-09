@@ -9,6 +9,7 @@ import com.example.Mi.casita.segura.acceso.repository.BitacoraDetalleRegistroIng
 import com.example.Mi.casita.segura.acceso.repository.RegistroIngresoRepository;
 import com.example.Mi.casita.segura.acceso.repository.BitacoraRegistroIngresoRepository;
 import com.example.Mi.casita.segura.acceso.websocket.TalanqueraWebSocketHandler;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,11 @@ public class AccesoQRService {
     private final BitacoraRegistroIngresoRepository bitacoraRegistroRepo;
     private final BitacoraDetalleRegistroIngresoRepository bitacoraDetalleRepo;
     private final TalanqueraWebSocketHandler ws;
+
+    @Transactional
+    public void borrarAccesosDeUsuario(String cui) {
+        repo.deleteByAsociado_Cui(cui);
+    }
 
     public AccesoQRService(AccesoQRRepository repo,
                            RegistroIngresoRepository logRepo,

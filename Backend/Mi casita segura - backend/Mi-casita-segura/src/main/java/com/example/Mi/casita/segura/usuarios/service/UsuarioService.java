@@ -5,14 +5,23 @@ import com.example.Mi.casita.segura.Correo.Service.CorreoService;
 import com.example.Mi.casita.segura.Qr.service.QRService;
 import com.example.Mi.casita.segura.acceso.model.Acceso_QR;
 import com.example.Mi.casita.segura.acceso.repository.AccesoQRRepository;
+import com.example.Mi.casita.segura.acceso.repository.RegistroIngresoRepository;
+import com.example.Mi.casita.segura.correspondencia.repository.PaqueteRepository;
 import com.example.Mi.casita.segura.notificaciones.service.NotificacionService;
+import com.example.Mi.casita.segura.pagos.repository.PagoDetalleRepository;
+import com.example.Mi.casita.segura.pagos.repository.PagosRepository;
+import com.example.Mi.casita.segura.reinstalacion.repository.ReinstalacionRepository;
+import com.example.Mi.casita.segura.reservas.repository.ReservaRepository;
+import com.example.Mi.casita.segura.soporte.repository.TicketSoporteRepository;
 import com.example.Mi.casita.segura.usuarios.dto.ActualizarPerfilDTO;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioListadoDTO;
 import com.example.Mi.casita.segura.usuarios.dto.UsuarioRegistroDTO;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
 import com.example.Mi.casita.segura.usuarios.repository.UsuarioRepository;
+import com.example.Mi.casita.segura.visitantes.repository.VisitanteRepository;
 import com.google.zxing.WriterException;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -37,6 +46,14 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final QRService qrService;
     private final CorreoService correoService;
+    private final PagosRepository pagosRepository;
+    private final PagoDetalleRepository pagoDetalleRepository;
+    private final ReservaRepository reservaRepository;
+    private final TicketSoporteRepository ticketSoporteRepository;
+    private final ReinstalacionRepository reinstalacionRepository;
+    private final VisitanteRepository visitanteRepository;
+    private final PaqueteRepository paqueteRepository;
+    private final RegistroIngresoRepository registroIngresoRepository;
 
     /**
      * Registra un usuario y genera un QR, devolviendo el DTO con el campo codigoQR rellenado.
@@ -87,8 +104,7 @@ public class UsuarioService {
         qr.setAsociado(usuario);
         accesoQRRepository.save(qr);
 
-        // Enviar notificación
-       // notificacionService.enviarBienvenida(usuario, qr.getCodigoQR());
+
 
         // 5) Generar imagen del QR
         BufferedImage qrImage;
@@ -116,13 +132,35 @@ public class UsuarioService {
         return dto;
     }
 
-
+    @Transactional
     public void eliminarUsuario(String cui) {
+        if (usuarioRepository.existsById(cui)) {
+            // borras transacciones
+            pagosRepository.deleteByCreadoPor_Cui(cui);
+            //pagoDetalleRepository.deleteByCreadoPorCui(cui);
+            reservaRepository.deleteByResidente_Cui(cui);
+            ticketSoporteRepository.deleteByUsuario_Cui(cui);
+            reinstalacionRepository.deleteByUsuario_Cui(cui);
+            visitanteRepository.deleteByCreadoPorCui(cui);
+            paqueteRepository.deleteByCreadopor_Cui(cui);
+            registroIngresoRepository.deleteByUsuario_Cui(cui);
+            accesoQRRepository.deleteByAsociado_Cui(cui);
+
+
+            // …las demás
+            // luego borras el usuario
+            usuarioRepository.deleteById(cui);
+        } else {
+            throw new EntityNotFoundException("Usuario no encontrado");
+        }
+    }
+
+   /* public void eliminarUsuario(String cui) {
         if (!usuarioRepository.existsById(cui)) {
             throw new IllegalArgumentException("El usuario con CUI " + cui + " no existe.");
         }
         usuarioRepository.deleteById(cui);
-    }
+    }*/
 
     public void actualizarUsuario(UsuarioRegistroDTO dto) {
         // implementar según necesidades...
