@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PagoConsultaDTO } from '../pagos/dto/pago-consulta.dto';
 import { AuthService } from './auth.service';
-import { environment } from './../../enviroments/enviroment';
+import { environment } from '../../environments/environment';
 
 export interface AguaCargoDTO {
   cui: string;

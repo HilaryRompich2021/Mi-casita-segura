@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UsuarioListadoDTO } from '../models/usuario-listado.dto';
-import { environment } from './../../enviroments/enviroment';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class DirectorioService {
