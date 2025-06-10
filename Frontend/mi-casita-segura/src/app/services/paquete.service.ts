@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from './../../enviroments/enviroment';
 
 export interface PaqueteRegistroDTO {
   empresaDeEntrega: string;
@@ -36,7 +37,8 @@ export interface PaqueteResponse {
   providedIn: 'root'
 })
 export class PaqueteService {
-private baseUrl = 'http://localhost:8080/api/paquetes';
+//private baseUrl = 'http://localhost:8080/api/paquetes';
+private baseUrl = `${environment.apiUrl}/paquetes`;
 
   constructor(private http: HttpClient) { }
 
@@ -75,13 +77,7 @@ private baseUrl = 'http://localhost:8080/api/paquetes';
       }
     );
   }
-/*  validarEntrega(codigo: string): Observable<PaqueteResponse> {
-    return this.http.post<PaqueteResponse>(
-      `${this.baseUrl}/validar-entrega`,
-      { codigo },
-      this._authHeaders()
-    );
-  }*/
+
 
   /** Construye headers con el Bearer token, tal como tu AuthInterceptor espera */
   private _authHeaders(): { headers: HttpHeaders } {

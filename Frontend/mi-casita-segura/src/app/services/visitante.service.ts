@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from './../../enviroments/enviroment';
 
 export interface VisitanteRegistroDTO {
   cui: string;
@@ -55,7 +56,8 @@ export interface Visitante {
   providedIn: 'root'
 })
 export class VisitanteService {
-  private baseUrl = 'http://localhost:8080/api/visitantes';
+  //private baseUrl = 'http://localhost:8080/api/visitantes';
+  private baseUrl = `${environment.apiUrl}/visitantes`;
 
 
   constructor(

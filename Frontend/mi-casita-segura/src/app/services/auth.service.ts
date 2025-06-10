@@ -1,6 +1,8 @@
+import { environment } from './../../enviroments/enviroment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+
 
 interface AuthResponse {
   token: string;
@@ -10,8 +12,9 @@ interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  [x: string]: any;
-  private baseUrl = 'http://localhost:8080/api/auth';
+  ///[x: string]: any;
+  //private baseUrl = 'http://localhost:8080/api/auth';
+  private baseUrl = `${environment.apiUrl}/auth`;
   private tokenKey = 'auth_token';
 
   constructor(private http: HttpClient){

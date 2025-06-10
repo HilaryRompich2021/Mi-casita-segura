@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PagoConsultaDTO } from '../pagos/dto/pago-consulta.dto';
 import { AuthService } from './auth.service';
+import { environment } from './../../enviroments/enviroment';
 
 export interface AguaCargoDTO {
   cui: string;
@@ -14,7 +15,9 @@ export interface AguaCargoDTO {
   providedIn: 'root'
 })
 export class PagosService {
-  private baseUrl = 'http://localhost:8080/api/pagos';
+ // private baseUrl = 'http://localhost:8080/api/pagos';
+ private baseUrl = `${environment.apiUrl}/pagos`;
+
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   /** Construye los headers con el Bearer token */

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from './../../enviroments/enviroment';
 
 export interface TicketSoporteDTO {
   id: number;
@@ -27,7 +28,8 @@ export interface UpdateEstadoRequest {
   providedIn: 'root'
 })
 export class TicketService {
-  private baseUrl = 'http://localhost:8080/api/tickets';
+  //private baseUrl = 'http://localhost:8080/api/tickets';
+  private baseUrl = `${environment.apiUrl}/tickets`;
 
   constructor(private http: HttpClient) { }
 

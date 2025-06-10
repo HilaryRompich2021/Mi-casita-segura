@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from './../../enviroments/enviroment';
 
 export interface ReservaDTO {
   cui: string;
@@ -26,7 +27,8 @@ export interface ReservaListadoDTO {
   providedIn: 'root'
 })
 export class ReservaService {
-  private baseUrl = 'http://localhost:8080/api/reservas';
+  //private baseUrl = 'http://localhost:8080/api/reservas';
+  private baseUrl = `${environment.apiUrl}/reservas`;
 
   constructor(private http: HttpClient) { }
 

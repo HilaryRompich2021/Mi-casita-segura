@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from './../../enviroments/enviroment';
 
 export interface UsuarioListadoDTO {
   cui: string;
@@ -33,7 +34,8 @@ interface RegistroDTO {
   providedIn: 'root'
 })
 export class RegistroService {
-  private baseUrl = 'http://localhost:8080/api/usuarios';
+  //private baseUrl = 'http://localhost:8080/api/usuarios';
+  private baseUrl = `${environment.apiUrl}/usuarios`;
 
 
   constructor(private http: HttpClient) {}
