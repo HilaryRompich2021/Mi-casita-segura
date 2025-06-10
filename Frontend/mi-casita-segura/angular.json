@@ -21,7 +21,13 @@
               {
                 "glob": "**/*",
                 "input": "src/assets"
-              }
+              },
+              {
+                  "glob": "web.config",
+                "input": "src",
+                  "output": "."
+             }
+
             ],
             "outputPath": "dist/mi-casita-tailwind",
             "index": "src/index.html",

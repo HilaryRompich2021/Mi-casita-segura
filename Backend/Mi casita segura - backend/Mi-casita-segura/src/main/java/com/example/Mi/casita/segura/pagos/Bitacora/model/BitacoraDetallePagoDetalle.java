@@ -2,9 +2,12 @@ package com.example.Mi.casita.segura.pagos.Bitacora.model;
 
 
 //import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
 //import org.hibernate.annotations.TypeDef;
 //import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
@@ -14,7 +17,6 @@ import org.hibernate.type.SqlTypes;
 
 @Data
 @Entity
-//@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class BitacoraDetallePagoDetalle {
 
     @Id
@@ -23,6 +25,8 @@ public class BitacoraDetallePagoDetalle {
 
     @ManyToOne
     @JoinColumn(name = "bitacoraPagoDetalle_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonBackReference
     private BitacoraPagoDetalle bitacoraPagoDetalle;
 
     @Column(nullable = false, length = 100)

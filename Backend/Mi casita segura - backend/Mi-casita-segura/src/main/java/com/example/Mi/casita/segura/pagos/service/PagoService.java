@@ -151,9 +151,34 @@ public class PagoService {
         // 9) ——— MARCAR COMO “COMPLETADOS” LOS DETALLES DE CUOTA PENDIENTES ANTERIORES ———
         // Recuperar todos los detalles PENDIENTES de tipo CUOTA para este usuario
         List<Pago_Detalle> detallesPendientesCuota = pagoDetalleRepo
-                .findDetallesDeCuotasPendientesPorUsuario(usuario.getCui());
+                //.findDetallesDeCuotasPendientesPorUsuario(
+                .findByPago_CreadoPor_CuiAndServicioPagadoAndEstadoPago(
+                        usuario.getCui(),
+                        Pago_Detalle.ServicioPagado.AGUA,
+                        Pago_Detalle.EstadoPago.PENDIENTE
+                );
+        for (Pago_Detalle detPend : detallesPendientesCuota) {
+            // 9.1) Cambiar el estado a COMPLETADO y guardar el detalle
+            detPend.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+            pagoDetalleRepo.save(detPend);
 
+            // 9.2) Crear una NUEVA bitácora para este detalle ya completado
+            detalleBitacoraService.crearConBitacora(detPend, usuarioLog);
 
+            // 9.3) Verificar si el pago padre ya no tiene detalles pendientes
+            Pagos pagoPadre = detPend.getPago();
+            boolean quedanPendientes = pagoDetalleRepo
+                    .existsByPago_IdAndEstadoPago(pagoPadre.getId(), Pago_Detalle.EstadoPago.PENDIENTE);
+
+            // 9.4) Si ya no quedan pendientes y el pago está PENDIENTE, marcar el pago como COMPLETADO
+            if (!quedanPendientes
+                    && pagoPadre.getEstado() == Pagos.EstadoDelPago.PENDIENTE) {
+                pagoPadre.setEstado(Pagos.EstadoDelPago.COMPLETADO);
+                pagosRepo.save(pagoPadre);
+            }
+        }
+
+/*
                 for (Pago_Detalle detPend : detallesPendientesCuota) {
                     Pago_Detalle cambios = new Pago_Detalle();
                     cambios.setConcepto(detPend.getConcepto());
@@ -168,9 +193,9 @@ public class PagoService {
                     // luego se copiarán en el método actualizarConBitacora.
                     detalleBitacoraService.actualizarConBitacora(detPend.getId(), cambios, usuarioLog);
 
-            // 9.1) Cambiar el estado del detalle a COMPLETADO
-            /*detPend.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
-            pagoDetalleRepo.save(detPend);*/
+                    detPend.setEstadoPago(Pago_Detalle.EstadoPago.COMPLETADO);
+                    pagoDetalleRepo.save(detPend);
+
 
             // 9.2) Verificar si el pago padre (detPend.getPago()) aún tiene otros detalles pendientes
             Pagos pagoPadre = detPend.getPago();
@@ -182,7 +207,7 @@ public class PagoService {
                 pagoPadre.setEstado(Pagos.EstadoDelPago.COMPLETADO);
                 pagosRepo.save(pagoPadre);
             }
-        }
+        }*/
 
         // 10) ——— MARCAR COMO “COMPLETADOS” LOS DETALLES DE RESERVA PENDIENTES ———
         for (PagoDetalleDTO detDTO : dto.getDetalles()) {

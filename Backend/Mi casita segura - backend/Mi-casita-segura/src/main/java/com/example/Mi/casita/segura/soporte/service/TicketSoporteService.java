@@ -11,6 +11,7 @@ public interface TicketSoporteService {
     TicketSoporteDTO crearTicket(CreateTicketRequestDTO request, String usuarioCuiLogeado);
     TicketSoporteDTO ponerEnProceso(UpdateEstadoRequestDTO request, String usuarioCuiLogeado);
     TicketSoporteDTO completarTicket(UpdateEstadoRequestDTO request, String usuarioCuiLogeado);
-    List<TicketSoporteDTO> listarTickets();
+    //List<TicketSoporteDTO> listarTickets();
     TicketSoporteDTO obtenerPorId(Long id);
+    List<TicketSoporteDTO> listarTickets(String usuarioCuiLogeado);
 }

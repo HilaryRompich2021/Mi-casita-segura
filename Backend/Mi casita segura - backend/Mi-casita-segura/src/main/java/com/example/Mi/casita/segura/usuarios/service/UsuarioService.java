@@ -155,12 +155,6 @@ public class UsuarioService {
         }
     }
 
-   /* public void eliminarUsuario(String cui) {
-        if (!usuarioRepository.existsById(cui)) {
-            throw new IllegalArgumentException("El usuario con CUI " + cui + " no existe.");
-        }
-        usuarioRepository.deleteById(cui);
-    }*/
 
     public void actualizarUsuario(UsuarioRegistroDTO dto) {
         // implementar según necesidades...

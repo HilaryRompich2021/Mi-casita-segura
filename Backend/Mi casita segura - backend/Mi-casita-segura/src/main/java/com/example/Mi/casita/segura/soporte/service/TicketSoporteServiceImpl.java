@@ -1,6 +1,7 @@
 // src/main/java/com/example/Mi/casita/segura/soporte/service/TicketSoporteServiceImpl.java
 package com.example.Mi.casita.segura.soporte.service;
 
+import com.example.Mi.casita.segura.pagos.Bitacora.CapturaDatos.JsonUtil;
 import com.example.Mi.casita.segura.soporte.Bitacora.model.BitacoraDetalleTicketSoporte;
 import com.example.Mi.casita.segura.soporte.Bitacora.model.BitacoraTicketSoporte;
 import com.example.Mi.casita.segura.soporte.Bitacora.repository.BitacoraDetalleTicketSoporteRepository;
@@ -37,144 +38,159 @@ public class TicketSoporteServiceImpl implements TicketSoporteService {
     private final BitacoraDetalleTicketSoporteRepository detalleRepo;
     private final UsuarioRepository usuarioRepo;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonUtil jsonUtil;
 
     @Override
     @Transactional
     public TicketSoporteDTO crearTicket(CreateTicketRequestDTO request, String usuarioLogeado) {
-        // 1. Verificar que el usuario logeado exista (buscamos por “usuario” en lugar de por CUI)
         Usuario usuario = usuarioRepo.findByUsuario(usuarioLogeado)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
-        // Si necesitas el CUI para guardarlo en la bitácora:
-        String cuiReal = usuario.getCui();
-
-        // 2. Crear el ticket usando usuario (con su CUI real)
+        // 1) Crear y guardar el ticket
         TicketSoporte ticket = new TicketSoporte();
         ticket.setTipoError(request.getTipoError());
         ticket.setDescripcion(request.getDescripcion());
         ticket.setEstado("CREADO");
         ticket.setFechaCreacion(LocalDate.now());
         ticket.setFechaActualizacion(LocalDateTime.now());
-        ticket.setUsuario(usuario); // asocia la entidad completa (incluye su CUI)
+        ticket.setUsuario(usuario);
         ticketRepo.save(ticket);
 
-        // 3. Bitácora de CREACIÓN
+        // 2) Registrar cabecera de bitácora
         BitacoraTicketSoporte bitEnc = new BitacoraTicketSoporte();
         bitEnc.setTicketSoporte(ticket);
         bitEnc.setOperacion("CREACION");
         bitEnc.setFecha(LocalDateTime.now());
         bitacoraRepo.save(bitEnc);
 
-        // 4. Detalle de bitácora (puedes usar usuario.getNombre() o usuario.getCui())
+        // 3) Serializar sólo el DTO plano (no la entidad entera)
+        TicketSoporteDTO dtoAfter = mapToDTO(ticket);
+        String snapshotDespues = jsonUtil.toJson(dtoAfter);
+
+        // 4) Crear detalle de bitácora
         BitacoraDetalleTicketSoporte detalle = new BitacoraDetalleTicketSoporte();
         detalle.setBitacoraTicketSoporte(bitEnc);
-        detalle.setUsuario(usuario.getNombre()); // o usuario.getCui()
+        detalle.setUsuario(usuario.getNombre());
         detalle.setDatosAnteriores(null);
-        try {
-            String jsonNuevos = objectMapper.writeValueAsString(ticket);
-            detalle.setDatosNuevos(jsonNuevos);
-        } catch (JsonProcessingException e) {
-            detalle.setDatosNuevos(null);
-        }
+        detalle.setDatosNuevos(snapshotDespues);
         detalleRepo.save(detalle);
 
-        return mapToDTO(ticket);
+        return dtoAfter;
     }
 
     @Override
     @Transactional
     public TicketSoporteDTO ponerEnProceso(UpdateEstadoRequestDTO request, String usuarioLogeado) {
+        // 1) Validar rol y cargar ticket
         Usuario usuario = usuarioRepo.findByUsuario(usuarioLogeado)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-
         if (!Usuario.Rol.ADMINISTRADOR.equals(usuario.getRol())) {
             throw new SecurityException("Solo administradores pueden poner en proceso");
         }
-
         TicketSoporte ticket = ticketRepo.findById(request.getTicketId())
                 .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
 
-        String snapshotAnterior = null;
-        try {
-            snapshotAnterior = objectMapper.writeValueAsString(ticket);
-        } catch (JsonProcessingException ignored) {}
+        // 2) Snapshot ANTERIOR usando DTO
+        TicketSoporteDTO dtoBefore = mapToDTO(ticket);
+        String snapshotAnterior = jsonUtil.toJson(dtoBefore);
 
-        // Concatenar detalle en proceso
-        String descripcionAnterior = ticket.getDescripcion();
-        String nuevaDescripcion = descripcionAnterior
+        // 3) Actualizar y guardar
+        ticket.setDescripcion(ticket.getDescripcion()
                 + "\n\n--- DETALLE EN PROCESO ---\n"
-                + request.getDetalle();
-        ticket.setDescripcion(nuevaDescripcion);
+                + request.getDetalle());
         ticket.setEstado("EN_PROCESO");
         ticket.setFechaActualizacion(LocalDateTime.now());
-        ticketRepo.save(ticket);
+        ticket = ticketRepo.save(ticket);
 
+        // 4) Cabecera bitácora
         BitacoraTicketSoporte bitEnc = new BitacoraTicketSoporte();
         bitEnc.setTicketSoporte(ticket);
         bitEnc.setOperacion("EN_PROCESO");
         bitEnc.setFecha(LocalDateTime.now());
         bitacoraRepo.save(bitEnc);
 
+        // 5) Snapshot NUEVO usando DTO
+        TicketSoporteDTO dtoAfter = mapToDTO(ticket);
+        String snapshotNuevo = jsonUtil.toJson(dtoAfter);
+
+        // 6) Detalle bitácora
         BitacoraDetalleTicketSoporte detalle = new BitacoraDetalleTicketSoporte();
         detalle.setBitacoraTicketSoporte(bitEnc);
         detalle.setUsuario(usuario.getNombre());
         detalle.setDatosAnteriores(snapshotAnterior);
-        try {
-            String snapshotNuevo = objectMapper.writeValueAsString(ticket);
-            detalle.setDatosNuevos(snapshotNuevo);
-        } catch (JsonProcessingException ignored) {}
+        detalle.setDatosNuevos(snapshotNuevo);
         detalleRepo.save(detalle);
 
-        return mapToDTO(ticket);
+        return dtoAfter;
     }
 
     @Override
     @Transactional
     public TicketSoporteDTO completarTicket(UpdateEstadoRequestDTO request, String usuarioLogeado) {
+        // 1) Validar rol y cargar ticket
         Usuario usuario = usuarioRepo.findByUsuario(usuarioLogeado)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-
         if (!Usuario.Rol.ADMINISTRADOR.equals(usuario.getRol())) {
             throw new SecurityException("Solo administradores pueden completar ticket");
         }
-
         TicketSoporte ticket = ticketRepo.findById(request.getTicketId())
                 .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
 
-        String snapshotAnterior = null;
-        try {
-            snapshotAnterior = objectMapper.writeValueAsString(ticket);
-        } catch (JsonProcessingException ignored) {}
+        // 2) Snapshot ANTERIOR usando DTO
+        TicketSoporteDTO dtoBefore = mapToDTO(ticket);
+        String snapshotAnterior = jsonUtil.toJson(dtoBefore);
 
-        // Concatenar detalle final
-        String descripcionActual = ticket.getDescripcion();
-        String nuevaDescripcion = descripcionActual
+        // 3) Actualizar y guardar
+        ticket.setDescripcion(ticket.getDescripcion()
                 + "\n\n--- DETALLE COMPLETADO ---\n"
-                + request.getDetalle();
-        ticket.setDescripcion(nuevaDescripcion);
+                + request.getDetalle());
         ticket.setEstado("COMPLETADO");
         ticket.setFechaActualizacion(LocalDateTime.now());
-        ticketRepo.save(ticket);
+        ticket = ticketRepo.save(ticket);
 
+        // 4) Cabecera bitácora
         BitacoraTicketSoporte bitEnc = new BitacoraTicketSoporte();
         bitEnc.setTicketSoporte(ticket);
         bitEnc.setOperacion("COMPLETADO");
         bitEnc.setFecha(LocalDateTime.now());
         bitacoraRepo.save(bitEnc);
 
+        // 5) Snapshot NUEVO usando DTO
+        TicketSoporteDTO dtoAfter = mapToDTO(ticket);
+        String snapshotNuevo = jsonUtil.toJson(dtoAfter);
+
+        // 6) Detalle bitácora
         BitacoraDetalleTicketSoporte detalle = new BitacoraDetalleTicketSoporte();
         detalle.setBitacoraTicketSoporte(bitEnc);
         detalle.setUsuario(usuario.getNombre());
         detalle.setDatosAnteriores(snapshotAnterior);
-        try {
-            String snapshotNuevo = objectMapper.writeValueAsString(ticket);
-            detalle.setDatosNuevos(snapshotNuevo);
-        } catch (JsonProcessingException ignored) {}
+        detalle.setDatosNuevos(snapshotNuevo);
         detalleRepo.save(detalle);
 
-        return mapToDTO(ticket);
+        return dtoAfter;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<TicketSoporteDTO> listarTickets(String usuarioLogeado) {
+        Usuario usuario = usuarioRepo.findByUsuario(usuarioLogeado)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+
+        List<TicketSoporte> tickets;
+
+        if (Usuario.Rol.ADMINISTRADOR.equals(usuario.getRol())) {
+            tickets = ticketRepo.findAll();
+        } else {
+            tickets = ticketRepo.findByUsuario_Cui(usuario.getCui());
+        }
+
+        return tickets.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+
+/*
     @Override
     @Transactional(readOnly = true)
     public List<TicketSoporteDTO> listarTickets() {
@@ -182,7 +198,7 @@ public class TicketSoporteServiceImpl implements TicketSoporteService {
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
-    }
+    }*/
 
     @Override
     @Transactional(readOnly = true)

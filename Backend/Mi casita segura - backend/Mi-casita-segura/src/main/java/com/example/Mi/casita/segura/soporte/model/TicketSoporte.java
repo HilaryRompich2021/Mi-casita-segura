@@ -1,6 +1,9 @@
 package com.example.Mi.casita.segura.soporte.model;
 
+import com.example.Mi.casita.segura.pagos.Bitacora.model.BitacoraPagoDetalle;
+import com.example.Mi.casita.segura.soporte.Bitacora.model.BitacoraTicketSoporte;
 import com.example.Mi.casita.segura.usuarios.model.Usuario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
@@ -10,9 +13,11 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
+@JsonIgnoreProperties({"bitacora"})
 //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TicketSoporte {
 
@@ -42,5 +47,13 @@ public class TicketSoporte {
     @ManyToOne
     @JoinColumn(name = "usuario_cui", referencedColumnName = "cui")
     private Usuario usuario;
+
+    @OneToMany(
+            mappedBy = "ticketSoporte",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonIgnore  // o @JsonManagedReference si quieres exponerla en JSON controlado
+    private List<BitacoraTicketSoporte> bitacora;
 
 }

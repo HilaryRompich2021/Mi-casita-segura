@@ -71,10 +71,17 @@ public class TicketSoporteController {
      * Lista todos los tickets.
      */
     @GetMapping
+    public ResponseEntity<List<TicketSoporteDTO>> listarTickets(@AuthenticationPrincipal UserDetails principal) {
+        String cuiLogeado = principal.getUsername();
+        List<TicketSoporteDTO> list = ticketService.listarTickets(cuiLogeado);
+        return ResponseEntity.ok(list);
+    }
+
+   /* @GetMapping
     public ResponseEntity<List<TicketSoporteDTO>> listarTickets() {
         List<TicketSoporteDTO> list = ticketService.listarTickets();
         return ResponseEntity.ok(list);
-    }
+    }*/
 
     /**
      * GET /api/tickets/{id}

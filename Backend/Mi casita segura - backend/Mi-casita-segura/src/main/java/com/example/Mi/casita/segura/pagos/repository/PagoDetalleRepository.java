@@ -60,6 +60,11 @@ public interface PagoDetalleRepository extends JpaRepository <Pago_Detalle, Long
     //Eliminar usuario completo
     //void deleteByCreadoPorCui(String cui);
 
+    List<Pago_Detalle> findByPago_CreadoPor_CuiAndServicioPagadoAndEstadoPago(
+            String cui,
+            Pago_Detalle.ServicioPagado servicio,
+            Pago_Detalle.EstadoPago estado
+    );
 }
 
 

@@ -27,10 +27,10 @@ public class generarCuotasMensuales {
     private final CorreoService correoService;
 
 
-    //@Scheduled(cron = "0 0 0 20 * ?") // Cada 20 del mes
+    @Scheduled(cron = "0 0 0 20 * ?") // Cada 20 del mes
    // @Scheduled(cron = "0 * * * * ?")
    // @Scheduled(cron = " * * * * ")
-    @Scheduled(cron = "0 */10 * * * ?")
+    //@Scheduled(cron = "0 */10 * * * ?")
     //@Scheduled(cron = "0 */5 * * * * ")
     public void generarCuotasMensuales() {
         List<Usuario> residentes = usuarioRepo.findByRol(Usuario.Rol.RESIDENTE);
@@ -57,7 +57,7 @@ public class generarCuotasMensuales {
 
 
 //el if para simular
-           // if (!yaTiene) {
+            if (!yaTiene) {
                 Pagos cuota = new Pagos();
                 cuota.setMontoTotal(new BigDecimal("550.00"));
                 cuota.setFechaPago(hoy); // fecha de emisión
@@ -80,7 +80,7 @@ public class generarCuotasMensuales {
                 // ✅ LOG para cada residente que reciba cuota
                 System.out.println("➡️ Cuota creada para: " + residente.getNombre() + " (CUI: " + residente.getCui() + ")");
 
-           // }
+           }
         }
     }
 
@@ -90,9 +90,9 @@ public class generarCuotasMensuales {
      *    usando CorreoService.enviarRecordatorioPago(...).
      */
 
-    //@Scheduled(cron = "0 0 1 * * ?") // Todos los días a la 01:00 AM
+    @Scheduled(cron = "0 0 1 * * ?") // Todos los días a la 01:00 AM
     //@Scheduled(cron = "0 */10 * * * ?")
-    @Scheduled(cron = "0 */5 * * * * ")
+    //@Scheduled(cron = "0 */5 * * * * ")
     //@Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void enviarRecordatorioSiTieneDosCuotas() {

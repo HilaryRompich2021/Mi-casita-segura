@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/da51d76e-3e3d-4095-bc33-6c5af21e93b1/resourceGroups/MiCasitaSegura/providers/Microsoft.Web/sites/MiCasitaSeguraResidencialF",
+    "appService.deploySubpath": "dist"
+}
