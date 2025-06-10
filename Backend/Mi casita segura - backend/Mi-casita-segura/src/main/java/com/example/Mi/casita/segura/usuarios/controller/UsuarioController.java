@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -35,6 +36,7 @@ public class UsuarioController {
     }
 
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @DeleteMapping("/{cui}")
     public ResponseEntity<String> eliminarUsuario(@PathVariable String cui) {
         usuarioService.eliminarUsuario(cui);
